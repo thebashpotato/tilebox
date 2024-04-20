@@ -34,12 +34,22 @@ endif()
 #
 # Create the library
 #
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD})
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${APP_INCLUDE_DIR})
+# Link project options and warnings, and C++ standard libs
+target_link_libraries(
+    ${PROJECT_NAME}
+    PRIVATE tilebox_workspace_project_options
+            tilebox_workspace_project_warnings
+            stdc++fs
+            fmt)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE tilebox_workspace_project_options tilebox_workspace_project_warnings
-                                              stdc++fs)
+# Link X11 and font libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${APP_INCLUDE_DIR}> $<INSTALL_INTERFACE:include>)
 
 #
 # Clang tooling needs to be ran after all libraries/targets are declared
@@ -53,4 +63,30 @@ if(DEVELOPER_MODE)
     run_clang_tidy(${APP_SOURCE_DIR} ${PROJECT_NAME})
     run_clang_tidy(${APP_INCLUDE_DIR} ${PROJECT_NAME})
     run_clang_format(${APP_EXAMPLE_DIR})
+else()
+
+    # Create an installable target
+    string(TOLOWER ${PROJECT_NAME}/version.hpp VERSION_HEADER_LOCATION)
+
+    packageproject(
+        NAME
+        ${PROJECT_NAME}
+        VERSION
+        ${PROJECT_VERSION}
+        NAMESPACE
+        ${PROJECT_NAME}
+        BINARY_DIR
+        ${PROJECT_BINARY_DIR}
+        INCLUDE_DIR
+        ${APP_INCLUDE_DIR}
+        INCLUDE_DESTINATION
+        include
+        VERSION_HEADER
+        "${VERSION_HEADER_LOCATION}"
+        COMPATIBILITY
+        SameMajorVersion
+        DEPENDENCIES
+        "Xlib"
+        DISABLE_VERSION_SUFFIX
+        YES)
 endif()

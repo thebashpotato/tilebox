@@ -43,6 +43,21 @@ add_library(tilebox_workspace_project_warnings INTERFACE)
 set_project_warnings(tilebox_workspace_project_warnings)
 
 #
+# NOTE: FindPackage and CPM (Dependencies needed by all projects are defined at this level only.
+#
+# PackageProject.cmake will be used to make our target installable
+cpmaddpackage("gh:TheLartians/PackageProject.cmake@1.8.0")
+
+# NOTE: https://cmake.org/cmake/help/latest/module/FindX11.html
+find_package(X11 REQUIRED)
+
+# NOTE: https://cmake.org/cmake/help/latest/module/FindFontconfig.html
+find_package(Fontconfig REQUIRED)
+
+# NOTE: https://cmake.org/cmake/help/latest/module/FindFreetype.html
+find_package(Freetype REQUIRED)
+
+#
 # Check for developer mode, add google tests library if it is
 #
 if(DEVELOPER_MODE)

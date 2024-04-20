@@ -14,6 +14,16 @@ define _list =
 	EOF
 endef
 
+define _install =
+	if [ ! -d build ]; then
+		echo "Cannot install, no build folder found"
+		echo "Try running => make install"
+		exit 1
+	else
+		cmake --build build --target install
+	fi
+endef
+
 define _uninstall =
 	if [ ! -d build ] || [ ! -f build/install_manifest.txt ]; then
 		echo "Cannot uninstall, no build folder found or no install_manifest.txt file found"

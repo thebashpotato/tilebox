@@ -11,7 +11,7 @@ list:
 init:
 	@$(call _init)
 
-init_dev:
+init-dev:
 	@$(call _init_dev)
 
 compile:
@@ -23,6 +23,12 @@ embed:
 
 tests: compile
 	@cd build/ && ctest
+
+install:
+	@$(call _install)
+
+uninstall:
+	@$(call _uninstall)
 
 clean:
 	@$(call _clean)
