@@ -1,7 +1,7 @@
 project(
     tilebox-core
     VERSION 0.1.0
-    DESCRIPTION "Xlib wrapper library and common tilbox functionality"
+    DESCRIPTION "Xlib wrapper library and common tilebox functionality"
     LANGUAGES CXX)
 
 #
@@ -36,8 +36,8 @@ endif()
 #
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD})
-set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
-set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
+# set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
+# set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 
 # Link project options and warnings, and C++ standard libs
 target_link_libraries(
@@ -66,27 +66,5 @@ if(DEVELOPER_MODE)
 else()
 
     # Create an installable target
-    string(TOLOWER ${PROJECT_NAME}/version.hpp VERSION_HEADER_LOCATION)
-
-    packageproject(
-        NAME
-        ${PROJECT_NAME}
-        VERSION
-        ${PROJECT_VERSION}
-        NAMESPACE
-        ${PROJECT_NAME}
-        BINARY_DIR
-        ${PROJECT_BINARY_DIR}
-        INCLUDE_DIR
-        ${APP_INCLUDE_DIR}
-        INCLUDE_DESTINATION
-        include
-        VERSION_HEADER
-        "${VERSION_HEADER_LOCATION}"
-        COMPATIBILITY
-        SameMajorVersion
-        DEPENDENCIES
-        "Xlib"
-        DISABLE_VERSION_SUFFIX
-        YES)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION /usr/lib)
 endif()

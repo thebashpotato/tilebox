@@ -45,6 +45,7 @@ message(STATUS "Building ${PROJECT_NAME} in [${CMAKE_BUILD_TYPE}] mode")
 #
 add_executable(${PROJECT_NAME} "${APP_SOURCE_DIR}/main.cpp" ${SOURCE_FILES})
 
+# Link project options and warnings, and C++ standard libs
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE tilebox_workspace_project_options
@@ -52,6 +53,9 @@ target_link_libraries(
             stdc++fs
             fmt
             tilebox-core)
+
+# Link X11 and font libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
 
 #
 # Clang tooling needs to be ran after all libraries/targets are declared.
@@ -61,4 +65,7 @@ if(DEVELOPER_MODE)
     run_clang_format(${APP_TEST_DIR})
 
     run_clang_tidy(${APP_SOURCE_DIR} ${PROJECT_NAME})
+else()
+    # Create an installable target
+    install(TARGETS ${PROJECT_NAME} DESTINATION /usr/bin)
 endif()

@@ -45,8 +45,6 @@ set_project_warnings(tilebox_workspace_project_warnings)
 #
 # NOTE: FindPackage and CPM (Dependencies needed by all projects are defined at this level only.
 #
-# PackageProject.cmake will be used to make our target installable
-cpmaddpackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 
 # NOTE: https://cmake.org/cmake/help/latest/module/FindX11.html
 find_package(X11 REQUIRED)
