@@ -32,6 +32,7 @@ define _uninstall =
 	else
 		echo "Removing installed files.."
 		cat build/install_manifest.txt
+		echo
 		xargs rm < build/install_manifest.txt
 	fi
 endef

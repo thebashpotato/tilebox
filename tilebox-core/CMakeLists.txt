@@ -36,19 +36,14 @@ endif()
 #
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD})
-# set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION})
-# set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 
-# Link project options and warnings, and C++ standard libs
-target_link_libraries(
-    ${PROJECT_NAME}
-    PRIVATE tilebox_workspace_project_options
-            tilebox_workspace_project_warnings
-            stdc++fs
-            fmt)
+if(DEVELOPER_MODE)
+    # Link project options and warnings if we are developing.
+    target_link_libraries(${PROJECT_NAME} PRIVATE tilebox_workspace_project_options tilebox_workspace_project_warnings)
+endif()
 
-# Link X11 and font libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
+# Link required dependencies
+target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs fmt ${X11_LIBRARIES})
 target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${APP_INCLUDE_DIR}> $<INSTALL_INTERFACE:include>)
 
 #
@@ -66,5 +61,5 @@ if(DEVELOPER_MODE)
 else()
 
     # Create an installable target
-    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION /usr/lib)
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 endif()
