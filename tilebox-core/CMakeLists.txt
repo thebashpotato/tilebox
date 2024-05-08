@@ -1,7 +1,7 @@
 project(
     tilebox-core
     VERSION 0.1.0
-    DESCRIPTION "Xlib wrapper library and common tilebox functionality"
+    DESCRIPTION "XLib wrapper library and common tilebox functionality"
     LANGUAGES CXX)
 
 #
@@ -15,10 +15,17 @@ set(APP_EXAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples")
 #
 # Declare all source files
 #
-set(SOURCE_FILES "${APP_SOURCE_DIR}/version.cpp" "${APP_SOURCE_DIR}/x11/display.cpp")
+set(SOURCE_FILES
+    "${APP_SOURCE_DIR}/version.cpp"
+    "${APP_SOURCE_DIR}/geometry.cpp"
+    "${APP_SOURCE_DIR}/x11/display.cpp"
+    "${APP_SOURCE_DIR}/x11/window.cpp"
+    "${APP_SOURCE_DIR}/x11/event_dispatcher.cpp"
+    "${APP_SOURCE_DIR}/x11/events.cpp"
+)
 
 #
-# If dev-mode is enabled add the tests directorA
+# If dev-mode is enabled add the tests directory
 #
 if(DEVELOPER_MODE)
     #
@@ -37,13 +44,15 @@ endif()
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD})
 
-if(DEVELOPER_MODE)
-    # Link project options and warnings if we are developing.
-    target_link_libraries(${PROJECT_NAME} PRIVATE tilebox_workspace_project_options tilebox_workspace_project_warnings)
-endif()
-
 # Link required dependencies
-target_link_libraries(${PROJECT_NAME} PRIVATE stdc++fs fmt ${X11_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        tilebox_workspace_project_options
+        tilebox_workspace_project_warnings
+        stdc++fs
+        fmt
+        ${X11_LIBRARIES}
+)
 target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${APP_INCLUDE_DIR}> $<INSTALL_INTERFACE:include>)
 
 #

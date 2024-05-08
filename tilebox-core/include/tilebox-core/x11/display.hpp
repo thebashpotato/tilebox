@@ -7,19 +7,29 @@
 #include <string>
 #include <tilebox-core/utils/attributes.hpp>
 
-namespace tilebox::core
+namespace tilebox::core::x
 {
 
-/// @brief Provides a RAII interface for common functionaility needed from the X11 Display
-class TILEBOX_EXPORT X11Display : public std::enable_shared_from_this<X11Display>
+/// @brief Provides a RAII interface for common functionaility needed from the X11 Display.
+/// @details Manages the underlying Display * via a shared_ptr.
+class TILEBOX_EXPORT X11Display
 {
   private:
     std::shared_ptr<Display> _display;
-
-  private:
-    explicit X11Display(const std::string &display_name = "") noexcept;
+    std::int32_t _screen_id{};
+    std::int32_t _screen_width{};
+    std::int32_t _screen_height{};
+    std::int32_t _screen_count{};
+    Window _default_root_window{};
+    Window _root_window{};
+    std::string _server_vendor{};
 
   public:
+    /// @param `display_name` Specifies the hardware display name, which determines the display and communications
+    /// domain to be used. On a POSIX-conformant system, if the display_name is NULL, it defaults to the value of the
+    /// DISPLAY environment variable.
+    explicit X11Display(const std::string &display_name = "") noexcept;
+
     virtual ~X11Display() = default;
 
     X11Display(X11Display &&other) noexcept = default;
@@ -28,13 +38,6 @@ class TILEBOX_EXPORT X11Display : public std::enable_shared_from_this<X11Display
     auto operator=(const X11Display &other) noexcept -> X11Display & = default;
 
   public:
-    /// @brief Returns a managed shared pointer to a X11 display.
-    ///
-    /// @param `display_name` Specifies the hardware display name, which determines the display and communications
-    /// domain to be used. On a POSIX-conformant system, if the display_name is NULL, it defaults to the value of the
-    /// DISPLAY environment variable.
-    [[nodiscard]] static auto create(const std::string &display_name = "") -> std::shared_ptr<X11Display>;
-
     /// @brief Check to see if the the underlying display is connected to the X server.
     ///
     /// @detail Should be used after creating the connection to check for failure.
@@ -42,14 +45,23 @@ class TILEBOX_EXPORT X11Display : public std::enable_shared_from_this<X11Display
     /// @return true if connected, false otherwise.
     [[nodiscard]] auto is_connected() const noexcept -> bool;
 
-    /// @brief Gets a shared pointer to this X11 display wrapper.
-    [[nodiscard]] auto get_shared() -> std::shared_ptr<X11Display>;
+    /// @brief Gets a reference counted copy to the underlying managed shared display pointer
+    [[nodiscard]] auto get_shared() const noexcept -> std::shared_ptr<Display>;
 
     /// @brief Gets the raw Display pointer
     [[nodiscard]] auto get_raw() const noexcept -> Display *;
 
+    /// @brief Refreshes all internal display values.
+    auto refresh() -> void;
+
     /// @brief Gets the active screen id
     [[nodiscard]] auto screen_id() const noexcept -> std::int32_t;
+
+    /// @brief Gets the screen width
+    [[nodiscard]] auto screen_width() const noexcept -> std::int32_t;
+
+    /// @brief Gets the screen height
+    [[nodiscard]] auto screen_height() const noexcept -> std::int32_t;
 
     /// @brief Gets the number of screens
     [[nodiscard]] auto screen_count() const noexcept -> std::int32_t;
@@ -63,4 +75,4 @@ class TILEBOX_EXPORT X11Display : public std::enable_shared_from_this<X11Display
     /// @brief Provides details about the X server implementation that is running
     [[nodiscard]] auto server_vendor() const noexcept -> std::string;
 };
-} // namespace tilebox::core
+} // namespace tilebox::core::x
