@@ -13,34 +13,34 @@ using X11EventCallback = std::function<void(XEvent *event)>;
 
 /// @brief Encapsulated, flexible abstraction of the X11 event loop
 /// with the ability to register event handlers for specific events.
-class TILEBOX_EXPORT X11EventDispatcher
+class TILEBOX_EXPORT X11EventLoop
 {
   private:
     X11Display _display;
     std::unordered_map<X11EventType, X11EventCallback> _event_handlers;
 
   public:
-    explicit X11EventDispatcher(X11Display &display) noexcept;
-    virtual ~X11EventDispatcher() = default;
+    explicit X11EventLoop(X11Display &display) noexcept;
+    virtual ~X11EventLoop() = default;
 
-    X11EventDispatcher(const X11EventDispatcher &other) noexcept = default;
-    auto operator=(const X11EventDispatcher &other) noexcept -> X11EventDispatcher & = default;
-    X11EventDispatcher(X11EventDispatcher &&other) noexcept = default;
-    auto operator=(X11EventDispatcher &&other) noexcept -> X11EventDispatcher & = default;
+    X11EventLoop(const X11EventLoop &other) noexcept = default;
+    auto operator=(const X11EventLoop &other) noexcept -> X11EventLoop & = default;
+    X11EventLoop(X11EventLoop &&other) noexcept = default;
+    auto operator=(X11EventLoop &&other) noexcept -> X11EventLoop & = default;
 
   public:
-    /// @brief Adds an event handler to the dispatcher
+    /// @brief Register a handler callback function for a specific event.
     ///
     /// @param `event_type` The event type to listen for
     /// @param `handler` The callback function to call when the event is received
-    auto add_event_handler(const X11EventType event_type, X11EventCallback callback) -> void;
+    auto register_event_handler(const X11EventType event_type, X11EventCallback callback) -> void;
 
-    /// @brief Dispatches events to the registered handlers
+    /// @brief Starts the event loop
     /// @details This function will block until an event is received, the user needs
     /// should do subtantial set up before calling this function.
     ///
-    /// @param `is_running` A flag to indicate if the event loop should continue during periods of event starvation.
-    auto dispatch_events(bool &is_running) -> void;
+    /// @param `dispatch` A flag to keep the loop running, change to false to shutdown the event loop
+    auto start(bool &dispatch) -> void;
 };
 
 } // namespace tilebox::core::x

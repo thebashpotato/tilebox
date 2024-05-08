@@ -20,7 +20,7 @@ set(SOURCE_FILES
     "${APP_SOURCE_DIR}/geometry.cpp"
     "${APP_SOURCE_DIR}/x11/display.cpp"
     "${APP_SOURCE_DIR}/x11/window.cpp"
-    "${APP_SOURCE_DIR}/x11/event_dispatcher.cpp"
+    "${APP_SOURCE_DIR}/x11/event_loop.cpp"
     "${APP_SOURCE_DIR}/x11/events.cpp"
 )
 
@@ -66,7 +66,6 @@ if(DEVELOPER_MODE)
 
     run_clang_tidy(${APP_SOURCE_DIR} ${PROJECT_NAME})
     run_clang_tidy(${APP_INCLUDE_DIR} ${PROJECT_NAME})
-    run_clang_format(${APP_EXAMPLE_DIR})
 else()
 
     # Create an installable target
