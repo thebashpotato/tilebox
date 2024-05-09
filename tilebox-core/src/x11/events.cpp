@@ -124,6 +124,9 @@ auto tilebox_event_mask_to_xlib_eventmask(const X11InputEventMask event_mask) ->
     case X11InputEventMask::X11OwnerGrabButtonMask:
         return OwnerGrabButtonMask;
     }
+
+    // Stop the end of control flow warning
+    return NoEventMask;
 }
 /////////////////////////////////////
 // X11 Event Type Conversion Helpers
@@ -281,6 +284,9 @@ auto tilebox_event_to_xlib_event(const X11EventType event_type) noexcept -> std:
     case X11EventType::X11LASTEvent:
         return LASTEvent;
     }
+
+    // stop the non void function end of control flow warning
+    return LASTEvent;
 }
 
 } // namespace tilebox::core::x

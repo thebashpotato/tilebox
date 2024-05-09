@@ -22,7 +22,7 @@ class TILEBOX_EXPORT X11Display
     std::int32_t _screen_count{};
     Window _default_root_window{};
     Window _root_window{};
-    std::string _server_vendor{};
+    std::string _server_vendor;
 
   public:
     /// @param `display_name` Specifies the hardware display name, which determines the display and communications
@@ -75,4 +75,5 @@ class TILEBOX_EXPORT X11Display
     /// @brief Provides details about the X server implementation that is running
     [[nodiscard]] auto server_vendor() const noexcept -> std::string;
 };
+
 } // namespace tilebox::core::x

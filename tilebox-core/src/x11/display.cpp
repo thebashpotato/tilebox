@@ -12,7 +12,6 @@ X11Display::X11Display(const std::string &display_name) noexcept
     : _display(XOpenDisplay(display_name.empty() ? nullptr : display_name.c_str()), [](Display *display) {
           if (display != nullptr)
           {
-              XSync(display, False);
               XCloseDisplay(display);
           }
       })
