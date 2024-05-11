@@ -28,7 +28,6 @@ template <typename Tag, typename FundamentalType> class TaggedFundamental
         static_assert(std::is_fundamental<FundamentalType>::value);
     }
 
-    /// @brief Default Destructor Move/Copy constructor and assignment
     virtual ~TaggedFundamental() = default;
     TaggedFundamental(TaggedFundamental &&other) noexcept = default;
     auto operator=(TaggedFundamental &&other) noexcept -> TaggedFundamental & = default;
@@ -36,14 +35,44 @@ template <typename Tag, typename FundamentalType> class TaggedFundamental
     auto operator=(const TaggedFundamental &other) -> TaggedFundamental & = default;
 
   public:
-    auto operator+(const TaggedFundamental &other) const -> TaggedFundamental
+    auto operator+(const TaggedFundamental &other) const noexcept -> TaggedFundamental
     {
         return TaggedFundamental(value + other.value);
     }
 
-    auto operator-(const TaggedFundamental &other) const -> TaggedFundamental
+    auto operator-(const TaggedFundamental &other) const noexcept -> TaggedFundamental
     {
         return TaggedFundamental(value - other.value);
+    }
+
+    auto operator<(const TaggedFundamental &other) const noexcept -> bool
+    {
+        return value < other.value;
+    }
+
+    auto operator<=(const TaggedFundamental &other) const noexcept -> bool
+    {
+        return value <= other.value;
+    }
+
+    auto operator>(const TaggedFundamental &other) const noexcept -> bool
+    {
+        return value > other.value;
+    }
+
+    auto operator>=(const TaggedFundamental &other) const noexcept -> bool
+    {
+        return value >= other.value;
+    }
+
+    auto operator==(const TaggedFundamental &other) const noexcept -> bool
+    {
+        return value == other.value;
+    }
+
+    auto operator!=(const TaggedFundamental &other) const noexcept -> bool
+    {
+        return value != other.value;
     }
 };
 

@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <tilebox-core/x11/display.hpp>
 
 using namespace tilebox::core::x;

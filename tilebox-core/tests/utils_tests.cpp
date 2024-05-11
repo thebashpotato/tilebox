@@ -1,5 +1,5 @@
+#include "tilebox-core/version.hpp"
 #include <gtest/gtest.h>
-#include <tilebox-core/version.hpp>
 
 TEST(TileboxCoreUtilsTest, EnsureVersionIsCorrect)
 {

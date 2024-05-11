@@ -42,10 +42,16 @@ class TILEBOX_EXPORT Point
     Y y;
 
   public:
+    /// @brief Builds a default Point with (0, 0).
+    Point();
+
+    /// @brief Builds a user defined Point.
     Point(X x, Y y);
 
-    auto operator+(const Point &other) const noexcept -> Point;
-    auto operator-(const Point &other) const noexcept -> Point;
+    auto operator+(const Point &rhs) const noexcept -> Point;
+    auto operator-(const Point &rhs) const noexcept -> Point;
+    auto operator==(const Point &rhs) const noexcept -> bool;
+    auto operator!=(const Point &rhs) const noexcept -> bool;
 };
 
 class TILEBOX_EXPORT Rect
@@ -56,14 +62,23 @@ class TILEBOX_EXPORT Rect
     Height height;
 
   public:
+    /// @brief Builds a default Rect with (0, 0, 1, 1);
+    Rect();
+
+    /// @brief Builds a Rect with (0,0) and user defined width and height.
+    Rect(Width width, Height height);
+
+    /// @brief Builds a user defined Rect.
     Rect(Point point, Width width, Height height);
 
-    auto operator+(const Rect &other) const noexcept -> Rect;
-    auto operator-(const Rect &other) const noexcept -> Rect;
-    auto operator<(const Rect &other) const noexcept -> bool;
-    auto operator<=(const Rect &other) const noexcept -> bool;
-    auto operator>(const Rect &other) const noexcept -> bool;
-    auto operator>=(const Rect &other) const noexcept -> bool;
+    auto operator+(const Rect &rhs) const noexcept -> Rect;
+    auto operator-(const Rect &rhs) const noexcept -> Rect;
+    auto operator<(const Rect &rhs) const noexcept -> bool;
+    auto operator<=(const Rect &rhs) const noexcept -> bool;
+    auto operator>(const Rect &rhs) const noexcept -> bool;
+    auto operator>=(const Rect &rhs) const noexcept -> bool;
+    auto operator==(const Rect &rhs) const noexcept -> bool;
+    auto operator!=(const Rect &rhs) const noexcept -> bool;
 
     /// @brief The four corners of this Rect in Point form return in clockwise order
     /// from the top left corner.
@@ -86,10 +101,10 @@ class TILEBOX_EXPORT Rect
     /// width and height of 1.
     [[nodiscard]] auto shrink_in(const std::uint32_t border) const noexcept -> Rect;
 
-    /// @brief Crates a new Rect with width equal to the factor * the current width
+    /// @brief Creates a new Rect with width equal to the factor * the current width
     [[nodiscard]] auto scale_width(const std::double_t factor) const noexcept -> Rect;
 
-    /// @brief Crates a new Rect with height equal to the factor * the current width
+    /// @brief Creates a new Rect with height equal to the factor * the current height
     [[nodiscard]] auto scale_height(const std::double_t factor) const noexcept -> Rect;
 
     /// @brief Update the width and height of this Rect by specified deltas.
@@ -102,11 +117,11 @@ class TILEBOX_EXPORT Rect
     /// @detail Minimum (x, y) coordinates are clamped at (0,0)
     auto reposition(const std::int32_t dx, const std::int32_t dy) noexcept -> void;
 
-    /// @brief Check whether this Rect contains `other` as a sub-Rect
-    [[nodiscard]] auto contains(const Rect &other) const noexcept -> bool;
+    /// @brief Check whether this Rect contains `rhs` as a sub-Rect
+    [[nodiscard]] auto contains(const Rect &rhs) const noexcept -> bool;
 
-    /// @brief Check whether this Rect contains 'other_point'
-    [[nodiscard]] auto contains_point(const Point &other_point) const noexcept -> bool;
+    /// @brief Check whether this Rect contains 'rhs'
+    [[nodiscard]] auto contains_point(const Point &rhs) const noexcept -> bool;
 };
 
 } // namespace tilebox::core

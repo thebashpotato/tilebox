@@ -22,7 +22,7 @@ embed:
 	@$(call _embed)
 
 tests: compile
-	@cd build/ && ctest
+	@cd build/ && ctest --output-on-failure
 
 install:
 	@$(call _install)

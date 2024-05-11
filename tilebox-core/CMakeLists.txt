@@ -31,7 +31,7 @@ if(DEVELOPER_MODE)
     #
     # Setup unit tests module
     #
-    message(STATUS "Building ${PROJECT_NAME} in [${CMAKE_BUILD_TYPE}] mode with Tests Enabled")
+    message(STATUS "Building ${PROJECT_NAME} in [${CMAKE_BUILD_TYPE}] mode with Tests and Examples Enabled")
     add_subdirectory(tests)
     add_subdirectory(examples)
 else()
@@ -43,6 +43,12 @@ endif()
 #
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD})
+
+# if(DEVELOPER_MODE)
+#     target_compile_options(${PROJECT_NAME} PRIVATE -fsanitize=address)
+#     target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=address)
+# endif()
+
 
 # Link required dependencies
 target_link_libraries(${PROJECT_NAME}
