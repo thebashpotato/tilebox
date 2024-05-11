@@ -1,7 +1,7 @@
 #pragma once
 
+#include "tilebox-core/utils/attributes.hpp"
 #include <cstdint>
-#include <tilebox-core/utils/attributes.hpp>
 
 namespace tilebox::core::x
 {

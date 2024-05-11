@@ -15,9 +15,9 @@ X11EventLoop::X11EventLoop(X11Display &display) noexcept : _display(display)
 
 auto X11EventLoop::register_event_handler(const X11EventType event_type, X11EventCallback callback) -> void
 {
-    if (!this->_event_handlers.contains(event_type))
+    if (!_event_handlers.contains(event_type))
     {
-        auto insertion_pair = this->_event_handlers.emplace(event_type, std::move(callback));
+        auto insertion_pair = _event_handlers.emplace(event_type, std::move(callback));
         if (!insertion_pair.second)
         {
             fmt::println("Could not insert event handler for X11 event type: {}",
@@ -32,10 +32,10 @@ auto X11EventLoop::start(bool &dispatch) -> void
     while (dispatch && (XNextEvent(_display.get_raw(), &event) == 0))
     {
         const X11EventType event_type = tilebox_event_from_xlib_event(event.type);
-        if (this->_event_handlers.contains(event_type))
+        if (_event_handlers.contains(event_type))
         {
-            auto callback = this->_event_handlers.at(event_type);
-            callback(&event);
+            // FIX: Can technically throw, I think it is safe becuase of the contains call though.
+            _event_handlers.at(event_type)(&event);
         }
     }
 }

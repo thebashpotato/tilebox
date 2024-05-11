@@ -1,11 +1,11 @@
 #pragma once
 
+#include "tilebox-core/utils/attributes.hpp"
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <tilebox-core/utils/attributes.hpp>
 
 namespace tilebox::core::x
 {
@@ -74,6 +74,14 @@ class TILEBOX_EXPORT X11Display
 
     /// @brief Provides details about the X server implementation that is running
     [[nodiscard]] auto server_vendor() const noexcept -> std::string;
+
+    /// @brief flushes the output buffer and then waits until all requests have been received and processed by the X
+    /// server.
+    ///
+    /// @details Should be called before shutdown
+    ///
+    /// @param `discard` Specifies whether the X server should discard all events in the event queue.
+    auto sync(bool discard = false) const noexcept -> void;
 };
 
 } // namespace tilebox::core::x
