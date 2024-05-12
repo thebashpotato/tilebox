@@ -29,12 +29,12 @@ class TILEBOX_EXPORT X11Display
     /// domain to be used. On a POSIX-conformant system, if the display_name is NULL, it defaults to the value of the
     /// DISPLAY environment variable.
     explicit X11Display(const std::string &display_name = "") noexcept;
-
     virtual ~X11Display() = default;
-
     X11Display(X11Display &&other) noexcept = default;
-    auto operator=(X11Display &&other) noexcept -> X11Display & = default;
     X11Display(const X11Display &other) noexcept = default;
+
+  public:
+    auto operator=(X11Display &&other) noexcept -> X11Display & = default;
     auto operator=(const X11Display &other) noexcept -> X11Display & = default;
 
   public:

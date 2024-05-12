@@ -72,6 +72,7 @@ class TILEBOX_EXPORT Point
     /// @brief Builds a user defined Point.
     Point(X x, Y y);
 
+  public:
     auto operator+(const Point &rhs) const noexcept -> Point;
     auto operator-(const Point &rhs) const noexcept -> Point;
     auto operator==(const Point &rhs) const noexcept -> bool;
@@ -83,11 +84,6 @@ class TILEBOX_EXPORT Point
 ///
 /// @details Has member functions for resizing, scaling, and manipulating
 /// a rectangle on a X11 cartesian plane via (x, y, width and height).
-///
-/// @note X11 does not use decimal values to layout client windows
-/// like traditional mathematics would assume. But rather it expects unsigned integers,
-/// this is why the x, y, width and height scalar variables are unsigned. A negative value
-/// would mean your client would be rendered in the void of which you could not see.
 class TILEBOX_EXPORT Rect
 {
   public:
@@ -105,6 +101,7 @@ class TILEBOX_EXPORT Rect
     /// @brief Builds a user defined Rect.
     Rect(Point point, Width width, Height height);
 
+  public:
     auto operator+(const Rect &rhs) const noexcept -> Rect;
     auto operator-(const Rect &rhs) const noexcept -> Rect;
     auto operator<(const Rect &rhs) const noexcept -> bool;
@@ -113,6 +110,12 @@ class TILEBOX_EXPORT Rect
     auto operator>=(const Rect &rhs) const noexcept -> bool;
     auto operator==(const Rect &rhs) const noexcept -> bool;
     auto operator!=(const Rect &rhs) const noexcept -> bool;
+
+  public:
+    [[nodiscard]] auto x() const noexcept -> std::int32_t;
+    [[nodiscard]] auto y() const noexcept -> std::int32_t;
+    [[nodiscard]] auto w() const noexcept -> std::uint32_t;
+    [[nodiscard]] auto h() const noexcept -> std::uint32_t;
 
     /// @brief The four corners of this Rect in Point form return in clockwise order
     /// from the top left corner.

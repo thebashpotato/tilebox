@@ -90,6 +90,26 @@ auto Rect::operator!=(const Rect &rhs) const noexcept -> bool
     return !(*this == rhs);
 }
 
+auto Rect::x() const noexcept -> std::int32_t
+{
+    return static_cast<std::int32_t>(point.x.value);
+}
+
+auto Rect::y() const noexcept -> std::int32_t
+{
+    return static_cast<std::int32_t>(point.y.value);
+}
+
+auto Rect::w() const noexcept -> std::uint32_t
+{
+    return width.value;
+}
+
+auto Rect::h() const noexcept -> std::uint32_t
+{
+    return height.value;
+}
+
 auto Rect::corners() const noexcept -> std::tuple<Point, Point, Point, Point>
 {
     return {
