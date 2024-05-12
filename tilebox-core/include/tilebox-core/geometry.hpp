@@ -28,13 +28,37 @@ class TILEBOX_INTERNAL HeightTag
 {
 };
 
+class TILEBOX_INTERNAL DeltaOneTag
+{
+};
+
+class TILEBOX_INTERNAL DeltaTwoTag
+{
+};
+
 } // namespace TILEBOX_INTERNAL detail
 
+/// @brief Tagged type for uint32_t x coordinate
 using X = TaggedFundamental<detail::Xtag, std::uint32_t>;
+
+/// @brief Tagged type for uint32_t y coordinate
 using Y = TaggedFundamental<detail::Ytag, std::uint32_t>;
+
+/// @brief Tagged type for uint32_t width size
 using Width = TaggedFundamental<detail::WidthTag, std::uint32_t>;
+
+/// @brief Tagged type for uint32_t height size
 using Height = TaggedFundamental<detail::HeightTag, std::uint32_t>;
 
+/// @brief Tagged type for int32_t rate of change variable
+using DeltaOne = TaggedFundamental<detail::DeltaOneTag, std::int32_t>;
+
+/// @brief Tagged type for int32_t rate of change variable
+using DeltaTwo = TaggedFundamental<detail::DeltaTwoTag, std::int32_t>;
+
+/// @brief Represents a 2D coordinate set on a cartesian plane.
+///
+/// @detail A point cannot be negative, and does not hold signed integers.
 class TILEBOX_EXPORT Point
 {
   public:
@@ -54,6 +78,16 @@ class TILEBOX_EXPORT Point
     auto operator!=(const Point &rhs) const noexcept -> bool;
 };
 
+/// @brief Rect Lays at the heart of an X11 program. Contains all
+/// necessary geometric functions for manipulating the layout of a client.
+///
+/// @details Has member functions for resizing, scaling, and manipulating
+/// a rectangle on a X11 cartesian plane via (x, y, width and height).
+///
+/// @note X11 does not use decimal values to layout client windows
+/// like traditional mathematics would assume. But rather it expects unsigned integers,
+/// this is why the x, y, width and height scalar variables are unsigned. A negative value
+/// would mean your client would be rendered in the void of which you could not see.
 class TILEBOX_EXPORT Rect
 {
   public:
@@ -107,15 +141,19 @@ class TILEBOX_EXPORT Rect
     /// @brief Creates a new Rect with height equal to the factor * the current height
     [[nodiscard]] auto scale_height(const std::double_t factor) const noexcept -> Rect;
 
-    /// @brief Update the width and height of this Rect by specified deltas.
+    /// @brief Mutate the width and height of this Rect by specified deltas.
     ///
-    /// @detail Minimum size is clamped at 1x1
-    auto resize(const std::int32_t dw, const std::int32_t dh) noexcept -> void;
+    /// @detail Minimum size is clamped at width = 1, height = 1.
+    ///
+    /// BUG: std::numeric_limits<std::int32_t>::max() is not accounted for and will likely
+    ///      cause a crash. However it is unlikely anyones screen would be `2147483647`
+    ///      pixels in width or height.
+    auto resize(const DeltaOne &dw, const DeltaTwo &dh) noexcept -> void;
 
-    /// @brief Update the position of this Rect by specified deltas
+    /// @brief Mutate the position of this Rect by specified deltas
     ///
-    /// @detail Minimum (x, y) coordinates are clamped at (0,0)
-    auto reposition(const std::int32_t dx, const std::int32_t dy) noexcept -> void;
+    /// @detail Minimum (x, y) coordinates are clamped at x = 0, y = 0.
+    auto reposition(const DeltaOne &dx, const DeltaTwo &dy) noexcept -> void;
 
     /// @brief Check whether this Rect contains `rhs` as a sub-Rect
     [[nodiscard]] auto contains(const Rect &rhs) const noexcept -> bool;

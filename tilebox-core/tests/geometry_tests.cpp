@@ -1,13 +1,14 @@
 #include <cmath>
 #include <cstdint>
 #include <gtest/gtest.h>
+#include <limits>
 #include <tilebox-core/geometry.hpp>
 
 using namespace tilebox::core;
 
 TEST(TileboxCoreGeometryTestSuite, VerifyBasicRectConstruction)
 {
-    auto r = Rect(Width(1), Height(2));
+    const Rect r(Width(1), Height(2));
 
     ASSERT_EQ(r.point.x, X(0));
     ASSERT_EQ(r.point.y, Y(0));
@@ -17,55 +18,55 @@ TEST(TileboxCoreGeometryTestSuite, VerifyBasicRectConstruction)
 
 TEST(TileboxCoreGeometryTestSuite, VerifyCornersWork)
 {
-    auto r = Rect(Width(1), Height(2));
-    auto [p0, p1, p2, p3] = r.corners();
+    const Rect r(Width(1), Height(2));
+    const auto [tl, tr, br, bl] = r.corners();
 
-    auto point0 = Point(X(0), Y(0));
-    auto point1 = Point(X(1), Y(0));
-    auto point2 = Point(X(1), Y(2));
-    auto point3 = Point(X(0), Y(2));
+    const Point expected_tl(X(0), Y(0));
+    const Point expected_tr(X(1), Y(0));
+    const Point expected_br(X(1), Y(2));
+    const Point expected_bl(X(0), Y(2));
 
-    ASSERT_EQ(p0.x, point0.x);
-    ASSERT_EQ(p0.y, point0.y);
+    ASSERT_EQ(tl.x, expected_tl.x);
+    ASSERT_EQ(tl.y, expected_tl.y);
 
-    ASSERT_EQ(p1.x, point1.x);
-    ASSERT_EQ(p1.y, point1.y);
+    ASSERT_EQ(tr.x, expected_tr.x);
+    ASSERT_EQ(tr.y, expected_tr.y);
 
-    ASSERT_EQ(p2.x, point2.x);
-    ASSERT_EQ(p2.y, point2.y);
+    ASSERT_EQ(br.x, expected_br.x);
+    ASSERT_EQ(br.y, expected_br.y);
 
-    ASSERT_EQ(p3.x, point3.x);
-    ASSERT_EQ(p3.y, point3.y);
+    ASSERT_EQ(bl.x, expected_bl.x);
+    ASSERT_EQ(bl.y, expected_bl.y);
 }
 
 TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksBothEven)
 {
-    auto r = Rect(Width(10), Height(20));
-    auto p = Point(X(5), Y(10));
+    const Rect r(Width(10), Height(20));
+    const Point p(X(5), Y(10));
 
     ASSERT_EQ(r.midpoint(), p);
 }
 
 TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksBothOdd)
 {
-    auto r = Rect(Width(11), Height(21));
-    auto p = Point(X(5), Y(10));
+    const Rect r(Width(11), Height(21));
+    const Point p(X(5), Y(10));
 
     ASSERT_EQ(r.midpoint(), p);
 }
 
 TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksWidthEven)
 {
-    auto r = Rect(Width(10), Height(21));
-    auto p = Point(X(5), Y(10));
+    const Rect r(Width(10), Height(21));
+    const Point p(X(5), Y(10));
 
     ASSERT_EQ(r.midpoint(), p);
 }
 
 TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksHeightEven)
 {
-    auto r = Rect(Width(11), Height(20));
-    auto p = Point(X(5), Y(10));
+    const Rect r(Width(11), Height(20));
+    const Point p(X(5), Y(10));
 
     ASSERT_EQ(r.midpoint(), p);
 }
@@ -76,7 +77,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksSmallBorder)
     const Width w(8);
     const Height h(18);
 
-    auto r = Rect(Width(10), Height(20));
+    const Rect r(Width(10), Height(20));
     const auto shrunk = r.shrink_in(border);
 
     ASSERT_EQ(shrunk, Rect(Point(X(r.point.x), Y(r.point.y)), w, h));
@@ -88,7 +89,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksMassiveBorder)
     const Width w(1);
     const Height h(1);
 
-    auto r = Rect(Width(10), Height(20));
+    const Rect r(Width(10), Height(20));
     const auto shrunk = r.shrink_in(border);
 
     ASSERT_EQ(shrunk, Rect(Point(X(r.point.x), Y(r.point.y)), w, h));
@@ -100,7 +101,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksBorderHalfOfWidth)
     const Width w(1);
     const Height h(10);
 
-    auto r = Rect(Width(10), Height(20));
+    const Rect r(Width(10), Height(20));
     const auto shrunk = r.shrink_in(border);
 
     ASSERT_EQ(shrunk, Rect(Point(X(r.point.x), Y(r.point.y)), w, h));
@@ -112,7 +113,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksBorderHalfOfHeight)
     const Width w(10);
     const Height h(1);
 
-    auto r = Rect(Width(20), Height(10));
+    const Rect r(Width(20), Height(10));
     const auto shrunk = r.shrink_in(border);
 
     ASSERT_EQ(shrunk, Rect(Point(X(r.point.x), Y(r.point.y)), w, h));
@@ -124,8 +125,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthUp)
     const Point coordinates(X(10), Y(20));
     const Height height(40);
 
-    const Rect expected = Rect(coordinates, Width(45), height);
-    const Rect r = Rect(coordinates, Width(30), height);
+    const Rect expected(coordinates, Width(45), height);
+    const Rect r(coordinates, Width(30), height);
 
     ASSERT_EQ(r.scale_width(factor), expected);
 }
@@ -136,8 +137,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthDown)
     const Point coordinates(X(10), Y(20));
     const Height height(40);
 
-    const Rect expected = Rect(coordinates, Width(15), height);
-    const Rect r = Rect(coordinates, Width(30), height);
+    const Rect expected(coordinates, Width(15), height);
+    const Rect r(coordinates, Width(30), height);
 
     ASSERT_EQ(r.scale_width(factor), expected);
 }
@@ -148,8 +149,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthUnchanged)
     const Point coordinates(X(10), Y(20));
     const Height height(40);
 
-    const Rect expected = Rect(coordinates, Width(30), height);
-    const Rect r = Rect(coordinates, Width(30), height);
+    const Rect expected(coordinates, Width(30), height);
+    const Rect r(coordinates, Width(30), height);
 
     ASSERT_EQ(r.scale_width(factor), expected);
 }
@@ -160,8 +161,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightUp)
     const Point coordinates(X(10), Y(20));
     const Width width(30);
 
-    const Rect expected = Rect(coordinates, width, Height(60));
-    const Rect r = Rect(coordinates, width, Height(40));
+    const Rect expected(coordinates, width, Height(60));
+    const Rect r(coordinates, width, Height(40));
 
     ASSERT_EQ(r.scale_height(factor), expected);
 }
@@ -172,8 +173,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightDown)
     const Point coordinates(X(10), Y(20));
     const Width width(30);
 
-    const Rect expected = Rect(coordinates, width, Height(20));
-    const Rect r = Rect(coordinates, width, Height(40));
+    const Rect expected(coordinates, width, Height(20));
+    const Rect r(coordinates, width, Height(40));
 
     ASSERT_EQ(r.scale_height(factor), expected);
 }
@@ -184,8 +185,170 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightUnchanged)
     const Point coordinates(X(10), Y(20));
     const Width width(30);
 
-    const Rect expected = Rect(coordinates, width, Height(40));
-    const Rect r = Rect(coordinates, width, Height(40));
+    const Rect expected(coordinates, width, Height(40));
+    const Rect r(coordinates, width, Height(40));
 
     ASSERT_EQ(r.scale_height(factor), expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyResizeIncrease)
+{
+    const DeltaOne dw(1);
+    const DeltaTwo dh(2);
+
+    const Rect expected(Width(11), Height(22));
+    Rect r(Width(10), Height(20));
+
+    r.resize(dw, dh);
+
+    ASSERT_EQ(r, expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecrease)
+{
+
+    const DeltaOne dw(-1);
+    const DeltaTwo dh(-2);
+
+    const Rect expected(Width(9), Height(18));
+    Rect r(Width(10), Height(20));
+
+    r.resize(dw, dh);
+
+    ASSERT_EQ(r, expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyResizeClamp)
+{
+    const DeltaOne dw(-100);
+    const DeltaTwo dh(-100);
+
+    const Rect expected(Width(1), Height(1));
+    Rect r(Width(10), Height(20));
+
+    r.resize(dw, dh);
+
+    ASSERT_EQ(r, expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecreaseMax)
+{
+    const DeltaOne dw(std::numeric_limits<std::int32_t>::max());
+    const DeltaTwo dh(std::numeric_limits<std::int32_t>::min());
+
+    const Rect expected(Width(1), Height(1));
+    Rect r(Width(10), Height(20));
+
+    r.resize(dw, dh);
+
+    ASSERT_EQ(r, expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyRepositionIncrease)
+{
+    const DeltaOne dx(1);
+    const DeltaTwo dy(2);
+
+    const Rect expected(Point(X(11), Y(22)), Width(10), Height(20));
+    Rect r(Point(X(10), Y(20)), Width(10), Height(20));
+
+    r.reposition(dx, dy);
+
+    ASSERT_EQ(r, expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyRepositionDecrease)
+{
+    const DeltaOne dx(-1);
+    const DeltaTwo dy(-2);
+
+    const Rect expected(Point(X(9), Y(18)), Width(10), Height(20));
+    Rect r(Point(X(10), Y(20)), Width(10), Height(20));
+
+    r.reposition(dx, dy);
+
+    ASSERT_EQ(r, expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyRepositionClamp)
+{
+    const DeltaOne dx(-100);
+    const DeltaTwo dy(-100);
+
+    const Rect expected(Point(X(0), Y(0)), Width(10), Height(20));
+    Rect r(Point(X(10), Y(20)), Width(10), Height(20));
+
+    r.reposition(dx, dy);
+
+    ASSERT_EQ(r, expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyDecreaseMax)
+{
+    const DeltaOne dx(std::numeric_limits<std::int32_t>::min());
+    const DeltaTwo dy(std::numeric_limits<std::int32_t>::min());
+
+    const Rect expected(Point(X(0), Y(0)), Width(10), Height(20));
+    Rect r(Point(X(10), Y(20)), Width(10), Height(20));
+
+    r.reposition(dx, dy);
+
+    ASSERT_EQ(r, expected);
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyContainsRect)
+{
+    const Rect r1(Point(X(10), Y(10)), Width(50), Height(50));
+    const Rect r2(Width(100), Height(100));
+
+    ASSERT_TRUE(r2.contains(r1));
+    ASSERT_FALSE(r1.contains(r2));
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointOutside)
+{
+    const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
+    const Point p;
+
+    ASSERT_FALSE(r.contains_point(p));
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointInside)
+{
+    const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
+    const Point p(X(30), Y(20));
+
+    ASSERT_TRUE(r.contains_point(p));
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointTopLeft)
+{
+    const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
+    const Point p(X(10), Y(20));
+
+    ASSERT_TRUE(r.contains_point(p));
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointTopRight)
+{
+    const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
+    const Point p(X(40), Y(20));
+
+    ASSERT_TRUE(r.contains_point(p));
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointBottomRight)
+{
+    const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
+    const Point p(X(40), Y(60));
+
+    ASSERT_TRUE(r.contains_point(p));
+}
+
+TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointBottomLeft)
+{
+    const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
+    const Point p(X(10), Y(60));
+
+    ASSERT_TRUE(r.contains_point(p));
 }

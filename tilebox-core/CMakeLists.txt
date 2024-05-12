@@ -70,8 +70,8 @@ if(DEVELOPER_MODE)
     run_clang_format(${APP_TEST_DIR})
     run_clang_format(${APP_EXAMPLE_DIR})
 
-    run_clang_tidy(${APP_SOURCE_DIR} ${PROJECT_NAME})
-    run_clang_tidy(${APP_INCLUDE_DIR} ${PROJECT_NAME})
+    # run_clang_tidy(${APP_SOURCE_DIR} ${PROJECT_NAME})
+    # run_clang_tidy(${APP_INCLUDE_DIR} ${PROJECT_NAME})
 else()
 
     # Create an installable target

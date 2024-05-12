@@ -159,16 +159,30 @@ auto Rect::scale_height(const std::double_t factor) const noexcept -> Rect
     };
 }
 
-auto Rect::resize(const std::int32_t dw, const std::int32_t dh) noexcept -> void
+auto Rect::resize(const DeltaOne &dw, const DeltaTwo &dh) noexcept -> void
 {
-    width = Width(static_cast<std::uint32_t>(std::max(1, (static_cast<std::int32_t>(width.value) + dw))));
-    height = Height(static_cast<std::uint32_t>(std::max(1, (static_cast<std::int32_t>(height.value) + dh))));
+    if (dw != 0)
+    {
+        width = Width(static_cast<std::uint32_t>(std::max(1, dw.value + static_cast<std::int32_t>(width.value))));
+    }
+
+    if (dh != 0)
+    {
+        height = Height(static_cast<std::uint32_t>(std::max(1, dh.value + static_cast<std::int32_t>(height.value))));
+    }
 }
 
-auto Rect::reposition(const std::int32_t dx, const std::int32_t dy) noexcept -> void
+auto Rect::reposition(const DeltaOne &dx, const DeltaTwo &dy) noexcept -> void
 {
-    point.x = X(static_cast<std::uint32_t>(std::max(0, static_cast<std::int32_t>(point.x.value) + dx)));
-    point.y = Y(static_cast<std::uint32_t>(std::max(0, static_cast<std::int32_t>(point.y.value) + dy)));
+    if (dx != 0)
+    {
+        point.x = X(static_cast<std::uint32_t>(std::max(0, dx.value + static_cast<std::int32_t>(point.x.value))));
+    }
+
+    if (dy != 0)
+    {
+        point.y = Y(static_cast<std::uint32_t>(std::max(0, dy.value + static_cast<std::int32_t>(point.y.value))));
+    }
 }
 
 auto Rect::contains(const Rect &rhs) const noexcept -> bool
@@ -183,12 +197,12 @@ auto Rect::contains(const Rect &rhs) const noexcept -> bool
         return false;
     }
 
-    if ((rhs.point.x.value + rhs.width.value) > (point.x.value + width.value))
+    if ((rhs.point.x + rhs.width.value) > (point.x + width.value))
     {
         return false;
     }
 
-    if ((rhs.point.y.value + rhs.height.value) > (point.y.value + height.value))
+    if ((rhs.point.y + rhs.height.value) > (point.y + height.value))
     {
         return false;
     }
@@ -198,8 +212,8 @@ auto Rect::contains(const Rect &rhs) const noexcept -> bool
 
 auto Rect::contains_point(const Point &rhs) const noexcept -> bool
 {
-    return (point.x <= rhs.x && rhs.x.value <= (point.x.value + width.value)) &&
-           (point.y <= rhs.y && rhs.y.value <= (point.x.value + height.value));
+    return (point.x <= rhs.x && rhs.x <= (point.x + width.value)) &&
+           (point.y <= rhs.y && rhs.y <= (point.y + height.value));
 }
 
 } // namespace tilebox::core

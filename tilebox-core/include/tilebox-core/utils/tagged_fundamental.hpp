@@ -8,8 +8,11 @@ namespace tilebox::core
 ///
 /// @details Solves the issue when a function takes in many arguments of the same type,
 /// which can lead to confusion and mistakes from the programmer.
-/// For example consider a Rectangle with a constructor that takes a uint32_t width, and uint32_t height.
-/// The width and the height can easily be swapped, resulting in runtime bugs.
+///
+/// For example consider a Rectangle with a constructor that takes a
+/// uint32_t x, uint32_t y, uint32_T width, and uint32_t height.
+///
+/// They can easily be swapped, resulting in runtime bugs.
 /// This can be avoided by "Tagging the type".
 template <typename Tag, typename FundamentalType> class TaggedFundamental
 {
@@ -23,56 +26,96 @@ template <typename Tag, typename FundamentalType> class TaggedFundamental
         static_assert(std::is_fundamental<FundamentalType>::value);
     };
 
-    explicit TaggedFundamental(FundamentalType value) : value(std::move(value))
+    constexpr explicit TaggedFundamental(FundamentalType value) noexcept : value(std::move(value))
     {
         static_assert(std::is_fundamental<FundamentalType>::value);
     }
 
     virtual ~TaggedFundamental() = default;
-    TaggedFundamental(TaggedFundamental &&other) noexcept = default;
-    auto operator=(TaggedFundamental &&other) noexcept -> TaggedFundamental & = default;
-    TaggedFundamental(const TaggedFundamental &other) = default;
-    auto operator=(const TaggedFundamental &other) -> TaggedFundamental & = default;
+    TaggedFundamental(TaggedFundamental &&rhs) noexcept = default;
+    auto operator=(TaggedFundamental &&rhs) noexcept -> TaggedFundamental & = default;
+    TaggedFundamental(const TaggedFundamental &rhs) = default;
+    auto operator=(const TaggedFundamental &rhs) -> TaggedFundamental & = default;
 
   public:
-    auto operator+(const TaggedFundamental &other) const noexcept -> TaggedFundamental
+    auto operator+(const TaggedFundamental &rhs) const noexcept -> TaggedFundamental
     {
-        return TaggedFundamental(value + other.value);
+        return TaggedFundamental(value + rhs.value);
     }
 
-    auto operator-(const TaggedFundamental &other) const noexcept -> TaggedFundamental
+    auto operator+(const FundamentalType &rhs) const noexcept -> TaggedFundamental
     {
-        return TaggedFundamental(value - other.value);
+        return TaggedFundamental(value + rhs);
     }
 
-    auto operator<(const TaggedFundamental &other) const noexcept -> bool
+    auto operator-(const TaggedFundamental &rhs) const noexcept -> TaggedFundamental
     {
-        return value < other.value;
+        return TaggedFundamental(value - rhs.value);
     }
 
-    auto operator<=(const TaggedFundamental &other) const noexcept -> bool
+    auto operator-(const FundamentalType &rhs) const noexcept -> TaggedFundamental
     {
-        return value <= other.value;
+        return TaggedFundamental(value - rhs);
     }
 
-    auto operator>(const TaggedFundamental &other) const noexcept -> bool
+    auto operator<(const TaggedFundamental &rhs) const noexcept -> bool
     {
-        return value > other.value;
+        return value < rhs.value;
     }
 
-    auto operator>=(const TaggedFundamental &other) const noexcept -> bool
+    auto operator<(const FundamentalType &rhs) const noexcept -> bool
     {
-        return value >= other.value;
+        return value < rhs;
     }
 
-    auto operator==(const TaggedFundamental &other) const noexcept -> bool
+    auto operator<=(const TaggedFundamental &rhs) const noexcept -> bool
     {
-        return value == other.value;
+        return value <= rhs.value;
     }
 
-    auto operator!=(const TaggedFundamental &other) const noexcept -> bool
+    auto operator<=(const FundamentalType &rhs) const noexcept -> bool
     {
-        return value != other.value;
+        return value <= rhs;
+    }
+
+    auto operator>(const TaggedFundamental &rhs) const noexcept -> bool
+    {
+        return value > rhs.value;
+    }
+
+    auto operator>(const FundamentalType &rhs) const noexcept -> bool
+    {
+        return value > rhs;
+    }
+
+    auto operator>=(const TaggedFundamental &rhs) const noexcept -> bool
+    {
+        return value >= rhs.value;
+    }
+
+    auto operator>=(const FundamentalType &rhs) const noexcept -> bool
+    {
+        return value >= rhs;
+    }
+
+    auto operator==(const TaggedFundamental &rhs) const noexcept -> bool
+    {
+        return value == rhs.value;
+    }
+
+    auto operator==(const FundamentalType &rhs) const noexcept -> bool
+    {
+        return value == rhs;
+    }
+
+    auto operator!=(const TaggedFundamental &rhs) const noexcept -> bool
+    {
+        return value != rhs.value;
+    }
+
+    auto operator!=(const FundamentalType &rhs) const noexcept -> bool
+    {
+        return value != rhs;
     }
 };
 
