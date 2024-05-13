@@ -16,11 +16,11 @@ using X11EventCallback = std::function<void(XEvent *event)>;
 class TILEBOX_EXPORT X11EventLoop
 {
   private:
-    X11Display _display;
+    X11Display _dpy;
     std::unordered_map<X11EventType, X11EventCallback> _event_handlers;
 
   public:
-    explicit X11EventLoop(X11Display &display) noexcept;
+    explicit X11EventLoop(X11Display &dpy) noexcept;
     virtual ~X11EventLoop() = default;
 
     X11EventLoop(const X11EventLoop &other) noexcept = default;

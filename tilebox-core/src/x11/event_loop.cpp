@@ -9,7 +9,7 @@
 namespace tilebox::core::x
 {
 
-X11EventLoop::X11EventLoop(X11Display &display) noexcept : _display(display)
+X11EventLoop::X11EventLoop(X11Display &dpy) noexcept : _dpy(dpy)
 {
 }
 
@@ -29,7 +29,7 @@ auto X11EventLoop::register_event_handler(const X11EventType event_type, X11Even
 auto X11EventLoop::start(bool &dispatch) -> void
 {
     XEvent event;
-    while (dispatch && (XNextEvent(_display.get_raw(), &event) == 0))
+    while (dispatch && (XNextEvent(_dpy.raw(), &event) == 0))
     {
         const X11EventType event_type = tilebox_event_from_xlib_event(event.type);
         if (_event_handlers.contains(event_type))

@@ -5,6 +5,7 @@
 #include <X11/Xlib.h>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace tilebox::core::x
@@ -28,7 +29,7 @@ class TILEBOX_EXPORT X11Display
     /// @param `display_name` Specifies the hardware display name, which determines the display and communications
     /// domain to be used. On a POSIX-conformant system, if the display_name is NULL, it defaults to the value of the
     /// DISPLAY environment variable.
-    explicit X11Display(const std::string &display_name = "") noexcept;
+    explicit X11Display(const std::optional<std::string> &display_name) noexcept;
     virtual ~X11Display() = default;
     X11Display(X11Display &&other) noexcept = default;
     X11Display(const X11Display &other) noexcept = default;
@@ -46,10 +47,10 @@ class TILEBOX_EXPORT X11Display
     [[nodiscard]] auto is_connected() const noexcept -> bool;
 
     /// @brief Gets a reference counted copy to the underlying managed shared display pointer
-    [[nodiscard]] auto get_shared() const noexcept -> std::shared_ptr<Display>;
+    [[nodiscard]] auto shared() const noexcept -> std::shared_ptr<Display>;
 
     /// @brief Gets the raw Display pointer
-    [[nodiscard]] auto get_raw() const noexcept -> Display *;
+    [[nodiscard]] auto raw() const noexcept -> Display *;
 
     /// @brief Refreshes all internal display values.
     auto refresh() -> void;

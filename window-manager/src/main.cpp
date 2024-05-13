@@ -1,6 +1,7 @@
 #include "version.hpp"
 #include <cstdlib>
 #include <fmt/core.h>
+#include <optional>
 #include <tilebox-core/version.hpp>
 #include <tilebox-core/x11/display.hpp>
 
@@ -11,7 +12,7 @@ auto main() -> int
     fmt::println("Tilebox Core Version: {}", core::version());
     fmt::println("Tilebox Window Manager Version: {}", wm::version());
 
-    auto display = core::x::X11Display();
+    auto display = core::x::X11Display(std::nullopt);
 
     if (!display.is_connected())
     {

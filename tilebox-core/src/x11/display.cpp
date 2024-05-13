@@ -3,13 +3,14 @@
 #include <X11/Xlib.h>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace tilebox::core::x
 {
 
-X11Display::X11Display(const std::string &display_name) noexcept
-    : _display(XOpenDisplay(display_name.empty() ? nullptr : display_name.c_str()), [](Display *display) {
+X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
+    : _display(XOpenDisplay(display_name.has_value() ? display_name.value().c_str() : nullptr), [](Display *display) {
           if (display != nullptr)
           {
               XCloseDisplay(display);
@@ -24,12 +25,12 @@ auto X11Display::is_connected() const noexcept -> bool
     return _display != nullptr;
 }
 
-auto X11Display::get_shared() const noexcept -> std::shared_ptr<Display>
+auto X11Display::shared() const noexcept -> std::shared_ptr<Display>
 {
     return _display;
 }
 
-auto X11Display::get_raw() const noexcept -> Display *
+auto X11Display::raw() const noexcept -> Display *
 {
     return _display.get();
 }
