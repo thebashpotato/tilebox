@@ -8,19 +8,28 @@
 #include <stdexcept>
 #include <string>
 #include <tilebox-core/geometry.hpp>
+#include <tilebox-core/x11/display.hpp>
 #include <tilebox-core/x11/events.hpp>
 #include <utility>
 
 using namespace tilebox::core;
-using namespace tilebox::core::x;
 
-PeripheralLogger::PeripheralLogger(Width &&app_width, Height &&app_height)
-    : _dpy(std::nullopt), _win(_dpy), _event_loop(_dpy), _aw(std::move(app_width)), _ah(std::move(app_height))
+PeripheralLogger::PeripheralLogger(X11DisplaySharedResource dpy, Width &&app_width, Height &&app_height)
+    : _dpy(std::move(dpy)), _win(_dpy), _event_loop(_dpy), _aw(std::move(app_width)), _ah(std::move(app_height))
 {
-    if (_dpy.is_connected())
+}
+
+auto PeripheralLogger::create(Width app_width, Height app_height) noexcept -> std::optional<PeripheralLogger>
+{
+    std::optional<PeripheralLogger> ret{std::nullopt};
+    auto dpy_opt = X11Display::create();
+    if (dpy_opt.has_value())
     {
-        _run = true;
+        auto dpy = dpy_opt.value();
+        ret.emplace(PeripheralLogger(dpy, std::move(app_width), std::move(app_height)));
     }
+
+    return ret;
 }
 
 auto PeripheralLogger::_setup() -> void
@@ -37,7 +46,7 @@ auto PeripheralLogger::_setup() -> void
         throw std::runtime_error("Could not map the window");
     }
 
-    XSelectInput(_dpy.raw(), _win.id(), KeyPressMask | ButtonPressMask);
+    XSelectInput(_dpy->raw(), _win.id(), KeyPressMask | ButtonPressMask);
 }
 
 auto PeripheralLogger::run() -> void
@@ -86,7 +95,14 @@ auto PeripheralLogger::run() -> void
 
 auto main() -> int
 {
-    auto app = PeripheralLogger(Width(640), Height(480));
+    auto app_opt = PeripheralLogger::create(Width(640), Height(480));
+    if (!app_opt.has_value())
+    {
+        fmt::println("Failed to start the PeripheralLogger application");
+        return EXIT_FAILURE;
+    }
+
+    auto app = app_opt.value();
 
     try
     {

@@ -7,8 +7,9 @@
 #include <functional>
 #include <unordered_map>
 
-namespace tilebox::core::x
+namespace tilebox::core
 {
+
 using X11EventCallback = std::function<void(XEvent *event)>;
 
 /// @brief Encapsulated, flexible abstraction of the X11 event loop
@@ -16,11 +17,11 @@ using X11EventCallback = std::function<void(XEvent *event)>;
 class TILEBOX_EXPORT X11EventLoop
 {
   private:
-    X11Display _dpy;
+    X11DisplaySharedResource _dpy;
     std::unordered_map<X11EventType, X11EventCallback> _event_handlers;
 
   public:
-    explicit X11EventLoop(X11Display &dpy) noexcept;
+    explicit X11EventLoop(X11DisplaySharedResource dpy) noexcept;
     virtual ~X11EventLoop() = default;
 
     X11EventLoop(const X11EventLoop &other) noexcept = default;
@@ -43,4 +44,4 @@ class TILEBOX_EXPORT X11EventLoop
     auto start(bool &dispatch) -> void;
 };
 
-} // namespace tilebox::core::x
+} // namespace tilebox::core

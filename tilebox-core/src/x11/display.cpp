@@ -6,11 +6,11 @@
 #include <optional>
 #include <string>
 
-namespace tilebox::core::x
+namespace tilebox::core
 {
 
 X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
-    : _display(XOpenDisplay(display_name.has_value() ? display_name.value().c_str() : nullptr), [](Display *display) {
+    : _dpy(XOpenDisplay(display_name.has_value() ? display_name.value().c_str() : nullptr), [](Display *display) {
           if (display != nullptr)
           {
               XCloseDisplay(display);
@@ -20,32 +20,38 @@ X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
     refresh();
 }
 
-auto X11Display::is_connected() const noexcept -> bool
+auto X11Display::create(const std::optional<std::string> &display_name) -> std::optional<X11DisplaySharedResource>
 {
-    return _display != nullptr;
+    std::optional<X11DisplaySharedResource> ret{std::nullopt};
+    auto display = std::shared_ptr<X11Display>(new X11Display(display_name));
+    if (display->is_connected())
+    {
+        ret.emplace(display);
+    }
+    return ret;
 }
 
-auto X11Display::shared() const noexcept -> std::shared_ptr<Display>
+auto X11Display::is_connected() const noexcept -> bool
 {
-    return _display;
+    return _dpy != nullptr;
 }
 
 auto X11Display::raw() const noexcept -> Display *
 {
-    return _display.get();
+    return _dpy.get();
 }
 
 auto X11Display::refresh() -> void
 {
     if (is_connected())
     {
-        _screen_id = DefaultScreen(_display.get());
-        _screen_width = DisplayWidth(_display.get(), _screen_id);
-        _screen_height = DisplayHeight(_display.get(), _screen_id);
-        _screen_count = ScreenCount(_display.get());
-        _default_root_window = DefaultRootWindow(_display.get());
-        _root_window = RootWindow(_display.get(), _screen_id);
-        _server_vendor = XServerVendor(_display.get());
+        _screen_id = DefaultScreen(_dpy.get());
+        _screen_width = DisplayWidth(_dpy.get(), _screen_id);
+        _screen_height = DisplayHeight(_dpy.get(), _screen_id);
+        _screen_count = ScreenCount(_dpy.get());
+        _default_root_window = DefaultRootWindow(_dpy.get());
+        _root_window = RootWindow(_dpy.get(), _screen_id);
+        _server_vendor = XServerVendor(_dpy.get());
     }
 }
 
@@ -89,8 +95,8 @@ auto X11Display::sync(bool discard) const noexcept -> void
     if (is_connected())
     {
         const auto xdiscard = discard ? True : False;
-        XSync(_display.get(), xdiscard);
+        XSync(_dpy.get(), xdiscard);
     }
 }
 
-} // namespace tilebox::core::x
+} // namespace tilebox::core

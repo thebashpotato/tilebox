@@ -1,24 +1,57 @@
 #include <gtest/gtest.h>
 #include <optional>
 #include <tilebox-core/x11/display.hpp>
+#include <utility>
 
-using namespace tilebox::core::x;
+using namespace tilebox::core;
+
+class Lifetime
+{
+  public:
+    X11DisplaySharedResource _dpy;
+
+    explicit Lifetime(X11DisplaySharedResource dpy) : _dpy(std::move(dpy))
+    {
+    }
+};
+
+auto build_display() -> X11DisplaySharedResource
+{
+
+    auto display_optional = X11Display::create();
+    if (display_optional.has_value())
+    {
+        auto display = display_optional.value();
+        return display;
+    }
+
+    return nullptr;
+}
 
 TEST(TileboxCoreX11TestSuite, VerifyX11DisplayLifetimeManagement)
 {
-    auto display = X11Display(std::nullopt);
-    auto shared_display = display.shared();
-    ASSERT_TRUE(display.is_connected());
+    auto dpy = build_display();
+
+    ASSERT_NE(dpy, nullptr);
+    ASSERT_TRUE(dpy->is_connected());
+    ASSERT_EQ(dpy.use_count(), 1);
+
+    Lifetime l1(dpy);
+    ASSERT_EQ(dpy.use_count(), 2);
 
     {
-        auto display_copy = display.shared();
-        ASSERT_EQ(shared_display.use_count(), 3);
+        const Lifetime l2(dpy);
+        ASSERT_EQ(dpy.use_count(), 3);
     }
 
-    ASSERT_EQ(shared_display.use_count(), 2);
-    ASSERT_TRUE(display.is_connected());
-    ASSERT_FALSE(display.server_vendor().empty());
+    ASSERT_EQ(dpy.use_count(), 2);
+    ASSERT_TRUE(dpy->is_connected());
 
-    shared_display.reset();
-    ASSERT_EQ(shared_display, nullptr);
+    l1._dpy.reset();
+
+    ASSERT_EQ(dpy.use_count(), 1);
+    ASSERT_TRUE(dpy->is_connected());
+
+    dpy.reset();
+    ASSERT_EQ(dpy, nullptr);
 }

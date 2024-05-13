@@ -11,18 +11,18 @@ class Rect;
 
 }
 
-namespace tilebox::core::x
+namespace tilebox::core
 {
 
 class TILEBOX_EXPORT X11Window
 {
   private:
-    X11Display _dpy;
+    X11DisplaySharedResource _dpy;
     bool _is_mapped{false};
     Window _id{0};
 
   public:
-    explicit X11Window(X11Display &display) noexcept;
+    explicit X11Window(X11DisplaySharedResource dpy) noexcept;
     virtual ~X11Window();
     X11Window(const X11Window &rhs) noexcept = default;
     X11Window(X11Window &&rhs) noexcept = default;
@@ -59,4 +59,4 @@ class TILEBOX_EXPORT X11Window
     auto unmap() const noexcept -> void;
 };
 
-} // namespace tilebox::core::x
+} // namespace tilebox::core

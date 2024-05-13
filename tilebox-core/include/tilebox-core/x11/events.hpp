@@ -3,7 +3,7 @@
 #include "tilebox-core/utils/attributes.hpp"
 #include <cstdint>
 
-namespace tilebox::core::x
+namespace tilebox::core
 {
 ////////////////////////////////////
 // X11 Event Mask Definitions
@@ -101,4 +101,4 @@ TILEBOX_EXPORT [[nodiscard]] auto tilebox_event_from_xlib_event(const std::int32
 
 TILEBOX_EXPORT [[nodiscard]] auto tilebox_event_to_xlib_event(const X11EventType event_type) noexcept -> std::int32_t;
 
-} // namespace tilebox::core::x
+} // namespace tilebox::core

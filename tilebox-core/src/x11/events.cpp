@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <tilebox-core/x11/events.hpp>
 
-namespace tilebox::core::x
+namespace tilebox::core
 {
 ///////////////////////////////////////////
 // X11 Input Event Mask Conversion Helpers
@@ -289,4 +289,4 @@ auto tilebox_event_to_xlib_event(const X11EventType event_type) noexcept -> std:
     return LASTEvent;
 }
 
-} // namespace tilebox::core::x
+} // namespace tilebox::core

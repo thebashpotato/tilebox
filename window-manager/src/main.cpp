@@ -12,15 +12,15 @@ auto main() -> int
     fmt::println("Tilebox Core Version: {}", core::version());
     fmt::println("Tilebox Window Manager Version: {}", wm::version());
 
-    auto display = core::x::X11Display(std::nullopt);
-
-    if (!display.is_connected())
+    auto dpy_opt = core::X11Display::create();
+    if (!dpy_opt.has_value())
     {
         fmt::println("Failed to open X display");
         return EXIT_FAILURE;
     }
 
-    fmt::println("{}", display.server_vendor());
+    auto display = dpy_opt.value();
+    fmt::println("{}", display->server_vendor());
 
     return EXIT_SUCCESS;
 }
