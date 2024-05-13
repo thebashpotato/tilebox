@@ -21,8 +21,7 @@ set(SOURCE_FILES
     "${APP_SOURCE_DIR}/x11/display.cpp"
     "${APP_SOURCE_DIR}/x11/window.cpp"
     "${APP_SOURCE_DIR}/x11/events.cpp"
-    "${APP_SOURCE_DIR}/x11/event_loop.cpp"
-)
+    "${APP_SOURCE_DIR}/x11/event_loop.cpp")
 
 #
 # If dev-mode is enabled add the tests directory
@@ -49,17 +48,25 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDA
 #     target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=address)
 # endif()
 
-
 # Link required dependencies
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-        tilebox_workspace_project_options
-        tilebox_workspace_project_warnings
-        stdc++fs
-        fmt
-        ${X11_LIBRARIES}
-)
-target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${APP_INCLUDE_DIR}> $<INSTALL_INTERFACE:include>)
+target_link_libraries(
+    ${PROJECT_NAME}
+    PRIVATE tilebox_workspace_project_options
+            tilebox_workspace_project_warnings
+            stdc++fs
+            fmt
+            ${X11_Xft_LIB}
+            ${X11_X11_LIB}
+            ${Fontconfig_LIBRARY})
+
+target_include_directories(
+    ${PROJECT_NAME}
+    PUBLIC $<BUILD_INTERFACE:${APP_INCLUDE_DIR}>
+           ${X11_INCLUDE_DIR}
+           ${FREETYPE_INCLUDE_DIR_ft2build}
+           ${FREETYPE_INCLUDE_DIR_freetype2}
+           ${Fontconfig_INCLUDE_DIR}
+           $<INSTALL_INTERFACE:include>)
 
 #
 # Clang tooling needs to be ran after all libraries/targets are declared

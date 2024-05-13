@@ -14,7 +14,7 @@
 
 using namespace tilebox::core;
 
-PeripheralLogger::PeripheralLogger(X11DisplaySharedResource dpy, Width &&app_width, Height &&app_height)
+PeripheralLogger::PeripheralLogger(X11DisplaySharedResource &&dpy, Width &&app_width, Height &&app_height)
     : _dpy(std::move(dpy)), _win(_dpy), _event_loop(_dpy), _aw(std::move(app_width)), _ah(std::move(app_height))
 {
 }
@@ -26,7 +26,7 @@ auto PeripheralLogger::create(Width app_width, Height app_height) noexcept -> st
     if (dpy_opt.has_value())
     {
         auto dpy = dpy_opt.value();
-        ret.emplace(PeripheralLogger(dpy, std::move(app_width), std::move(app_height)));
+        ret.emplace(PeripheralLogger(std::move(dpy), std::move(app_width), std::move(app_height)));
     }
 
     return ret;
@@ -78,7 +78,7 @@ auto PeripheralLogger::run() -> void
 
     _event_loop.register_event_handler(X11EventType::X11KeyPress, [&](XEvent *event) -> void {
         const KeySym key_sym = XLookupKeysym(&event->xkey, 0);
-        std::string key_name(XKeysymToString(key_sym));
+        const std::string key_name(XKeysymToString(key_sym));
         if (key_sym == XK_Escape)
         {
             fmt::println("Escape key pressed.. Exiting");

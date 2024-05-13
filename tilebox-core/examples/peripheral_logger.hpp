@@ -18,7 +18,7 @@ class PeripheralLogger
     bool _run{true};
 
   private:
-    PeripheralLogger(tilebox::core::X11DisplaySharedResource dpy, tilebox::core::Width &&app_width,
+    PeripheralLogger(tilebox::core::X11DisplaySharedResource &&dpy, tilebox::core::Width &&app_width,
                      tilebox::core::Height &&app_height);
 
   private:
