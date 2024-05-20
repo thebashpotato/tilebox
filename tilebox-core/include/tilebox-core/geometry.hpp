@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tilebox-core/utils/attributes.hpp"
-#include "tilebox-core/utils/tagged_fundamental.hpp"
+#include "tilebox-core/vendor/etl.hpp"
 #include <cmath>
 #include <cstdint>
 #include <tuple>
@@ -39,22 +39,22 @@ class TILEBOX_INTERNAL DeltaTwoTag
 } // namespace TILEBOX_INTERNAL detail
 
 /// @brief Tagged type for uint32_t x coordinate
-using X = TaggedFundamental<detail::Xtag, std::uint32_t>;
+using X = etl::TaggedFundamental<detail::Xtag, std::uint32_t>;
 
 /// @brief Tagged type for uint32_t y coordinate
-using Y = TaggedFundamental<detail::Ytag, std::uint32_t>;
+using Y = etl::TaggedFundamental<detail::Ytag, std::uint32_t>;
 
 /// @brief Tagged type for uint32_t width size
-using Width = TaggedFundamental<detail::WidthTag, std::uint32_t>;
+using Width = etl::TaggedFundamental<detail::WidthTag, std::uint32_t>;
 
 /// @brief Tagged type for uint32_t height size
-using Height = TaggedFundamental<detail::HeightTag, std::uint32_t>;
+using Height = etl::TaggedFundamental<detail::HeightTag, std::uint32_t>;
 
 /// @brief Tagged type for int32_t rate of change variable
-using DeltaOne = TaggedFundamental<detail::DeltaOneTag, std::int32_t>;
+using DeltaOne = etl::TaggedFundamental<detail::DeltaOneTag, std::int32_t>;
 
 /// @brief Tagged type for int32_t rate of change variable
-using DeltaTwo = TaggedFundamental<detail::DeltaTwoTag, std::int32_t>;
+using DeltaTwo = etl::TaggedFundamental<detail::DeltaTwoTag, std::int32_t>;
 
 /// @brief Represents a 2D coordinate set on a cartesian plane.
 ///
