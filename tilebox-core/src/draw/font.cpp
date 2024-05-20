@@ -1,8 +1,10 @@
 #include "tilebox-core/draw/font.hpp"
 #include "tilebox-core/error.hpp"
+#include "tilebox-core/geometry.hpp"
 #include "tilebox-core/vendor/etl.hpp"
 #include "tilebox-core/x11/display.hpp"
 #include <X11/Xft/Xft.h>
+#include <cstdint>
 #include <fontconfig/fontconfig.h>
 #include <functional>
 #include <string>
@@ -13,8 +15,8 @@ using namespace etl;
 namespace tilebox::core
 {
 
-X11Font::X11Font(XftFontUniqueResource &&xft_font, FcPattern *pattern) noexcept
-    : _xftfont(std::move(xft_font)), _pattern(pattern)
+X11Font::X11Font(XftFontUniqueResource &&xft_font, FcPattern *pattern, Height height) noexcept
+    : _xftfont(std::move(xft_font)), _pattern(pattern), _height(std::move(height))
 {
 }
 
@@ -60,7 +62,9 @@ auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &fon
         }
     };
 
-    return Result<X11Font, CoreError>(X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), pattern));
+    const Height height(static_cast<uint32_t>(raw_font->ascent + raw_font->descent));
+
+    return Result<X11Font, CoreError>(X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), pattern, height));
 }
 
 auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
@@ -84,7 +88,9 @@ auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_patter
         }
     };
 
-    return Result<X11Font, CoreError>(X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), font_pattern));
+    const Height height(static_cast<uint32_t>(raw_font->ascent + raw_font->descent));
+
+    return Result<X11Font, CoreError>(X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), font_pattern, height));
 }
 
 } // namespace tilebox::core

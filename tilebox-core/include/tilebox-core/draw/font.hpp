@@ -32,7 +32,7 @@ class TILEBOX_INTERNAL X11Font
     Height _height;
 
   private:
-    X11Font(XftFontUniqueResource &&xft_font, FcPattern *pattern) noexcept;
+    X11Font(XftFontUniqueResource &&xft_font, FcPattern *pattern, Height height) noexcept;
 
   public:
     ~X11Font();
