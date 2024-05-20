@@ -9,8 +9,8 @@ using namespace tilebox;
 
 auto main() -> int
 {
-    fmt::println("Tilebox Core Version: {}", core::version());
-    fmt::println("Tilebox Window Manager Version: {}", wm::version());
+    fmt::println("Tilebox Core Version: {}", core::VERSION_STRING);
+    fmt::println("Tilebox Window Manager Version: {}", VERSION_STRING);
 
     auto dpy_opt = core::X11Display::create();
     if (!dpy_opt.has_value())

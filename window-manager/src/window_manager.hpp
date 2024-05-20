@@ -1,9 +1,9 @@
 #include <tilebox-core/x11/display.hpp>
 
-namespace tilebox::wm
+namespace tilebox
 {
 
 class WindowManager
 {
 };
-} // namespace tilebox::wm
+} // namespace tilebox

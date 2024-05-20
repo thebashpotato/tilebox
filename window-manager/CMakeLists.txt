@@ -17,7 +17,7 @@ set(APP_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 #
 # Declare all source files
 #
-set(SOURCE_FILES "${APP_SOURCE_DIR}/version.cpp" "${APP_SOURCE_DIR}/window_manager.cpp" "${APP_SOURCE_DIR}/main.cpp")
+set(SOURCE_FILES "${APP_SOURCE_DIR}/window_manager.cpp" "${APP_SOURCE_DIR}/main.cpp")
 
 #
 # If dev-mode is enabled add the tests and examples

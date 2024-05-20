@@ -16,7 +16,6 @@ set(APP_EXAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples")
 # Declare all source files
 #
 set(SOURCE_FILES
-    "${APP_SOURCE_DIR}/version.cpp"
     "${APP_SOURCE_DIR}/geometry.cpp"
     "${APP_SOURCE_DIR}/x11/display.cpp"
     "${APP_SOURCE_DIR}/x11/window.cpp"
