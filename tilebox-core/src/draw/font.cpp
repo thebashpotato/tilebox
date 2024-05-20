@@ -3,7 +3,6 @@
 #include "tilebox-core/vendor/etl.hpp"
 #include "tilebox-core/x11/display.hpp"
 #include <X11/Xft/Xft.h>
-#include <fmt/core.h>
 #include <fontconfig/fontconfig.h>
 #include <functional>
 #include <string>
@@ -50,8 +49,6 @@ auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &fon
     FcPattern *pattern = FcNameParse(reinterpret_cast<const FcChar8 *>(font_name.c_str()));
     if (pattern == nullptr)
     {
-        fmt::println("Error, could not parse font name from pattern: {}", font_name);
-
         return Result<X11Font, CoreError>(CoreError::create(
             std::string("Error, could not parse font name from pattern: ").append(font_name), RUNTIME_INFO));
     }
@@ -88,11 +85,6 @@ auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_patter
     };
 
     return Result<X11Font, CoreError>(X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), font_pattern));
-}
-
-X11FontManager::X11FontManager(X11DisplaySharedResource dpy) noexcept : _dpy(std::move(dpy))
-{
-    _fonts.reserve(2);
 }
 
 } // namespace tilebox::core

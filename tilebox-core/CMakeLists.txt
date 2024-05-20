@@ -22,7 +22,8 @@ set(SOURCE_FILES
     "${APP_SOURCE_DIR}/x11/window.cpp"
     "${APP_SOURCE_DIR}/x11/events.cpp"
     "${APP_SOURCE_DIR}/x11/event_loop.cpp"
-    "${APP_SOURCE_DIR}/draw/font.cpp")
+    "${APP_SOURCE_DIR}/draw/font.cpp"
+    "${APP_SOURCE_DIR}/draw/utf8_codec.cpp")
 
 #
 # If dev-mode is enabled add the tests directory
@@ -41,13 +42,8 @@ endif()
 #
 # Create the library
 #
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDARD})
-
-# if(DEVELOPER_MODE)
-#     target_compile_options(${PROJECT_NAME} PRIVATE -fsanitize=address)
-#     target_link_options(${PROJECT_NAME} PRIVATE -fsanitize=address)
-# endif()
 
 # Link required dependencies
 target_link_libraries(
@@ -77,9 +73,6 @@ if(DEVELOPER_MODE)
     run_clang_format(${APP_INCLUDE_DIR})
     run_clang_format(${APP_TEST_DIR})
     run_clang_format(${APP_EXAMPLE_DIR})
-
-    run_clang_tidy(${APP_SOURCE_DIR} ${PROJECT_NAME})
-    run_clang_tidy(${APP_INCLUDE_DIR} ${PROJECT_NAME})
 else()
 
     # Create an installable target

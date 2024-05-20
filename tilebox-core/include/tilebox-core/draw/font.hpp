@@ -15,7 +15,6 @@
 #include <string>
 #include <utility>
 #include <variant>
-#include <vector>
 
 namespace tilebox::core
 {
@@ -36,7 +35,7 @@ class TILEBOX_INTERNAL X11Font
     X11Font(XftFontUniqueResource &&xft_font, FcPattern *pattern) noexcept;
 
   public:
-    virtual ~X11Font();
+    ~X11Font();
     X11Font(const X11Font &rhs) noexcept = delete;
     X11Font(X11Font &&rhs) noexcept = default;
 
@@ -52,16 +51,6 @@ class TILEBOX_INTERNAL X11Font
     /// @brief Creates a font based on the pattern of the font.
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
         -> etl::Result<X11Font, CoreError>;
-};
-
-class TILEBOX_INTERNAL X11FontManager
-{
-  private:
-    X11DisplaySharedResource _dpy;
-    std::vector<X11Font> _fonts;
-
-  public:
-    explicit X11FontManager(X11DisplaySharedResource dpy) noexcept;
 };
 
 } // namespace tilebox::core
@@ -81,9 +70,11 @@ template <typename ErrType> class Result<tilebox::core::X11Font, ErrType>
     explicit Result(tilebox::core::X11Font &&value) noexcept : _result(std::move(value)), _is_ok(true)
     {
     }
+
     explicit Result(const ErrType &error) noexcept : _result(error)
     {
     }
+
     explicit Result(ErrType &&error) noexcept : _result(std::move(error))
     {
     }

@@ -17,11 +17,7 @@ set(APP_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 #
 # Declare all source files
 #
-set(SOURCE_FILES
-    "${APP_SOURCE_DIR}/version.cpp"
-    "${APP_SOURCE_DIR}/window_manager.cpp"
-    "${APP_SOURCE_DIR}/main.cpp"
-)
+set(SOURCE_FILES "${APP_SOURCE_DIR}/version.cpp" "${APP_SOURCE_DIR}/window_manager.cpp" "${APP_SOURCE_DIR}/main.cpp")
 
 #
 # If dev-mode is enabled add the tests and examples
@@ -49,13 +45,12 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 # Link required dependencies
 target_link_libraries(
     ${PROJECT_NAME}
-    PRIVATE
-        tilebox_workspace_project_options
-        tilebox_workspace_project_warnings
-        stdc++fs
-        fmt
-        tilebox-core
-        ${X11_LIBRARIES})
+    PRIVATE tilebox_workspace_project_options
+            tilebox_workspace_project_warnings
+            stdc++fs
+            fmt
+            tilebox-core
+            ${X11_LIBRARIES})
 
 #
 # Clang tooling needs to be ran after all libraries/targets are declared.
@@ -63,8 +58,6 @@ target_link_libraries(
 if(DEVELOPER_MODE)
     run_clang_format(${APP_SOURCE_DIR})
     run_clang_format(${APP_TEST_DIR})
-
-    # run_clang_tidy(${APP_SOURCE_DIR} ${PROJECT_NAME})
 else()
     # Create an installable target
     install(TARGETS ${PROJECT_NAME} DESTINATION bin)
