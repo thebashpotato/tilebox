@@ -33,8 +33,8 @@ class TILEBOX_EXPORT X11Display
 
   public:
     virtual ~X11Display() = default;
-    X11Display(X11Display &&rhs) noexcept = default;
     X11Display(const X11Display &rsh) noexcept = default;
+    X11Display(X11Display &&rhs) noexcept = default;
 
   public:
     auto operator=(X11Display &&rhs) noexcept -> X11Display & = default;

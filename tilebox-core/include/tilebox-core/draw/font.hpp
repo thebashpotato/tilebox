@@ -1,7 +1,9 @@
 #pragma once
 
+#include "tilebox-core/error.hpp"
 #include "tilebox-core/geometry.hpp"
 #include "tilebox-core/utils/attributes.hpp"
+#include "tilebox-core/vendor/etl.hpp"
 #include "tilebox-core/x11/display.hpp"
 #include <X11/X.h>
 #include <X11/Xft/Xft.h>
@@ -11,6 +13,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <variant>
 #include <vector>
 
 namespace tilebox::core
@@ -43,11 +47,11 @@ class TILEBOX_INTERNAL X11Font
   public:
     /// @brief Creates a font based on the name of the font.
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const std::string &font_name) noexcept
-        -> std::optional<X11Font>;
+        -> etl::Result<X11Font, CoreError>;
 
     /// @brief Creates a font based on the pattern of the font.
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
-        -> std::optional<X11Font>;
+        -> etl::Result<X11Font, CoreError>;
 };
 
 class TILEBOX_INTERNAL X11FontManager
@@ -61,3 +65,78 @@ class TILEBOX_INTERNAL X11FontManager
 };
 
 } // namespace tilebox::core
+
+namespace etl
+{
+
+/// @brief Template specializaion for `Result<tilebox::core::X11Font, Error>`
+template <typename ErrType> class Result<tilebox::core::X11Font, ErrType>
+{
+  private:
+    std::variant<tilebox::core::X11Font, ErrType> _result;
+    bool _is_ok{};
+
+  public:
+    Result() noexcept = default;
+    explicit Result(tilebox::core::X11Font &&value) noexcept : _result(std::move(value)), _is_ok(true)
+    {
+    }
+    explicit Result(const ErrType &error) noexcept : _result(error)
+    {
+    }
+    explicit Result(ErrType &&error) noexcept : _result(std::move(error))
+    {
+    }
+
+  public:
+    /// @brief Check if the union value is of the ok type
+    [[nodiscard]] inline auto is_ok() const noexcept -> bool
+    {
+        return _is_ok;
+    }
+
+    /// @brief Check if the union value is of the error type
+    [[nodiscard]] inline auto is_err() const noexcept -> bool
+    {
+        return !_is_ok;
+    }
+
+    /// @brief Check if the union value is of the error type
+    ///
+    /// @details The use should always use isOk() before using ok()
+    ///
+    /// @return std::optinal<tilebox::core::X11Font> for safety, incase the user did not call
+    /// isOk() before using this method.
+    [[nodiscard]] inline auto ok() noexcept -> std::optional<tilebox::core::X11Font>
+    {
+        std::optional<tilebox::core::X11Font> opt{std::nullopt};
+        if (_is_ok)
+        {
+            if (auto *value = std::get_if<tilebox::core::X11Font>(&_result))
+            {
+                opt.emplace(std::move(*value));
+                return opt;
+            }
+        }
+        return opt;
+    }
+
+    /// @brief Check if the union value is of the error type
+    ///
+    /// @details The use should always use isErr() before using err()
+    ///
+    /// @return std::optinal<ErrType> for safety, incase the user did not call
+    /// isErr() before using this method.
+    [[nodiscard]] inline auto err() const noexcept -> std::optional<ErrType>
+    {
+        if (!_is_ok)
+        {
+            if (auto *err = std::get_if<ErrType>(&_result))
+            {
+                return *err;
+            }
+        }
+        return std::nullopt;
+    }
+};
+} // namespace etl

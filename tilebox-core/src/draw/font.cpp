@@ -1,12 +1,15 @@
 #include "tilebox-core/draw/font.hpp"
+#include "tilebox-core/error.hpp"
+#include "tilebox-core/vendor/etl.hpp"
 #include "tilebox-core/x11/display.hpp"
 #include <X11/Xft/Xft.h>
 #include <fmt/core.h>
 #include <fontconfig/fontconfig.h>
 #include <functional>
-#include <optional>
 #include <string>
 #include <utility>
+
+using namespace etl;
 
 namespace tilebox::core
 {
@@ -25,12 +28,11 @@ X11Font::~X11Font()
 }
 
 auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &font_name) noexcept
-    -> std::optional<X11Font>
+    -> Result<X11Font, CoreError>
 {
     if (font_name.empty())
     {
-        fmt::println("Error, No font name was specified");
-        return std::nullopt;
+        return Result<X11Font, CoreError>(CoreError::create("Error, no font name was specified", RUNTIME_INFO));
     }
 
     // Using the pattern found at `_xftfont->pattern` does not yield the
@@ -41,15 +43,17 @@ auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &fon
     XftFont *raw_font = XftFontOpenName(dpy->raw(), dpy->screen_id(), font_name.c_str());
     if (raw_font == nullptr)
     {
-        fmt::println("Error, could not load font from name: {}", font_name);
-        return std::nullopt;
+        return Result<X11Font, CoreError>(
+            CoreError::create(std::string("Error, could not load font from: ").append(font_name), RUNTIME_INFO));
     }
 
     FcPattern *pattern = FcNameParse(reinterpret_cast<const FcChar8 *>(font_name.c_str()));
     if (pattern == nullptr)
     {
         fmt::println("Error, could not parse font name from pattern: {}", font_name);
-        return std::nullopt;
+
+        return Result<X11Font, CoreError>(CoreError::create(
+            std::string("Error, could not parse font name from pattern: ").append(font_name), RUNTIME_INFO));
     }
 
     auto xftfont_deleter = [dpy](XftFont *font) {
@@ -59,22 +63,21 @@ auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &fon
         }
     };
 
-    return X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), pattern);
+    return Result<X11Font, CoreError>(X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), pattern));
 }
 
-auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept -> std::optional<X11Font>
+auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
+    -> Result<X11Font, CoreError>
 {
     if (font_pattern == nullptr)
     {
-        fmt::println("Error, no font pattern was specified");
-        return std::nullopt;
+        return Result<X11Font, CoreError>(CoreError::create("Error, no font name was specified", RUNTIME_INFO));
     }
 
     XftFont *raw_font = XftFontOpenPattern(dpy->raw(), font_pattern);
     if (raw_font == nullptr)
     {
-        fmt::println("Error, cannot load font from pattern");
-        return std::nullopt;
+        return Result<X11Font, CoreError>(CoreError::create("Error, could not load font from pattern", RUNTIME_INFO));
     }
 
     auto xftfont_deleter = [dpy](XftFont *font) {
@@ -84,7 +87,7 @@ auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_patter
         }
     };
 
-    return X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), font_pattern);
+    return Result<X11Font, CoreError>(X11Font(XftFontUniqueResource(raw_font, xftfont_deleter), font_pattern));
 }
 
 X11FontManager::X11FontManager(X11DisplaySharedResource dpy) noexcept : _dpy(std::move(dpy))
