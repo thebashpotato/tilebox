@@ -23,6 +23,7 @@ Checks: "*,
         -misc-non-private-member-variables-in-classes,
         -readability-redundant-access-specifiers,
         -bugprone-unchecked-optional-access,
+        -cppcoreguidelines-pro-type-reinterpret-cast,
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: ''

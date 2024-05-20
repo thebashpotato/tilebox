@@ -21,7 +21,8 @@ set(SOURCE_FILES
     "${APP_SOURCE_DIR}/x11/display.cpp"
     "${APP_SOURCE_DIR}/x11/window.cpp"
     "${APP_SOURCE_DIR}/x11/events.cpp"
-    "${APP_SOURCE_DIR}/x11/event_loop.cpp")
+    "${APP_SOURCE_DIR}/x11/event_loop.cpp"
+    "${APP_SOURCE_DIR}/draw/font.cpp")
 
 #
 # If dev-mode is enabled add the tests directory
@@ -62,11 +63,11 @@ target_link_libraries(
 target_include_directories(
     ${PROJECT_NAME}
     PUBLIC $<BUILD_INTERFACE:${APP_INCLUDE_DIR}>
+           $<INSTALL_INTERFACE:include>
            ${X11_INCLUDE_DIR}
            ${FREETYPE_INCLUDE_DIR_ft2build}
            ${FREETYPE_INCLUDE_DIR_freetype2}
-           ${Fontconfig_INCLUDE_DIR}
-           $<INSTALL_INTERFACE:include>)
+           ${Fontconfig_INCLUDE_DIR})
 
 #
 # Clang tooling needs to be ran after all libraries/targets are declared

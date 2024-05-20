@@ -33,12 +33,12 @@ class TILEBOX_EXPORT X11Display
 
   public:
     virtual ~X11Display() = default;
-    X11Display(X11Display &&other) noexcept = default;
-    X11Display(const X11Display &other) noexcept = default;
+    X11Display(X11Display &&rhs) noexcept = default;
+    X11Display(const X11Display &rsh) noexcept = default;
 
   public:
-    auto operator=(X11Display &&other) noexcept -> X11Display & = default;
-    auto operator=(const X11Display &other) noexcept -> X11Display & = default;
+    auto operator=(X11Display &&rhs) noexcept -> X11Display & = default;
+    auto operator=(const X11Display &rhs) noexcept -> X11Display & = default;
 
   public:
     /// @brief Static creation method for the shared display resource, this is to guarentee the resource is built
