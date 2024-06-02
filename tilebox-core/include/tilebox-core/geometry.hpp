@@ -83,7 +83,7 @@ class TILEBOX_EXPORT Point
 /// necessary geometric functions for manipulating the layout of a client.
 ///
 /// @details Has member functions for resizing, scaling, and manipulating
-/// a rectangle on a X11 cartesian plane via (x, y, width and height).
+/// a rectangle on a X11 cartesian plane via (x, y, w, h).
 class TILEBOX_EXPORT Rect
 {
   public:
@@ -131,7 +131,7 @@ class TILEBOX_EXPORT Rect
     /// in order to maintain integer coordinates.
     [[nodiscard]] auto midpoint() const noexcept -> Point;
 
-    /// @brief Creats a new Rect with a shrunken width and height by the given pixel border,
+    /// @brief Creates a new Rect with a shrunken width and height by the given pixel border,
     /// maintaining the current (x,y) coordinates.
     ///
     /// @detail The resulting Rect will always have a minimum
@@ -149,7 +149,7 @@ class TILEBOX_EXPORT Rect
     /// @detail Minimum size is clamped at width = 1, height = 1.
     ///
     /// BUG: std::numeric_limits<std::int32_t>::max() is not accounted for and will likely
-    ///      cause a crash. However it is unlikely anyones screen would be `2147483647`
+    ///      cause a crash. However it is unlikely anyone's screen would be `2147483647`
     ///      pixels in width or height.
     auto resize(const DeltaOne &dw, const DeltaTwo &dh) noexcept -> void;
 

@@ -14,7 +14,7 @@ namespace tilebox::core
 class X11Display;
 using X11DisplaySharedResource = std::shared_ptr<X11Display>;
 
-/// @brief Provides a RAII interface for common functionaility needed from the X11 Display.
+/// @brief Provides a RAII interface for common functionality needed from the X11 Display.
 /// @details Manages the underlying Display * via a shared_ptr.
 class TILEBOX_EXPORT X11Display
 {
@@ -41,7 +41,7 @@ class TILEBOX_EXPORT X11Display
     auto operator=(const X11Display &rhs) noexcept -> X11Display & = default;
 
   public:
-    /// @brief Static creation method for the shared display resource, this is to guarentee the resource is built
+    /// @brief Static creation method for the shared display resource, this is to guarantee the resource is built
     /// correctly, and shared with all other objects that need a display connection (there are many) as a shallow
     /// pointer copy.
     ///

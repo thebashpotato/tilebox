@@ -21,7 +21,7 @@ namespace tilebox::core
 
 using XftFontUniqueResource = std::unique_ptr<XftFont, std::function<void(XftFont *)>>;
 
-class TILEBOX_INTERNAL X11Font
+class TILEBOX_EXPORT X11Font
 {
   private:
     XftFontUniqueResource _xftfont;
