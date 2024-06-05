@@ -26,15 +26,15 @@ auto X11EventLoop::register_event_handler(const X11EventType event_type, X11Even
     }
 }
 
-auto X11EventLoop::start(bool &dispatch) -> void
+auto X11EventLoop::start(bool &run) -> void
 {
     XEvent event;
-    while (dispatch && (XNextEvent(_dpy->raw(), &event) == 0))
+    while (run && (XNextEvent(_dpy->raw(), &event) == 0))
     {
         const X11EventType event_type = tilebox_event_from_xlib_event(event.type);
         if (_event_handlers.contains(event_type))
         {
-            // FIX: Can technically throw, I think it is safe becuase of the contains call though.
+            // FIX: Can technically throw, this should be safe becuase of the contains call though.
             _event_handlers.at(event_type)(&event);
         }
     }

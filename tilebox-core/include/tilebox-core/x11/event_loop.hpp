@@ -40,8 +40,8 @@ class TILEBOX_EXPORT X11EventLoop
     /// @details This function will block until an event is received, the user needs
     /// should do subtantial set up before calling this function.
     ///
-    /// @param `dispatch` A flag to keep the loop running, change to false to shutdown the event loop
-    auto start(bool &dispatch) -> void;
+    /// @param `run` A flag to keep the loop (program) running, change to false to shutdown the event loop.
+    auto start(bool &run) -> void;
 };
 
 } // namespace tilebox::core

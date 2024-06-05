@@ -1,5 +1,6 @@
 #pragma once
 
+#include <X11/X.h>
 #include <optional>
 #include <tilebox-core/geometry.hpp>
 #include <tilebox-core/x11/display.hpp>
@@ -15,6 +16,8 @@ class PeripheralLogger
     tilebox::core::X11EventLoop _event_loop;
     tilebox::core::Width _aw;
     tilebox::core::Height _ah;
+    Atom _delete_window_msg;
+
     bool _run{true};
 
   private:
@@ -22,11 +25,11 @@ class PeripheralLogger
                      tilebox::core::Height &&app_height);
 
   private:
-    auto _setup() -> void;
+    [[nodiscard]] auto _setup() noexcept -> etl::Result<etl::Void, etl::Error>;
 
   public:
     [[nodiscard]] static auto create(tilebox::core::Width app_width, tilebox::core::Height app_height) noexcept
         -> std::optional<PeripheralLogger>;
 
-    auto run() -> void;
+    [[nodiscard]] auto run() noexcept -> etl::Result<etl::Void, etl::Error>;
 };

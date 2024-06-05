@@ -41,7 +41,7 @@ class TILEBOX_EXPORT X11Window
     ///
     /// @error The following Xlib errors can cause failure.
     ///     `BadAlloc`, `BadMatch`, `BadValue`, and `BadWindow`.
-    [[nodiscard]] auto create_window(const Rect &r) noexcept -> bool;
+    [[nodiscard]] auto create(const Rect &r) noexcept -> bool;
 
     /// @brief Maps a window using the Xlib `XMapWindow` function.
     ///

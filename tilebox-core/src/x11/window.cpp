@@ -28,12 +28,12 @@ auto X11Window::id() const noexcept -> Window
     return _id;
 }
 
-auto X11Window::create_window(const Rect &r) noexcept -> bool
+auto X11Window::create(const Rect &r) noexcept -> bool
 {
     XSetWindowAttributes wa;
     wa.background_pixel = BlackPixel(_dpy->raw(), _dpy->screen_id());
     wa.border_pixel = WhitePixel(_dpy->raw(), _dpy->screen_id());
-    wa.event_mask = ButtonPress;
+    wa.event_mask = ButtonPress | DestroyNotify;
 
     if (!_is_mapped)
     {

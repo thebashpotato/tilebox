@@ -5,53 +5,62 @@
 #include <cstdlib>
 #include <fmt/core.h>
 #include <optional>
-#include <stdexcept>
 #include <string>
 #include <tilebox-core/geometry.hpp>
+#include <tilebox-core/vendor/etl.hpp>
 #include <tilebox-core/x11/display.hpp>
 #include <tilebox-core/x11/events.hpp>
 #include <utility>
 
 using namespace tilebox::core;
+using namespace etl;
 
 PeripheralLogger::PeripheralLogger(X11DisplaySharedResource &&dpy, Width &&app_width, Height &&app_height)
-    : _dpy(std::move(dpy)), _win(_dpy), _event_loop(_dpy), _aw(std::move(app_width)), _ah(std::move(app_height))
+    : _dpy(std::move(dpy)), _win(_dpy), _event_loop(_dpy), _aw(std::move(app_width)), _ah(std::move(app_height)),
+      _delete_window_msg(XInternAtom(_dpy->raw(), "WM_DELETE_WINDOW", False))
 {
 }
 
 auto PeripheralLogger::create(Width app_width, Height app_height) noexcept -> std::optional<PeripheralLogger>
 {
-    std::optional<PeripheralLogger> ret{std::nullopt};
+    std::optional<PeripheralLogger> ret;
     auto dpy_opt = X11Display::create();
     if (dpy_opt.has_value())
     {
-        auto dpy = dpy_opt.value();
-        ret.emplace(PeripheralLogger(std::move(dpy), std::move(app_width), std::move(app_height)));
+        ret.emplace(PeripheralLogger(std::move(dpy_opt.value()), std::move(app_width), std::move(app_height)));
     }
 
     return ret;
 }
 
-auto PeripheralLogger::_setup() -> void
+auto PeripheralLogger::_setup() noexcept -> Result<Void, Error>
 {
     const Rect r(_aw, _ah);
 
-    if (!_win.create_window(r))
+    if (!_win.create(r))
     {
-        throw std::runtime_error("Could not create the application window");
+        return Result<Void, Error>(Error::create("Could not create the application window", RUNTIME_INFO));
     }
 
     if (!_win.map())
     {
-        throw std::runtime_error("Could not map the window");
+        return Result<Void, Error>(Error::create("Could not map the window", RUNTIME_INFO));
     }
 
-    XSelectInput(_dpy->raw(), _win.id(), KeyPressMask | ButtonPressMask);
+    // Set up the inputs we are going to listen to
+    XSelectInput(_dpy->raw(), _win.id(), KeyPressMask | ButtonPressMask | StructureNotifyMask);
+    // Setup window messaging protocol for deleting a window.
+    XSetWMProtocols(_dpy->raw(), _win.id(), &_delete_window_msg, 1);
+
+    return Result<Void, Error>(Void());
 }
 
-auto PeripheralLogger::run() -> void
+auto PeripheralLogger::run() noexcept -> Result<Void, Error>
 {
-    _setup();
+    if (auto res = _setup(); res.is_err())
+    {
+        return res;
+    }
 
     _event_loop.register_event_handler(X11EventType::X11ButtonPress, [&](XEvent *event) -> void {
         switch (event->xbutton.button)
@@ -90,8 +99,17 @@ auto PeripheralLogger::run() -> void
         }
     });
 
+    _event_loop.register_event_handler(X11EventType::X11ClientMessage, [&](XEvent *event) -> void {
+        if (static_cast<Atom>(event->xclient.data.l[0]) == _delete_window_msg)
+        {
+            fmt::println("Window close event requested.. Exiting");
+            _run = false;
+        }
+    });
+
     _event_loop.start(_run);
     _dpy->sync();
+    return Result<Void, Error>(Void());
 }
 
 auto main() -> int
@@ -103,16 +121,13 @@ auto main() -> int
         return EXIT_FAILURE;
     }
 
-    auto app = app_opt.value();
+    auto app = std::move(app_opt.value());
 
-    try
+    if (auto res = app.run(); res.is_err())
     {
-        app.run();
-    }
-    catch (const std::runtime_error &error)
-    {
-        fmt::println("{}", error.what());
+        fmt::println("PeripheralLogger app failed to run: {}", res.err().value().info());
         return EXIT_FAILURE;
     }
+
     return EXIT_SUCCESS;
 }
