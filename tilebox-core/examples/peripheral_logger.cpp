@@ -91,6 +91,7 @@ auto PeripheralLogger::run() -> void
     });
 
     _event_loop.start(_run);
+    _dpy->sync();
 }
 
 auto main() -> int

@@ -10,6 +10,7 @@ define _list =
 		tests       --  Runs ctest on the test suite
 		install     --  Installs optimized binaries, libraries, files and scripts
 		uninstall   --  Uninstalls all binararies, libraries, files and scripts
+		compile     --  Compiles with the settings defined in the .env file
 		clean       --  Cleans all build artifacts
 	EOF
 endef

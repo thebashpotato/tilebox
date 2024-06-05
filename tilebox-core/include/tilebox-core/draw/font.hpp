@@ -9,7 +9,6 @@
 #include <X11/Xft/Xft.h>
 #include <fontconfig/fontconfig.h>
 #include <ft2build.h>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,7 +18,16 @@
 namespace tilebox::core
 {
 
-using XftFontUniqueResource = std::unique_ptr<XftFont, std::function<void(XftFont *)>>;
+struct TILEBOX_INTERNAL XftFontDeleter
+{
+    X11DisplaySharedResource dpy;
+
+    explicit XftFontDeleter(X11DisplaySharedResource display) noexcept;
+
+    auto operator()(XftFont *font) const noexcept -> void;
+};
+
+using XftFontUniqueResource = std::unique_ptr<XftFont, XftFontDeleter>;
 
 class TILEBOX_EXPORT X11Font
 {
@@ -37,11 +45,9 @@ class TILEBOX_EXPORT X11Font
   public:
     ~X11Font();
     X11Font(const X11Font &rhs) noexcept = delete;
-    X11Font(X11Font &&rhs) noexcept = default;
-
-  public:
+    X11Font(X11Font &&rhs) noexcept;
     auto operator=(const X11Font &rhs) noexcept -> X11Font & = delete;
-    auto operator=(X11Font &&rhs) noexcept -> X11Font & = default;
+    auto operator=(X11Font &&rhs) noexcept -> X11Font &;
 
   public:
     /// @brief Creates a font based on the name of the font.
@@ -51,6 +57,10 @@ class TILEBOX_EXPORT X11Font
     /// @brief Creates a font based on the pattern of the font.
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
         -> etl::Result<X11Font, CoreError>;
+
+  public:
+    [[nodiscard]] auto height() const noexcept -> Height;
+    [[nodiscard]] auto pattern() const noexcept -> FcPattern *;
 };
 
 } // namespace tilebox::core
@@ -62,12 +72,14 @@ namespace etl
 template <typename ErrType> class Result<tilebox::core::X11Font, ErrType>
 {
   private:
-    std::variant<tilebox::core::X11Font, ErrType> _result;
+    std::variant<tilebox::core::X11Font, ErrType> _result{};
     bool _is_ok{};
 
   public:
     Result() noexcept = default;
-    explicit Result(tilebox::core::X11Font &&value) noexcept : _result(std::move(value)), _is_ok(true)
+    ~Result() = default;
+
+    explicit Result(tilebox::core::X11Font value) noexcept : _result(std::move(value)), _is_ok(true)
     {
     }
 
@@ -79,8 +91,28 @@ template <typename ErrType> class Result<tilebox::core::X11Font, ErrType>
     {
     }
 
+    Result(Result &&rhs) noexcept : _result(std::move(rhs._result)), _is_ok(rhs._is_ok)
+    {
+        rhs._is_ok = false;
+    }
+
+    Result(const Result &rhs) noexcept = delete;
+
+    auto operator=(Result &&rhs) noexcept -> Result &
+    {
+        if (this != &rhs)
+        {
+            _result = std::move(rhs._result);
+            _is_ok = rhs.is_ok;
+            rhs.is_ok = false;
+        }
+
+        return *this;
+    }
+
+    auto operator=(const Result &rhs) noexcept = delete;
+
   public:
-    /// @brief Check if the union value is of the ok type
     [[nodiscard]] inline auto is_ok() const noexcept -> bool
     {
         return _is_ok;
@@ -100,7 +132,7 @@ template <typename ErrType> class Result<tilebox::core::X11Font, ErrType>
     /// isOk() before using this method.
     [[nodiscard]] inline auto ok() noexcept -> std::optional<tilebox::core::X11Font>
     {
-        std::optional<tilebox::core::X11Font> opt{std::nullopt};
+        std::optional<tilebox::core::X11Font> opt;
         if (_is_ok)
         {
             if (auto *value = std::get_if<tilebox::core::X11Font>(&_result))
@@ -120,14 +152,16 @@ template <typename ErrType> class Result<tilebox::core::X11Font, ErrType>
     /// isErr() before using this method.
     [[nodiscard]] inline auto err() const noexcept -> std::optional<ErrType>
     {
+        std::optional<ErrType> opt;
         if (!_is_ok)
         {
             if (auto *err = std::get_if<ErrType>(&_result))
             {
-                return *err;
+                opt.emplace(std::move(*err));
+                return opt;
             }
         }
-        return std::nullopt;
+        return opt;
     }
 };
 } // namespace etl

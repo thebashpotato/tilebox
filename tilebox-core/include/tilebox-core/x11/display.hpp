@@ -11,6 +11,11 @@
 namespace tilebox::core
 {
 
+struct TILEBOX_INTERNAL DisplayDeleter
+{
+    auto operator()(Display *display) const noexcept -> void;
+};
+
 class X11Display;
 using X11DisplaySharedResource = std::shared_ptr<X11Display>;
 

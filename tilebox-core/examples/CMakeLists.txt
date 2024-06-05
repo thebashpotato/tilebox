@@ -12,6 +12,9 @@ target_link_libraries(
             tilebox_workspace_project_warnings
             stdc++fs
             fmt
+            ${X11_Xft_LIB}
+            ${X11_X11_LIB}
+            ${Fontconfig_LIBRARY}
             ${PROJECT_NAME})
 
 #

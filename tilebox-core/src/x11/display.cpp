@@ -9,20 +9,25 @@
 namespace tilebox::core
 {
 
-X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
-    : _dpy(XOpenDisplay(display_name.has_value() ? display_name.value().c_str() : nullptr), [](Display *display) {
-          if (display != nullptr)
-          {
-              XCloseDisplay(display);
-          }
-      })
+auto DisplayDeleter::operator()(Display *display) const noexcept -> void
 {
+    if (display != nullptr)
+    {
+        XCloseDisplay(display);
+        display = nullptr;
+    }
+}
+
+X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
+    : _dpy(XOpenDisplay(display_name.has_value() ? display_name.value().c_str() : nullptr), DisplayDeleter())
+{
+
     refresh();
 }
 
 auto X11Display::create(const std::optional<std::string> &display_name) -> std::optional<X11DisplaySharedResource>
 {
-    std::optional<X11DisplaySharedResource> ret{std::nullopt};
+    std::optional<X11DisplaySharedResource> ret;
     auto display = std::shared_ptr<X11Display>(new X11Display(display_name));
     if (display->is_connected())
     {
