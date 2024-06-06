@@ -7,7 +7,11 @@
 
 using namespace tilebox::core;
 
-Vec2D::Vec2D(const A &a, const B &b) noexcept : a(a.value), b(b.value)
+Vec2D::Vec2D() noexcept : width(Width(0)), height(Height(1))
+{
+}
+
+Vec2D::Vec2D(Width w, Height h) noexcept : width(std::move(w)), height(std::move(h))
 {
 }
 
@@ -93,22 +97,22 @@ auto Rect::operator!=(const Rect &rhs) const noexcept -> bool
     return !(*this == rhs);
 }
 
-auto Rect::x() const noexcept -> std::int32_t
+auto Rect::x() const noexcept -> int32_t
 {
-    return static_cast<std::int32_t>(point.x.value);
+    return point.x.value;
 }
 
-auto Rect::y() const noexcept -> std::int32_t
+auto Rect::y() const noexcept -> int32_t
 {
-    return static_cast<std::int32_t>(point.y.value);
+    return point.y.value;
 }
 
-auto Rect::w() const noexcept -> std::uint32_t
+auto Rect::w() const noexcept -> uint32_t
 {
     return width.value;
 }
 
-auto Rect::h() const noexcept -> std::uint32_t
+auto Rect::h() const noexcept -> uint32_t
 {
     return height.value;
 }
@@ -120,7 +124,7 @@ auto Rect::corners() const noexcept -> std::tuple<Point, Point, Point, Point>
         Point(X(point.x.value + static_cast<int32_t>(width.value)), point.y), // top right
         Point(X(point.x.value + static_cast<int32_t>(width.value)),
               Y(point.y.value + static_cast<int32_t>(height.value))),               // bottom right
-        Point(point.x, Y(point.y.value + static_cast<std::int32_t>(height.value))), // bottom left
+        Point(point.x, Y(point.y.value + static_cast<int32_t>(height.value))), // bottom left
     };
 }
 
@@ -130,7 +134,7 @@ auto Rect::midpoint() const noexcept -> Point
             Y(point.y.value + static_cast<int32_t>(height.value / 2))};
 }
 
-auto Rect::shrink_in(const std::uint32_t border) const noexcept -> Rect
+auto Rect::shrink_in(const ::uint32_t border) const noexcept -> Rect
 {
     Width w;
     Height h;
@@ -156,7 +160,7 @@ auto Rect::shrink_in(const std::uint32_t border) const noexcept -> Rect
     return {point, w, h};
 }
 
-auto Rect::scale_width(const std::double_t factor) const noexcept -> Rect
+auto Rect::scale_width(const double_t factor) const noexcept -> Rect
 {
     if (factor == 1.0)
     {
@@ -165,12 +169,12 @@ auto Rect::scale_width(const std::double_t factor) const noexcept -> Rect
 
     return {
         point,
-        Width(static_cast<std::uint32_t>(std::floor(width.value * factor))),
+        Width(static_cast<uint32_t>(std::floor(width.value * factor))),
         height,
     };
 }
 
-auto Rect::scale_height(const std::double_t factor) const noexcept -> Rect
+auto Rect::scale_height(const double_t factor) const noexcept -> Rect
 {
     if (factor == 1.0)
     {
@@ -180,7 +184,7 @@ auto Rect::scale_height(const std::double_t factor) const noexcept -> Rect
     return {
         point,
         width,
-        Height(static_cast<std::uint32_t>(std::floor(height.value * factor))),
+        Height(static_cast<uint32_t>(std::floor(height.value * factor))),
     };
 }
 

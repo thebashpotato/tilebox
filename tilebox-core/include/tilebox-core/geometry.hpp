@@ -46,34 +46,28 @@ class TILEBOX_INTERNAL DeltaTwoTag
 
 } // namespace TILEBOX_INTERNAL detail
 
-/// @brief Tagged type for uint32_t value
-using A = etl::TaggedFundamental<detail::Atag, std::uint32_t>;
-
-/// @brief Tagged type for uint32_t value
-using B = etl::TaggedFundamental<detail::Btag, std::uint32_t>;
-
 /// @brief Tagged type for uint32_t x coordinate
-using X = etl::TaggedFundamental<detail::Xtag, std::int32_t>;
+using X = etl::TaggedFundamental<detail::Xtag, int32_t>;
 
 /// @brief Tagged type for uint32_t y coordinate
-using Y = etl::TaggedFundamental<detail::Ytag, std::int32_t>;
+using Y = etl::TaggedFundamental<detail::Ytag, int32_t>;
 
 /// @brief Tagged type for uint32_t width size
-using Width = etl::TaggedFundamental<detail::WidthTag, std::uint32_t>;
+using Width = etl::TaggedFundamental<detail::WidthTag, uint32_t>;
 
 /// @brief Tagged type for uint32_t height size
-using Height = etl::TaggedFundamental<detail::HeightTag, std::uint32_t>;
+using Height = etl::TaggedFundamental<detail::HeightTag, uint32_t>;
 
 /// @brief Represents a pair of unsigned integers.
 class TILEBOX_EXPORT Vec2D
 {
   public:
-    uint32_t a{};
-    uint32_t b{};
+    Width width;
+    Height height;
 
   public:
-    Vec2D() noexcept = default;
-    Vec2D(const A &a, const B &b) noexcept;
+    Vec2D() noexcept;
+    Vec2D(Width w, Height h) noexcept;
 };
 
 /// @brief Represents a 2D coordinate set on a cartesian plane.
@@ -127,10 +121,10 @@ class TILEBOX_EXPORT Rect
     auto operator!=(const Rect &rhs) const noexcept -> bool;
 
   public:
-    [[nodiscard]] auto x() const noexcept -> std::int32_t;
-    [[nodiscard]] auto y() const noexcept -> std::int32_t;
-    [[nodiscard]] auto w() const noexcept -> std::uint32_t;
-    [[nodiscard]] auto h() const noexcept -> std::uint32_t;
+    [[nodiscard]] auto x() const noexcept -> int32_t;
+    [[nodiscard]] auto y() const noexcept -> int32_t;
+    [[nodiscard]] auto w() const noexcept -> uint32_t;
+    [[nodiscard]] auto h() const noexcept -> uint32_t;
 
     /// @brief The four corners of this Rect in Point form return in clockwise order
     /// from the top left corner.
@@ -151,13 +145,13 @@ class TILEBOX_EXPORT Rect
     ///
     /// @detail The resulting Rect will always have a minimum
     /// width and height of 1.
-    [[nodiscard]] auto shrink_in(const std::uint32_t border) const noexcept -> Rect;
+    [[nodiscard]] auto shrink_in(const uint32_t border) const noexcept -> Rect;
 
     /// @brief Creates a new Rect with width equal to the factor * the current width
-    [[nodiscard]] auto scale_width(const std::double_t factor) const noexcept -> Rect;
+    [[nodiscard]] auto scale_width(const double_t factor) const noexcept -> Rect;
 
     /// @brief Creates a new Rect with height equal to the factor * the current height
-    [[nodiscard]] auto scale_height(const std::double_t factor) const noexcept -> Rect;
+    [[nodiscard]] auto scale_height(const double_t factor) const noexcept -> Rect;
 
     /// @brief Mutate the width and height of this Rect by specified deltas.
     ///
@@ -167,7 +161,7 @@ class TILEBOX_EXPORT Rect
     /// @param `dw` delta width scalar
     /// @param `dh` delta height scalar
     ///
-    /// BUG: std::numeric_limits<std::int32_t>::max() is not accounted for and will likely
+    /// BUG: std::numeric_limits<int32_t>::max() is not accounted for and will likely
     ///      cause a crash. However it is unlikely anyone's screen would be `2147483647`
     ///      pixels in width or height.
     auto resize(const X &dw, const Y &dh) noexcept -> void;
