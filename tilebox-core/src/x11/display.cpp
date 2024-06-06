@@ -6,8 +6,7 @@
 #include <optional>
 #include <string>
 
-namespace tilebox::core
-{
+using namespace tilebox::core;
 
 auto DisplayDeleter::operator()(Display *display) const noexcept -> void
 {
@@ -103,5 +102,3 @@ auto X11Display::sync(bool discard) const noexcept -> void
         XSync(_dpy.get(), xdiscard);
     }
 }
-
-} // namespace tilebox::core

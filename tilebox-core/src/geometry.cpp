@@ -5,8 +5,7 @@
 #include <tuple>
 #include <utility>
 
-namespace tilebox::core
-{
+using namespace tilebox::core;
 
 Point::Point() : x(X(0)), y(Y(0))
 {
@@ -235,5 +234,3 @@ auto Rect::contains_point(const Point &rhs) const noexcept -> bool
     return (point.x <= rhs.x && rhs.x <= (point.x + width.value)) &&
            (point.y <= rhs.y && rhs.y <= (point.y + height.value));
 }
-
-} // namespace tilebox::core

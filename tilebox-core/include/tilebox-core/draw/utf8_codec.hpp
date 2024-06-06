@@ -7,8 +7,8 @@
 namespace tilebox::core
 {
 
-[[nodiscard]] auto utf8_decode(const std::string &input) noexcept -> etl::Result<std::u32string, CoreError>;
+[[nodiscard]] auto utf8_decode(const std::string &input) noexcept -> etl::Result<std::u32string, X11FontError>;
 
-[[nodiscard]] auto utf8_encode(const std::u32string &input) noexcept -> etl::Result<std::string, CoreError>;
+[[nodiscard]] auto utf8_encode(const std::u32string &input) noexcept -> etl::Result<std::string, X11FontError>;
 
 } // namespace tilebox::core

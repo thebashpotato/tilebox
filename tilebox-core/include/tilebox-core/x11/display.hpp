@@ -23,23 +23,10 @@ using X11DisplaySharedResource = std::shared_ptr<X11Display>;
 /// @details Manages the underlying Display * via a shared_ptr.
 class TILEBOX_EXPORT X11Display
 {
-  private:
-    std::shared_ptr<Display> _dpy;
-    std::int32_t _screen_id{};
-    std::int32_t _screen_width{};
-    std::int32_t _screen_height{};
-    std::int32_t _screen_count{};
-    Window _default_root_window{};
-    Window _root_window{};
-    std::string _server_vendor;
-
-  private:
-    explicit X11Display(const std::optional<std::string> &display_name) noexcept;
-
   public:
-    virtual ~X11Display() = default;
-    X11Display(const X11Display &rsh) noexcept = default;
+    ~X11Display() = default;
     X11Display(X11Display &&rhs) noexcept = default;
+    X11Display(const X11Display &rsh) noexcept = default;
 
   public:
     auto operator=(X11Display &&rhs) noexcept -> X11Display & = default;
@@ -99,6 +86,19 @@ class TILEBOX_EXPORT X11Display
     ///
     /// @param `discard` Specifies whether the X server should discard all events in the event queue.
     auto sync(bool discard = false) const noexcept -> void;
+
+  private:
+    explicit X11Display(const std::optional<std::string> &display_name) noexcept;
+
+  private:
+    std::shared_ptr<Display> _dpy;
+    std::int32_t _screen_id{};
+    std::int32_t _screen_width{};
+    std::int32_t _screen_height{};
+    std::int32_t _screen_count{};
+    Window _default_root_window{};
+    Window _root_window{};
+    std::string _server_vendor;
 };
 
 } // namespace tilebox::core

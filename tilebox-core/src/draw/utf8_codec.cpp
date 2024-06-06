@@ -11,12 +11,11 @@ using namespace etl;
 namespace tilebox::core
 {
 
-auto utf8_decode(const std::string &input) noexcept -> Result<std::u32string, CoreError>
+auto utf8_decode(const std::string &input) noexcept -> Result<std::u32string, X11FontError>
 {
     if (input.empty())
     {
-        return Result<std::u32string, CoreError>(
-            CoreError::create("UTF-8 input is empty, cannot decode", RUNTIME_INFO));
+        return Result<std::u32string, X11FontError>({"UTF-8 input is empty, cannot decode", RUNTIME_INFO});
     }
 
     std::u32string output{};
@@ -26,21 +25,21 @@ auto utf8_decode(const std::string &input) noexcept -> Result<std::u32string, Co
     }
     catch (const utf8::invalid_utf8 &err)
     {
-        return Result<std::u32string, CoreError>(CoreError::create(err.what(), RUNTIME_INFO));
+        return Result<std::u32string, X11FontError>({err.what(), RUNTIME_INFO});
     }
     catch (const utf8::not_enough_room &err)
     {
-        return Result<std::u32string, CoreError>(CoreError::create(err.what(), RUNTIME_INFO));
+        return Result<std::u32string, X11FontError>({err.what(), RUNTIME_INFO});
     }
 
-    return Result<std::u32string, CoreError>(std::move(output));
+    return Result<std::u32string, X11FontError>(std::move(output));
 }
 
-auto utf8_encode(const std::u32string &input) noexcept -> etl::Result<std::string, CoreError>
+auto utf8_encode(const std::u32string &input) noexcept -> etl::Result<std::string, X11FontError>
 {
     if (input.empty())
     {
-        return Result<std::string, CoreError>(CoreError::create("UTF-32 input is empty, cannot encode", RUNTIME_INFO));
+        return Result<std::string, X11FontError>({"UTF-32 input is empty, cannot encode", RUNTIME_INFO});
     }
 
     std::string output{};
@@ -50,14 +49,14 @@ auto utf8_encode(const std::u32string &input) noexcept -> etl::Result<std::strin
     }
     catch (const utf8::invalid_utf8 &err)
     {
-        return etl::Result<std::string, CoreError>(CoreError::create(err.what(), RUNTIME_INFO));
+        return etl::Result<std::string, X11FontError>({err.what(), RUNTIME_INFO});
     }
     catch (const utf8::not_enough_room &err)
     {
-        return Result<std::string, CoreError>(CoreError::create(err.what(), RUNTIME_INFO));
+        return Result<std::string, X11FontError>({err.what(), RUNTIME_INFO});
     }
 
-    return Result<std::string, CoreError>(std::move(output));
+    return Result<std::string, X11FontError>(std::move(output));
 }
 
 } // namespace tilebox::core

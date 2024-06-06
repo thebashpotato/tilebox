@@ -9,18 +9,8 @@ namespace tilebox::core
 
 class Rect;
 
-}
-
-namespace tilebox::core
-{
-
 class TILEBOX_EXPORT X11Window
 {
-  private:
-    X11DisplaySharedResource _dpy;
-    bool _is_mapped{false};
-    Window _id{0};
-
   public:
     explicit X11Window(X11DisplaySharedResource dpy) noexcept;
     virtual ~X11Window();
@@ -57,6 +47,11 @@ class TILEBOX_EXPORT X11Window
     /// @detail Does not free any memory e.g. XDestroyWindow is not called,
     /// that happens in the Destructor
     auto unmap() const noexcept -> void;
+
+  private:
+    X11DisplaySharedResource _dpy;
+    bool _is_mapped{false};
+    Window _id{0};
 };
 
 } // namespace tilebox::core

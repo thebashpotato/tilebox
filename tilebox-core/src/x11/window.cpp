@@ -5,8 +5,7 @@
 #include <X11/Xlib.h>
 #include <utility>
 
-namespace tilebox::core
-{
+using namespace tilebox::core;
 
 X11Window::X11Window(X11DisplaySharedResource dpy) noexcept : _dpy(std::move(dpy))
 {
@@ -68,5 +67,3 @@ auto X11Window::unmap() const noexcept -> void
         XUnmapWindow(_dpy->raw(), _id);
     }
 }
-
-} // namespace tilebox::core

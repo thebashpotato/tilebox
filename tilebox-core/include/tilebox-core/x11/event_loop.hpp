@@ -16,10 +16,6 @@ using X11EventCallback = std::function<void(XEvent *event)>;
 /// with the ability to register event handlers for specific events.
 class TILEBOX_EXPORT X11EventLoop
 {
-  private:
-    X11DisplaySharedResource _dpy;
-    std::unordered_map<X11EventType, X11EventCallback> _event_handlers;
-
   public:
     explicit X11EventLoop(X11DisplaySharedResource dpy) noexcept;
     virtual ~X11EventLoop() = default;
@@ -42,6 +38,10 @@ class TILEBOX_EXPORT X11EventLoop
     ///
     /// @param `run` A flag to keep the loop (program) running, change to false to shutdown the event loop.
     auto start(bool &run) -> void;
+
+  private:
+    X11DisplaySharedResource _dpy;
+    std::unordered_map<X11EventType, X11EventCallback> _event_handlers;
 };
 
 } // namespace tilebox::core

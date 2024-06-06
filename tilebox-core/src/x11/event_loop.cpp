@@ -6,8 +6,7 @@
 #include <fmt/core.h>
 #include <utility>
 
-namespace tilebox::core
-{
+using namespace tilebox::core;
 
 X11EventLoop::X11EventLoop(X11DisplaySharedResource dpy) noexcept : _dpy(std::move(dpy))
 {
@@ -39,5 +38,3 @@ auto X11EventLoop::start(bool &run) -> void
         }
     }
 }
-
-} // namespace tilebox::core

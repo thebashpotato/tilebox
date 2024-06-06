@@ -31,6 +31,30 @@ using XftFontUniqueResource = std::unique_ptr<XftFont, XftFontDeleter>;
 
 class TILEBOX_EXPORT X11Font
 {
+  public:
+    ~X11Font();
+    X11Font(X11Font &&rhs) noexcept;
+    X11Font(const X11Font &rhs) noexcept = delete;
+
+  public:
+    auto operator=(X11Font &&rhs) noexcept -> X11Font &;
+    auto operator=(const X11Font &rhs) noexcept -> X11Font & = delete;
+
+  public:
+    /// @brief Creates a font based on the name of the font.
+    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const std::string &font_name) noexcept
+        -> etl::Result<X11Font, X11FontError>;
+
+    /// @brief Creates a font based on the pattern of the font.
+    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
+        -> etl::Result<X11Font, X11FontError>;
+
+    [[nodiscard]] auto height() const noexcept -> Height;
+    [[nodiscard]] auto pattern() const noexcept -> FcPattern *;
+
+  private:
+    X11Font(XftFontUniqueResource &&xft_font, FcPattern *pattern, Height height) noexcept;
+
   private:
     XftFontUniqueResource _xftfont;
     // we can't have a smart pointer, Keith Packard forward declared
@@ -38,29 +62,6 @@ class TILEBOX_EXPORT X11Font
     // fail at compile time due to the incomplete type.
     FcPattern *_pattern;
     Height _height;
-
-  private:
-    X11Font(XftFontUniqueResource &&xft_font, FcPattern *pattern, Height height) noexcept;
-
-  public:
-    ~X11Font();
-    X11Font(const X11Font &rhs) noexcept = delete;
-    X11Font(X11Font &&rhs) noexcept;
-    auto operator=(const X11Font &rhs) noexcept -> X11Font & = delete;
-    auto operator=(X11Font &&rhs) noexcept -> X11Font &;
-
-  public:
-    /// @brief Creates a font based on the name of the font.
-    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const std::string &font_name) noexcept
-        -> etl::Result<X11Font, CoreError>;
-
-    /// @brief Creates a font based on the pattern of the font.
-    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
-        -> etl::Result<X11Font, CoreError>;
-
-  public:
-    [[nodiscard]] auto height() const noexcept -> Height;
-    [[nodiscard]] auto pattern() const noexcept -> FcPattern *;
 };
 
 } // namespace tilebox::core
