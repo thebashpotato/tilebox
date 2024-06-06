@@ -193,8 +193,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightUnchanged)
 
 TEST(TileboxCoreGeometryTestSuite, VerifyResizeIncrease)
 {
-    const DeltaOne dw(1);
-    const DeltaTwo dh(2);
+    const X dw(1);
+    const Y dh(2);
 
     const Rect expected(Width(11), Height(22));
     Rect r(Width(10), Height(20));
@@ -207,8 +207,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyResizeIncrease)
 TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecrease)
 {
 
-    const DeltaOne dw(-1);
-    const DeltaTwo dh(-2);
+    const X dw(-1);
+    const Y dh(-2);
 
     const Rect expected(Width(9), Height(18));
     Rect r(Width(10), Height(20));
@@ -220,8 +220,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecrease)
 
 TEST(TileboxCoreGeometryTestSuite, VerifyResizeClamp)
 {
-    const DeltaOne dw(-100);
-    const DeltaTwo dh(-100);
+    const X dw(-100);
+    const Y dh(-100);
 
     const Rect expected(Width(1), Height(1));
     Rect r(Width(10), Height(20));
@@ -233,8 +233,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyResizeClamp)
 
 TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecreaseMax)
 {
-    const DeltaOne dw(std::numeric_limits<std::int32_t>::max());
-    const DeltaTwo dh(std::numeric_limits<std::int32_t>::min());
+    const X dw(std::numeric_limits<std::int32_t>::max());
+    const Y dh(std::numeric_limits<std::int32_t>::min());
 
     const Rect expected(Width(1), Height(1));
     Rect r(Width(10), Height(20));
@@ -246,8 +246,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecreaseMax)
 
 TEST(TileboxCoreGeometryTestSuite, VerifyRepositionIncrease)
 {
-    const DeltaOne dx(1);
-    const DeltaTwo dy(2);
+    const X dx(1);
+    const Y dy(2);
 
     const Rect expected(Point(X(11), Y(22)), Width(10), Height(20));
     Rect r(Point(X(10), Y(20)), Width(10), Height(20));
@@ -259,8 +259,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyRepositionIncrease)
 
 TEST(TileboxCoreGeometryTestSuite, VerifyRepositionDecrease)
 {
-    const DeltaOne dx(-1);
-    const DeltaTwo dy(-2);
+    const X dx(-1);
+    const Y dy(-2);
 
     const Rect expected(Point(X(9), Y(18)), Width(10), Height(20));
     Rect r(Point(X(10), Y(20)), Width(10), Height(20));
@@ -272,8 +272,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyRepositionDecrease)
 
 TEST(TileboxCoreGeometryTestSuite, VerifyRepositionClamp)
 {
-    const DeltaOne dx(-100);
-    const DeltaTwo dy(-100);
+    const X dx(-100);
+    const Y dy(-100);
 
     const Rect expected(Point(X(0), Y(0)), Width(10), Height(20));
     Rect r(Point(X(10), Y(20)), Width(10), Height(20));
@@ -285,8 +285,8 @@ TEST(TileboxCoreGeometryTestSuite, VerifyRepositionClamp)
 
 TEST(TileboxCoreGeometryTestSuite, VerifyDecreaseMax)
 {
-    const DeltaOne dx(std::numeric_limits<std::int32_t>::min());
-    const DeltaTwo dy(std::numeric_limits<std::int32_t>::min());
+    const X dx(std::numeric_limits<std::int32_t>::min());
+    const Y dy(std::numeric_limits<std::int32_t>::min());
 
     const Rect expected(Point(X(0), Y(0)), Width(10), Height(20));
     Rect r(Point(X(10), Y(20)), Width(10), Height(20));

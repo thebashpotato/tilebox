@@ -7,11 +7,15 @@
 
 using namespace tilebox::core;
 
-Point::Point() : x(X(0)), y(Y(0))
+Vec2D::Vec2D(const A &a, const B &b) noexcept : a(a.value), b(b.value)
 {
 }
 
-Point::Point(X x, Y y) : x(std::move(x)), y(std::move(y))
+Point::Point() noexcept : x(X(0)), y(Y(0))
+{
+}
+
+Point::Point(X x, Y y) noexcept : x(std::move(x)), y(std::move(y))
 {
 }
 
@@ -112,16 +116,18 @@ auto Rect::h() const noexcept -> std::uint32_t
 auto Rect::corners() const noexcept -> std::tuple<Point, Point, Point, Point>
 {
     return {
-        Point(point.x, point.y),                                                // top left
-        Point(X(point.x.value + width.value), point.y),                         // top right
-        Point(X(point.x.value + width.value), Y(point.y.value + height.value)), // bottom right
-        Point(point.x, Y(point.y.value + height.value)),                        // bottom left
+        Point(point.x, point.y),                                              // top left
+        Point(X(point.x.value + static_cast<int32_t>(width.value)), point.y), // top right
+        Point(X(point.x.value + static_cast<int32_t>(width.value)),
+              Y(point.y.value + static_cast<int32_t>(height.value))),               // bottom right
+        Point(point.x, Y(point.y.value + static_cast<std::int32_t>(height.value))), // bottom left
     };
 }
 
 auto Rect::midpoint() const noexcept -> Point
 {
-    return {X(point.x.value + width.value / 2), Y(point.y.value + height.value / 2)};
+    return {X(point.x.value + static_cast<int32_t>(width.value / 2)),
+            Y(point.y.value + static_cast<int32_t>(height.value / 2))};
 }
 
 auto Rect::shrink_in(const std::uint32_t border) const noexcept -> Rect
@@ -178,29 +184,35 @@ auto Rect::scale_height(const std::double_t factor) const noexcept -> Rect
     };
 }
 
-auto Rect::resize(const DeltaOne &dw, const DeltaTwo &dh) noexcept -> void
+auto Rect::resize(const X &dw, const Y &dh) noexcept -> void
 {
+    const X min_width(1);
+    const Y min_height(1);
+
     if (dw != 0)
     {
-        width = Width(static_cast<std::uint32_t>(std::max(1, dw.value + static_cast<std::int32_t>(width.value))));
+        width = Width(static_cast<uint32_t>(std::max(min_width.value, dw.value + static_cast<int32_t>(width.value))));
     }
 
     if (dh != 0)
     {
-        height = Height(static_cast<std::uint32_t>(std::max(1, dh.value + static_cast<std::int32_t>(height.value))));
+        height =
+            Height(static_cast<uint32_t>(std::max(min_height.value, dh.value + static_cast<int32_t>(height.value))));
     }
 }
 
-auto Rect::reposition(const DeltaOne &dx, const DeltaTwo &dy) noexcept -> void
+auto Rect::reposition(const X &dx, const Y &dy) noexcept -> void
 {
+    const X min_x(0);
+    const Y min_y(0);
     if (dx != 0)
     {
-        point.x = X(static_cast<std::uint32_t>(std::max(0, dx.value + static_cast<std::int32_t>(point.x.value))));
+        point.x = X(std::max(min_x, dx + point.x));
     }
 
     if (dy != 0)
     {
-        point.y = Y(static_cast<std::uint32_t>(std::max(0, dy.value + static_cast<std::int32_t>(point.y.value))));
+        point.y = Y(std::max(min_y, dy + point.y));
     }
 }
 
@@ -216,12 +228,12 @@ auto Rect::contains(const Rect &rhs) const noexcept -> bool
         return false;
     }
 
-    if ((rhs.point.x + rhs.width.value) > (point.x + width.value))
+    if ((rhs.point.x + static_cast<int32_t>(rhs.width.value)) > (point.x + static_cast<int32_t>(width.value)))
     {
         return false;
     }
 
-    if ((rhs.point.y + rhs.height.value) > (point.y + height.value))
+    if ((rhs.point.y + static_cast<int32_t>(rhs.height.value)) > (point.y + static_cast<int32_t>(height.value)))
     {
         return false;
     }
@@ -231,6 +243,6 @@ auto Rect::contains(const Rect &rhs) const noexcept -> bool
 
 auto Rect::contains_point(const Point &rhs) const noexcept -> bool
 {
-    return (point.x <= rhs.x && rhs.x <= (point.x + width.value)) &&
-           (point.y <= rhs.y && rhs.y <= (point.y + height.value));
+    return (point.x <= rhs.x && rhs.x <= (point.x + static_cast<int32_t>(width.value))) &&
+           (point.y <= rhs.y && rhs.y <= (point.y + static_cast<int32_t>(height.value)));
 }

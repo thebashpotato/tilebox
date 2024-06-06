@@ -12,6 +12,14 @@ namespace tilebox::core
 namespace TILEBOX_INTERNAL detail
 {
 
+class TILEBOX_INTERNAL Atag
+{
+};
+
+class TILEBOX_INTERNAL Btag
+{
+};
+
 class TILEBOX_INTERNAL Xtag
 {
 };
@@ -38,11 +46,17 @@ class TILEBOX_INTERNAL DeltaTwoTag
 
 } // namespace TILEBOX_INTERNAL detail
 
+/// @brief Tagged type for uint32_t value
+using A = etl::TaggedFundamental<detail::Atag, std::uint32_t>;
+
+/// @brief Tagged type for uint32_t value
+using B = etl::TaggedFundamental<detail::Btag, std::uint32_t>;
+
 /// @brief Tagged type for uint32_t x coordinate
-using X = etl::TaggedFundamental<detail::Xtag, std::uint32_t>;
+using X = etl::TaggedFundamental<detail::Xtag, std::int32_t>;
 
 /// @brief Tagged type for uint32_t y coordinate
-using Y = etl::TaggedFundamental<detail::Ytag, std::uint32_t>;
+using Y = etl::TaggedFundamental<detail::Ytag, std::int32_t>;
 
 /// @brief Tagged type for uint32_t width size
 using Width = etl::TaggedFundamental<detail::WidthTag, std::uint32_t>;
@@ -50,15 +64,19 @@ using Width = etl::TaggedFundamental<detail::WidthTag, std::uint32_t>;
 /// @brief Tagged type for uint32_t height size
 using Height = etl::TaggedFundamental<detail::HeightTag, std::uint32_t>;
 
-/// @brief Tagged type for int32_t rate of change variable
-using DeltaOne = etl::TaggedFundamental<detail::DeltaOneTag, std::int32_t>;
+/// @brief Represents a pair of unsigned integers.
+class TILEBOX_EXPORT Vec2D
+{
+  public:
+    uint32_t a{};
+    uint32_t b{};
 
-/// @brief Tagged type for int32_t rate of change variable
-using DeltaTwo = etl::TaggedFundamental<detail::DeltaTwoTag, std::int32_t>;
+  public:
+    Vec2D() noexcept = default;
+    Vec2D(const A &a, const B &b) noexcept;
+};
 
 /// @brief Represents a 2D coordinate set on a cartesian plane.
-///
-/// @detail A point cannot be negative, and does not hold signed integers.
 class TILEBOX_EXPORT Point
 {
   public:
@@ -66,11 +84,8 @@ class TILEBOX_EXPORT Point
     Y y;
 
   public:
-    /// @brief Builds a default Point with (0, 0).
-    Point();
-
-    /// @brief Builds a user defined Point.
-    Point(X x, Y y);
+    Point() noexcept;
+    Point(X x, Y y) noexcept;
 
   public:
     auto operator+(const Point &rhs) const noexcept -> Point;
@@ -146,17 +161,24 @@ class TILEBOX_EXPORT Rect
 
     /// @brief Mutate the width and height of this Rect by specified deltas.
     ///
+    ///
     /// @detail Minimum size is clamped at width = 1, height = 1.
+    ///
+    /// @param `dw` delta width scalar
+    /// @param `dh` delta height scalar
     ///
     /// BUG: std::numeric_limits<std::int32_t>::max() is not accounted for and will likely
     ///      cause a crash. However it is unlikely anyone's screen would be `2147483647`
     ///      pixels in width or height.
-    auto resize(const DeltaOne &dw, const DeltaTwo &dh) noexcept -> void;
+    auto resize(const X &dw, const Y &dh) noexcept -> void;
 
     /// @brief Mutate the position of this Rect by specified deltas
     ///
     /// @detail Minimum (x, y) coordinates are clamped at x = 0, y = 0.
-    auto reposition(const DeltaOne &dx, const DeltaTwo &dy) noexcept -> void;
+    ///
+    /// @param `dx` delta x scalar
+    /// @param `dy` delta y scalar
+    auto reposition(const X &dx, const Y &dy) noexcept -> void;
 
     /// @brief Check whether this Rect contains `rhs` as a sub-Rect
     [[nodiscard]] auto contains(const Rect &rhs) const noexcept -> bool;
