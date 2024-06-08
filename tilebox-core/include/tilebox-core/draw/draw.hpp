@@ -1,11 +1,14 @@
 #pragma once
 
 #include "tilebox-core/draw/font.hpp"
+#include "tilebox-core/error.hpp"
 #include "tilebox-core/geometry.hpp"
 #include "tilebox-core/utils/attributes.hpp"
+#include "tilebox-core/vendor/etl.hpp"
 #include "tilebox-core/x11/display.hpp"
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <string_view>
 #include <vector>
 
 namespace tilebox::core
@@ -25,7 +28,11 @@ class TILEBOX_EXPORT X11Draw
     auto operator=(const X11Draw &rhs) noexcept -> X11Draw & = delete;
 
   public:
+    [[nodiscard]] auto add_font(const std::string_view &font) -> etl::Result<etl::Void, X11FontError>;
     auto resize(const Width &width, const Height &height) noexcept -> void;
+
+  private:
+    auto text_extents(const std::string_view &text, uint32_t len) noexcept -> etl::Result<Vec2D, X11FontError>;
 
   private:
     X11DisplaySharedResource _dpy;

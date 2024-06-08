@@ -2,6 +2,7 @@
 #include "tilebox-core/geometry.hpp"
 #include "tilebox-core/x11/display.hpp"
 #include <X11/X.h>
+#include <X11/Xft/Xft.h>
 #include <X11/Xlib.h>
 #include <utility>
 
@@ -84,4 +85,16 @@ auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
     }
     _drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), width.value, height.value,
                               DefaultDepth(_dpy->raw(), _dpy->screen_id()));
+}
+
+auto X11Draw::text_extents(const std::string_view &text, uint32_t len) noexcept -> Result<Vec2D, X11FontError>
+{
+    XGlyphInfo ext;
+
+    if (text.empty())
+    {
+        return Result<Vec2D, X11FontError>({"text is empty", RUNTIME_INFO});
+    }
+
+    // XftTextExtentsUtf8(_dpy->raw(), XftFont *pub, const FcChar8 *string, int len, XGlyphInfo *extents)
 }

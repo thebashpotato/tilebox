@@ -27,18 +27,19 @@ struct TILEBOX_INTERNAL XftFontDeleter
     auto operator()(XftFont *font) const noexcept -> void;
 };
 
-using XftFontUniqueResource = std::unique_ptr<XftFont, XftFontDeleter>;
+using XftFontSharedResource = std::shared_ptr<XftFont>;
 
+/// @brief Provides a RAII wrapper around an XftFont and fontconfig.
 class TILEBOX_EXPORT X11Font
 {
   public:
     ~X11Font();
     X11Font(X11Font &&rhs) noexcept;
-    X11Font(const X11Font &rhs) noexcept = delete;
+    X11Font(const X11Font &rhs) noexcept;
 
   public:
     auto operator=(X11Font &&rhs) noexcept -> X11Font &;
-    auto operator=(const X11Font &rhs) noexcept -> X11Font & = delete;
+    auto operator=(const X11Font &rhs) noexcept -> X11Font &;
 
   public:
     /// @brief Creates a font based on the name of the font.
@@ -53,10 +54,10 @@ class TILEBOX_EXPORT X11Font
     [[nodiscard]] auto pattern() const noexcept -> FcPattern *;
 
   private:
-    X11Font(XftFontUniqueResource &&xft_font, FcPattern *pattern, Height height) noexcept;
+    X11Font(XftFontSharedResource &&xft_font, FcPattern *pattern, Height height) noexcept;
 
   private:
-    XftFontUniqueResource _xftfont;
+    XftFontSharedResource _xftfont;
     // we can't have a smart pointer, Keith Packard forward declared
     // the FcPattern type, thus the call to sizeof() in the unique_ptr constructor will
     // fail at compile time due to the incomplete type.

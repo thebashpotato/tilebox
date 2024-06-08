@@ -123,7 +123,7 @@ auto Rect::corners() const noexcept -> std::tuple<Point, Point, Point, Point>
         Point(point.x, point.y),                                              // top left
         Point(X(point.x.value + static_cast<int32_t>(width.value)), point.y), // top right
         Point(X(point.x.value + static_cast<int32_t>(width.value)),
-              Y(point.y.value + static_cast<int32_t>(height.value))),               // bottom right
+              Y(point.y.value + static_cast<int32_t>(height.value))),          // bottom right
         Point(point.x, Y(point.y.value + static_cast<int32_t>(height.value))), // bottom left
     };
 }
