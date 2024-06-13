@@ -18,7 +18,6 @@ namespace tilebox::core
 class TILEBOX_EXPORT X11Draw
 {
   public:
-    X11Draw(X11DisplaySharedResource dpy, Width width, Height height) noexcept;
     ~X11Draw() noexcept;
     X11Draw(X11Draw &&rhs) noexcept;
     X11Draw(const X11Draw &rhs) noexcept = delete;
@@ -28,17 +27,25 @@ class TILEBOX_EXPORT X11Draw
     auto operator=(const X11Draw &rhs) noexcept -> X11Draw & = delete;
 
   public:
-    [[nodiscard]] auto add_font(const std::string_view &font) -> etl::Result<etl::Void, X11FontError>;
+    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const Width &width,
+                                     const Height &height) noexcept -> etl::Result<X11Draw, CoreError>;
+
+    [[nodiscard]] auto add_font(const std::string_view &font) noexcept -> etl::Result<etl::Void, X11FontError>;
+
     auto resize(const Width &width, const Height &height) noexcept -> void;
 
   private:
-    auto text_extents(const std::string_view &text, uint32_t len) noexcept -> etl::Result<Vec2D, X11FontError>;
+    auto text_extents(const X11Font &font, const std::string_view &text, uint32_t len) noexcept
+        -> etl::Result<Vec2D, X11FontError>;
+
+  private:
+    X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, Drawable drawable, Width width, Height height) noexcept;
 
   private:
     X11DisplaySharedResource _dpy;
     std::vector<X11Font> _fonts;
-    Drawable _drawable;
     GC _graphics_ctx;
+    Drawable _drawable;
     Width _width;
     Height _height;
 };

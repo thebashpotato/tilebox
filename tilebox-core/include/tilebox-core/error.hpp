@@ -7,7 +7,7 @@
 namespace tilebox::core
 {
 
-/// @brief Basic tilebox core library error
+/// @brief Basic tilebox core library error, this error is considered to be unrecoverable.
 class CoreError : public etl::IError
 {
   public:

@@ -10,10 +10,7 @@
 #include <fontconfig/fontconfig.h>
 #include <ft2build.h>
 #include <memory>
-#include <optional>
 #include <string>
-#include <utility>
-#include <variant>
 
 namespace tilebox::core
 {
@@ -50,8 +47,9 @@ class TILEBOX_EXPORT X11Font
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
         -> etl::Result<X11Font, X11FontError>;
 
-    [[nodiscard]] auto height() const noexcept -> Height;
+    [[nodiscard]] auto xftfont() const noexcept -> const XftFontSharedResource &;
     [[nodiscard]] auto pattern() const noexcept -> FcPattern *;
+    [[nodiscard]] auto height() const noexcept -> Height;
 
   private:
     X11Font(XftFontSharedResource &&xft_font, FcPattern *pattern, Height height) noexcept;
@@ -66,104 +64,3 @@ class TILEBOX_EXPORT X11Font
 };
 
 } // namespace tilebox::core
-
-namespace etl
-{
-
-/// @brief Template specializaion for `Result<tilebox::core::X11Font, Error>`
-template <typename ErrType> class Result<tilebox::core::X11Font, ErrType>
-{
-  private:
-    std::variant<tilebox::core::X11Font, ErrType> _result{};
-    bool _is_ok{};
-
-  public:
-    Result() noexcept = default;
-    ~Result() = default;
-
-    explicit Result(tilebox::core::X11Font value) noexcept : _result(std::move(value)), _is_ok(true)
-    {
-    }
-
-    explicit Result(const ErrType &error) noexcept : _result(error)
-    {
-    }
-
-    explicit Result(ErrType &&error) noexcept : _result(std::move(error))
-    {
-    }
-
-    Result(Result &&rhs) noexcept : _result(std::move(rhs._result)), _is_ok(rhs._is_ok)
-    {
-        rhs._is_ok = false;
-    }
-
-    Result(const Result &rhs) noexcept = delete;
-
-    auto operator=(Result &&rhs) noexcept -> Result &
-    {
-        if (this != &rhs)
-        {
-            _result = std::move(rhs._result);
-            _is_ok = rhs.is_ok;
-            rhs.is_ok = false;
-        }
-
-        return *this;
-    }
-
-    auto operator=(const Result &rhs) noexcept = delete;
-
-  public:
-    [[nodiscard]] inline auto is_ok() const noexcept -> bool
-    {
-        return _is_ok;
-    }
-
-    /// @brief Check if the union value is of the error type
-    [[nodiscard]] inline auto is_err() const noexcept -> bool
-    {
-        return !_is_ok;
-    }
-
-    /// @brief Check if the union value is of the error type
-    ///
-    /// @details The use should always use isOk() before using ok()
-    ///
-    /// @return std::optinal<tilebox::core::X11Font> for safety, incase the user did not call
-    /// isOk() before using this method.
-    [[nodiscard]] inline auto ok() noexcept -> std::optional<tilebox::core::X11Font>
-    {
-        std::optional<tilebox::core::X11Font> opt;
-        if (_is_ok)
-        {
-            if (auto *value = std::get_if<tilebox::core::X11Font>(&_result))
-            {
-                opt.emplace(std::move(*value));
-                return opt;
-            }
-        }
-        return opt;
-    }
-
-    /// @brief Check if the union value is of the error type
-    ///
-    /// @details The use should always use isErr() before using err()
-    ///
-    /// @return std::optinal<ErrType> for safety, incase the user did not call
-    /// isErr() before using this method.
-    [[nodiscard]] inline auto err() const noexcept -> std::optional<ErrType>
-    {
-        std::optional<ErrType> opt;
-        if (!_is_ok)
-        {
-            if (auto *err = std::get_if<ErrType>(&_result))
-            {
-                opt.emplace(std::move(*err));
-                return opt;
-            }
-        }
-        return opt;
-    }
-};
-} // namespace etl

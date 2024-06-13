@@ -4,7 +4,6 @@
 #include "tilebox-core/vendor/etl.hpp"
 #include "tilebox-core/x11/display.hpp"
 #include <X11/Xft/Xft.h>
-#include <X11/extensions/Xrender.h>
 #include <cstdint>
 #include <fontconfig/fontconfig.h>
 #include <string>
@@ -98,8 +97,8 @@ auto X11Font::operator=(const X11Font &rhs) noexcept -> X11Font &
     return *this;
 }
 
-auto X11Font::create(const X11DisplaySharedResource &dpy,
-                     const std::string &font_name) noexcept -> Result<X11Font, X11FontError>
+auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &font_name) noexcept
+    -> Result<X11Font, X11FontError>
 {
     if (font_name.empty())
     {
@@ -132,8 +131,8 @@ auto X11Font::create(const X11DisplaySharedResource &dpy,
         {XftFontSharedResource(raw_font, XftFontDeleter(dpy)), pattern, std::move(height)});
 }
 
-auto X11Font::create(const X11DisplaySharedResource &dpy,
-                     FcPattern *font_pattern) noexcept -> Result<X11Font, X11FontError>
+auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
+    -> Result<X11Font, X11FontError>
 {
     if (font_pattern == nullptr)
     {
@@ -150,6 +149,11 @@ auto X11Font::create(const X11DisplaySharedResource &dpy,
 
     return Result<X11Font, X11FontError>(
         {XftFontSharedResource(raw_font, XftFontDeleter(dpy)), font_pattern, std::move(height)});
+}
+
+auto X11Font::xftfont() const noexcept -> const XftFontSharedResource &
+{
+    return this->_xftfont;
 }
 
 auto X11Font::height() const noexcept -> Height
