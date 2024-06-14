@@ -3,7 +3,7 @@ include(GoogleTest)
 #
 # Add all test source files
 #
-set(TEST_SOURCE_FILES "version_tests.cpp" "x11_display_tests.cpp" "geometry_tests.cpp" "utf8_codec_tests.cpp")
+set(TEST_SOURCE_FILES "version_tests.cpp" "x11_display_tests.cpp" "geometry_tests.cpp" "utf8_codec_tests.cpp" "font_tests.cpp")
 
 #
 # Declare a custom name for the text executable

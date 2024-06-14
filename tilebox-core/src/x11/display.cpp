@@ -1,5 +1,4 @@
 #include "tilebox-core/x11/display.hpp"
-#include "tilebox-core/utils/debug.hpp"
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <cstdint>
@@ -11,7 +10,6 @@ using namespace tilebox::core;
 
 auto DisplayDeleter::operator()(Display *display) const noexcept -> void
 {
-    debug_print();
     if (display != nullptr)
     {
         XCloseDisplay(display);
@@ -22,7 +20,6 @@ auto DisplayDeleter::operator()(Display *display) const noexcept -> void
 X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
     : _dpy(XOpenDisplay(display_name.has_value() ? display_name.value().c_str() : nullptr), DisplayDeleter())
 {
-
     refresh();
 }
 

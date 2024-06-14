@@ -77,8 +77,8 @@ auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
     return *this;
 }
 
-auto X11Draw::create(const X11DisplaySharedResource &dpy, const Width &width,
-                     const Height &height) noexcept -> Result<X11Draw, CoreError>
+auto X11Draw::create(const X11DisplaySharedResource &dpy, const Width &width, const Height &height) noexcept
+    -> Result<X11Draw, CoreError>
 {
     GC gc = XCreateGC(dpy->raw(), dpy->root_window(), 0, nullptr);
 
@@ -118,8 +118,8 @@ auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
                               DefaultDepth(_dpy->raw(), _dpy->screen_id()));
 }
 
-auto X11Draw::text_extents(const X11Font &font, const std::string_view &text,
-                           uint32_t len) noexcept -> Result<Vec2D, X11FontError>
+auto X11Draw::text_extents(const X11Font &font, const std::string_view &text, uint32_t len) noexcept
+    -> Result<Vec2D, X11FontError>
 {
     XGlyphInfo ext;
 

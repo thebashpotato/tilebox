@@ -7,7 +7,7 @@
 using namespace etl;
 using namespace tilebox::core;
 
-TEST(TilboxUtf8CodecTestSuite, DecodeValidUTF8)
+TEST(TileboxCoreUtf8CodecTestSuite, DecodeValidUTF8)
 {
     const std::string input = "Hello, 世界!";
     const auto result = utf8_decode(input);
@@ -22,7 +22,7 @@ TEST(TilboxUtf8CodecTestSuite, DecodeValidUTF8)
     ASSERT_EQ(output[8], U'界');
 }
 
-TEST(TilboxUtf8CodecTestSuite, DecodeInvalidUTF8)
+TEST(TileboxCoreUtf8CodecTestSuite, DecodeInvalidUTF8)
 {
     const std::string input = "Hello, \xF0\x28\x8C\x28";
     const auto result = utf8_decode(input);
@@ -30,7 +30,7 @@ TEST(TilboxUtf8CodecTestSuite, DecodeInvalidUTF8)
     ASSERT_TRUE(result.is_err());
 }
 
-TEST(TilboxUtf8CodecTestSuite, EncodeValidUTF32)
+TEST(TileboxCoreUtf8CodecTestSuite, EncodeValidUTF32)
 {
     const std::u32string input = U"Hello, 世界!";
     const auto result = utf8_encode(input);
@@ -43,7 +43,7 @@ TEST(TilboxUtf8CodecTestSuite, EncodeValidUTF32)
     ASSERT_EQ(output, "Hello, 世界!");
 }
 
-TEST(TilboxUtf8CodecTestSuite, EncodeEmptyUTF32)
+TEST(TileboxCoreUtf8CodecTestSuite, EncodeEmptyUTF32)
 {
     const std::u32string input;
 
@@ -52,7 +52,7 @@ TEST(TilboxUtf8CodecTestSuite, EncodeEmptyUTF32)
     ASSERT_TRUE(result.is_err());
 }
 
-TEST(TilboxUtf8CodecTestSuite, DecodeEmptyUTF8)
+TEST(TileboxCoreUtf8CodecTestSuite, DecodeEmptyUTF8)
 {
     const std::string input;
 
@@ -61,7 +61,7 @@ TEST(TilboxUtf8CodecTestSuite, DecodeEmptyUTF8)
     ASSERT_TRUE(result.is_err());
 }
 
-TEST(TilboxUtf8CodecTestSuite, EncodeAndDecodeUTF8)
+TEST(TileboxCoreUtf8CodecTestSuite, EncodeAndDecodeUTF8)
 {
     const std::string original_utf8_str = "Hello, 世界!";
     const auto decoded_result = utf8_decode(original_utf8_str);
@@ -77,7 +77,7 @@ TEST(TilboxUtf8CodecTestSuite, EncodeAndDecodeUTF8)
     ASSERT_EQ(original_utf8_str, utf8_str);
 }
 
-TEST(TilboxUtf8CodecTestSuite, DecodeStandardASCIIArray)
+TEST(TileboxCoreUtf8CodecTestSuite, DecodeStandardASCIIArray)
 {
     const std::array<std::string, 9> input = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
@@ -91,7 +91,7 @@ TEST(TilboxUtf8CodecTestSuite, DecodeStandardASCIIArray)
     }
 }
 
-TEST(TilboxUtf8CodecTestSuite, DecodeUTF8Array)
+TEST(TileboxCoreUtf8CodecTestSuite, DecodeUTF8Array)
 {
     const std::array<std::string, 9> input = {"", "", "", "", "", "", "", "", ""};
 
