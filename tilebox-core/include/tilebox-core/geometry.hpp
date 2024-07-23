@@ -70,7 +70,7 @@ class TILEBOX_EXPORT Vec2D
     Vec2D(Width w, Height h) noexcept;
 };
 
-/// @brief Represents a 2D coordinate set on a cartesian plane.
+/// @brief Represents a 2D coordinate set on a cartesian plane (signed integers).
 class TILEBOX_EXPORT Point
 {
   public:
@@ -129,21 +129,21 @@ class TILEBOX_EXPORT Rect
     /// @brief The four corners of this Rect in Point form return in clockwise order
     /// from the top left corner.
     ///
-    /// @detail It starts from the top left because X11 identifies the top left
+    /// @details It starts from the top left because X11 identifies the top left
     /// corner of a screen as the origin (0,0). Basically, the screen is just the 2nd quadrant of a
     /// cartesian plane inverted.
     [[nodiscard]] auto corners() const noexcept -> std::tuple<Point, Point, Point, Point>;
 
     /// @brief The midpoint of this rectangle.
     ///
-    /// @detail Odd side lengths will lead to a truncated point towards to top left corner
+    /// @details Odd side lengths will lead to a truncated point towards to top left corner
     /// in order to maintain integer coordinates.
     [[nodiscard]] auto midpoint() const noexcept -> Point;
 
     /// @brief Creates a new Rect with a shrunken width and height by the given pixel border,
     /// maintaining the current (x,y) coordinates.
     ///
-    /// @detail The resulting Rect will always have a minimum
+    /// @details The resulting Rect will always have a minimum
     /// width and height of 1.
     [[nodiscard]] auto shrink_in(const uint32_t border) const noexcept -> Rect;
 
@@ -156,10 +156,10 @@ class TILEBOX_EXPORT Rect
     /// @brief Mutate the width and height of this Rect by specified deltas.
     ///
     ///
-    /// @detail Minimum size is clamped at width = 1, height = 1.
+    /// @details Minimum size is clamped at width = 1, height = 1.
     ///
-    /// @param `dw` delta width scalar
-    /// @param `dh` delta height scalar
+    /// @param `dw` delta signed width scalar
+    /// @param `dh` delta signed height scalar
     ///
     /// BUG: std::numeric_limits<int32_t>::max() is not accounted for and will likely
     ///      cause a crash. However it is unlikely anyone's screen would be `2147483647`
@@ -168,7 +168,7 @@ class TILEBOX_EXPORT Rect
 
     /// @brief Mutate the position of this Rect by specified deltas
     ///
-    /// @detail Minimum (x, y) coordinates are clamped at x = 0, y = 0.
+    /// @details Minimum (x, y) coordinates are clamped at x = 0, y = 0.
     ///
     /// @param `dx` delta x scalar
     /// @param `dy` delta y scalar

@@ -27,7 +27,7 @@ struct TILEBOX_INTERNAL XftFontDeleter
 using XftFontSharedResource = std::shared_ptr<XftFont>;
 
 /// @brief Provides a RAII wrapper around an XftFont and fontconfig.
-class TILEBOX_EXPORT X11Font
+class TILEBOX_INTERNAL X11Font
 {
   public:
     ~X11Font();

@@ -35,8 +35,8 @@ class TILEBOX_EXPORT X11Draw
     auto resize(const Width &width, const Height &height) noexcept -> void;
 
   private:
-    auto text_extents(const X11Font &font, const std::string_view &text,
-                      uint32_t len) noexcept -> etl::Result<Vec2D, X11FontError>;
+    [[nodiscard]] auto get_text_extents(const X11Font &font, const std::string_view &text,
+                                        uint32_t len) noexcept -> etl::Result<Vec2D, X11FontError>;
 
   private:
     X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, Drawable drawable, Width width, Height height) noexcept;
