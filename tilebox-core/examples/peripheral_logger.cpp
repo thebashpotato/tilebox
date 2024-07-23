@@ -16,8 +16,8 @@ using namespace tilebox::core;
 using namespace etl;
 
 PeripheralLogger::PeripheralLogger(X11DisplaySharedResource &&dpy, Width &&app_width, Height &&app_height)
-    : _dpy(std::move(dpy)), _win(_dpy), _event_loop(_dpy), _aw(std::move(app_width)), _ah(std::move(app_height)),
-      _delete_window_msg(XInternAtom(_dpy->raw(), "WM_DELETE_WINDOW", False))
+    : _dpy(std::move(dpy)), _win(_dpy), _event_loop(_dpy), _app_width(std::move(app_width)),
+      _app_height(std::move(app_height)), _delete_window_msg(XInternAtom(_dpy->raw(), "WM_DELETE_WINDOW", False))
 {
 }
 
@@ -35,7 +35,7 @@ auto PeripheralLogger::create(Width app_width, Height app_height) noexcept -> st
 
 auto PeripheralLogger::_setup() noexcept -> Result<Void, Error>
 {
-    const Rect r(_aw, _ah);
+    const Rect r(_app_width, _app_height);
 
     if (!_win.create(r))
     {

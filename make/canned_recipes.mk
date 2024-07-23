@@ -70,7 +70,7 @@ define _compile =
 	if [ ! -f compile_commands.json ]; then
 		[ -d build ] && ln -s ./build/compile_commands.json .
 	fi
-	cmake --build build
+	cmake --build build -j $(nproc --ignore 1)
 endef
 
 # Embeds the window manager in a Xephyr window for testing and debugging

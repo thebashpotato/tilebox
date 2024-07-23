@@ -19,7 +19,7 @@ Point::Point() noexcept : x(X(0)), y(Y(0))
 {
 }
 
-Point::Point(X x, Y y) noexcept : x(std::move(x)), y(std::move(y))
+Point::Point(X px, Y py) noexcept : x(std::move(px)), y(std::move(py))
 {
 }
 
@@ -47,12 +47,11 @@ Rect::Rect() : width(Width(1)), height(Height(1))
 {
 }
 
-Rect::Rect(Width width, Height height) : width(std::move(width)), height(std::move(height))
+Rect::Rect(Width w, Height h) : width(std::move(w)), height(std::move(h))
 {
 }
 
-Rect::Rect(Point point, Width width, Height height)
-    : point(std::move(point)), width(std::move(width)), height(std::move(height))
+Rect::Rect(Point p, Width w, Height h) : point(std::move(p)), width(std::move(w)), height(std::move(h))
 {
 }
 
@@ -134,7 +133,7 @@ auto Rect::midpoint() const noexcept -> Point
             Y(point.y.value + static_cast<int32_t>(height.value / 2))};
 }
 
-auto Rect::shrink_in(const ::uint32_t border) const noexcept -> Rect
+auto Rect::shrink_in(const uint32_t border) const noexcept -> Rect
 {
     Width w;
     Height h;
@@ -220,24 +219,24 @@ auto Rect::reposition(const X &dx, const Y &dy) noexcept -> void
     }
 }
 
-auto Rect::contains(const Rect &rhs) const noexcept -> bool
+auto Rect::contains(const Rect &other) const noexcept -> bool
 {
-    if (rhs.point.x < point.x)
+    if (other.point.x < point.x)
     {
         return false;
     }
 
-    if (rhs.point.y < point.y)
+    if (other.point.y < point.y)
     {
         return false;
     }
 
-    if ((rhs.point.x + static_cast<int32_t>(rhs.width.value)) > (point.x + static_cast<int32_t>(width.value)))
+    if ((other.point.x + static_cast<int32_t>(other.width.value)) > (point.x + static_cast<int32_t>(width.value)))
     {
         return false;
     }
 
-    if ((rhs.point.y + static_cast<int32_t>(rhs.height.value)) > (point.y + static_cast<int32_t>(height.value)))
+    if ((other.point.y + static_cast<int32_t>(other.height.value)) > (point.y + static_cast<int32_t>(height.value)))
     {
         return false;
     }
@@ -245,8 +244,8 @@ auto Rect::contains(const Rect &rhs) const noexcept -> bool
     return true;
 }
 
-auto Rect::contains_point(const Point &rhs) const noexcept -> bool
+auto Rect::contains_point(const Point &other) const noexcept -> bool
 {
-    return (point.x <= rhs.x && rhs.x <= (point.x + static_cast<int32_t>(width.value))) &&
-           (point.y <= rhs.y && rhs.y <= (point.y + static_cast<int32_t>(height.value)));
+    return (point.x <= other.x && other.x <= (point.x + static_cast<int32_t>(width.value))) &&
+           (point.y <= other.y && other.y <= (point.y + static_cast<int32_t>(height.value)));
 }

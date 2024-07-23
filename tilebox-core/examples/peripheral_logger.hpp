@@ -14,8 +14,8 @@ class PeripheralLogger
     tilebox::core::X11DisplaySharedResource _dpy;
     tilebox::core::X11Window _win;
     tilebox::core::X11EventLoop _event_loop;
-    tilebox::core::Width _aw;
-    tilebox::core::Height _ah;
+    tilebox::core::Width _app_width;
+    tilebox::core::Height _app_height;
     Atom _delete_window_msg;
 
     bool _run{true};

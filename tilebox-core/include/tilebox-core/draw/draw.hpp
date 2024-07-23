@@ -8,6 +8,7 @@
 #include "tilebox-core/x11/display.hpp"
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -30,7 +31,7 @@ class TILEBOX_EXPORT X11Draw
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const Width &width,
                                      const Height &height) noexcept -> etl::Result<X11Draw, CoreError>;
 
-    [[nodiscard]] auto add_font(const std::string_view &font) noexcept -> etl::Result<etl::Void, X11FontError>;
+    [[nodiscard]] auto add_font_set(const std::string &font_name) noexcept -> etl::Result<etl::Void, X11FontError>;
 
     auto resize(const Width &width, const Height &height) noexcept -> void;
 

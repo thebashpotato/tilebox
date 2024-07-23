@@ -10,6 +10,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrender.h>
 #include <cstdint>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -106,16 +107,29 @@ auto X11Draw::create(const X11DisplaySharedResource &dpy, const Width &width,
     });
 }
 
+auto X11Draw::add_font_set(const std::string &font_name) noexcept -> Result<Void, X11FontError>
+{
+    if (const auto font_res = X11Font::create(this->_dpy, font_name); font_res.is_ok())
+    {
+        this->_fonts.emplace_back(std::move(font_res.ok().value()));
+        return Result<Void, X11FontError>(Void());
+    }
+    else
+    {
+        return Result<Void, X11FontError>(font_res.err().value());
+    }
+}
+
 auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
 {
-    _width = width;
-    _height = height;
-    if (_drawable != False)
+    this->_width = width;
+    this->_height = height;
+    if (this->_drawable != False)
     {
         XFreePixmap(_dpy->raw(), _drawable);
     }
-    _drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), width.value, height.value,
-                              DefaultDepth(_dpy->raw(), _dpy->screen_id()));
+    this->_drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), width.value, height.value,
+                                    DefaultDepth(_dpy->raw(), _dpy->screen_id()));
 }
 
 auto X11Draw::get_text_extents(const X11Font &font, const std::string_view &text,
@@ -131,7 +145,5 @@ auto X11Draw::get_text_extents(const X11Font &font, const std::string_view &text
     XftTextExtentsUtf8(_dpy->raw(), font.xftfont().get(), reinterpret_cast<const XftChar8 *>(text.data()),
                        static_cast<int32_t>(len), &ext);
 
-    return Result<Vec2D, X11FontError>({Width(static_cast<uint32_t>(ext.xOff)), font.height()
-
-    });
+    return Result<Vec2D, X11FontError>({Width(static_cast<uint32_t>(ext.xOff)), font.height()});
 }

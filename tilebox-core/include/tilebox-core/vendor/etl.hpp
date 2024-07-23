@@ -153,7 +153,7 @@ template <typename Tag, typename FundamentalType> class TaggedFundamental
         static_assert(std::is_fundamental<FundamentalType>::value);
     };
 
-    constexpr explicit TaggedFundamental(FundamentalType value) noexcept : value(std::move(value))
+    constexpr explicit TaggedFundamental(FundamentalType v) noexcept : value(std::move(v))
     {
         static_assert(std::is_fundamental<FundamentalType>::value);
     }

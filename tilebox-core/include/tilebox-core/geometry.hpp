@@ -12,27 +12,27 @@ namespace tilebox::core
 namespace TILEBOX_INTERNAL detail
 {
 
-class TILEBOX_INTERNAL Xtag
+class TILEBOX_EXPORT Xtag
 {
 };
 
-class TILEBOX_INTERNAL Ytag
+class TILEBOX_EXPORT Ytag
 {
 };
 
-class TILEBOX_INTERNAL WidthTag
+class TILEBOX_EXPORT WidthTag
 {
 };
 
-class TILEBOX_INTERNAL HeightTag
+class TILEBOX_EXPORT HeightTag
 {
 };
 
-class TILEBOX_INTERNAL DeltaOneTag
+class TILEBOX_EXPORT DeltaOneTag
 {
 };
 
-class TILEBOX_INTERNAL DeltaTwoTag
+class TILEBOX_EXPORT DeltaTwoTag
 {
 };
 
@@ -71,7 +71,7 @@ class TILEBOX_EXPORT Point
 
   public:
     Point() noexcept;
-    Point(X x, Y y) noexcept;
+    Point(X px, Y py) noexcept;
 
   public:
     auto operator+(const Point &rhs) const noexcept -> Point;
@@ -97,10 +97,10 @@ class TILEBOX_EXPORT Rect
     Rect();
 
     /// @brief Builds a Rect with (0,0) and user defined width and height.
-    Rect(Width width, Height height);
+    Rect(Width w, Height h);
 
     /// @brief Builds a user defined Rect.
-    Rect(Point point, Width width, Height height);
+    Rect(Point p, Width w, Height h);
 
   public:
     auto operator+(const Rect &rhs) const noexcept -> Rect;
@@ -166,11 +166,11 @@ class TILEBOX_EXPORT Rect
     /// @param `dy` delta y scalar
     auto reposition(const X &dx, const Y &dy) noexcept -> void;
 
-    /// @brief Check whether this Rect contains `rhs` as a sub-Rect
-    [[nodiscard]] auto contains(const Rect &rhs) const noexcept -> bool;
+    /// @brief Check whether this Rect contains `other` as a sub-Rect
+    [[nodiscard]] auto contains(const Rect &other) const noexcept -> bool;
 
-    /// @brief Check whether this Rect contains 'rhs'
-    [[nodiscard]] auto contains_point(const Point &rhs) const noexcept -> bool;
+    /// @brief Check whether this Rect contains 'other'
+    [[nodiscard]] auto contains_point(const Point &other) const noexcept -> bool;
 };
 
 } // namespace tilebox::core

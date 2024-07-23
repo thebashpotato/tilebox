@@ -26,17 +26,11 @@ set(SOURCE_FILES
     "${APP_SOURCE_DIR}/draw/draw.cpp")
 
 #
-# If dev-mode is enabled add the tests directory
+# If dev-mode is enabled add the tests and examples directories
 #
 if(DEVELOPER_MODE)
-    #
-    # Setup unit tests module
-    #
-    message(STATUS "Building ${PROJECT_NAME} in [${CMAKE_BUILD_TYPE}] mode with Tests and Examples Enabled")
     add_subdirectory(tests)
     add_subdirectory(examples)
-else()
-    message(STATUS "Building ${PROJECT_NAME} in [${CMAKE_BUILD_TYPE}] mode")
 endif()
 
 #

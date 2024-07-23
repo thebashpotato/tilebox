@@ -26,13 +26,11 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # Include all custom modules
 #
 include(CPM)
-include(StandardProjectSettings)
 include(StaticAnalyzers)
 include(CompilerWarnings)
+include(StandardProjectSettings)
 include(ClangFormat)
 include(ClangTidy)
-
-message(STATUS "Building ${PROJECT_NAME} -- ${PROJECT_DESCRIPTION} -- Written in C++${CMAKE_CXX_STANDARD}")
 
 #
 # Create interfaced "libraries" for custom StandardProjectSettings and CompilerWarnings
@@ -87,6 +85,8 @@ else()
         Release
         CACHE STRING "Forcing build type to Release" FORCE)
 endif()
+
+message(STATUS "Compiling ${PROJECT_NAME} in [ ${CMAKE_BUILD_TYPE} ] mode using the C++${CMAKE_CXX_STANDARD} standard")
 
 #
 # Add sub-projects
