@@ -28,8 +28,8 @@ class PeripheralLogger
     [[nodiscard]] auto _setup() noexcept -> etl::Result<etl::Void, etl::Error>;
 
   public:
-    [[nodiscard]] static auto create(tilebox::core::Width app_width, tilebox::core::Height app_height) noexcept
-        -> std::optional<PeripheralLogger>;
+    [[nodiscard]] static auto create(tilebox::core::Width app_width,
+                                     tilebox::core::Height app_height) noexcept -> std::optional<PeripheralLogger>;
 
     [[nodiscard]] auto run() noexcept -> etl::Result<etl::Void, etl::Error>;
 };

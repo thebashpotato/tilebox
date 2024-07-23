@@ -97,8 +97,8 @@ auto X11Font::operator=(const X11Font &rhs) noexcept -> X11Font &
     return *this;
 }
 
-auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &font_name) noexcept
-    -> Result<X11Font, X11FontError>
+auto X11Font::create(const X11DisplaySharedResource &dpy,
+                     const std::string &font_name) noexcept -> Result<X11Font, X11FontError>
 {
     if (font_name.empty())
     {
@@ -131,8 +131,8 @@ auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &fon
         {XftFontSharedResource(raw_font, XftFontDeleter(dpy)), pattern, std::move(height)});
 }
 
-auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
-    -> Result<X11Font, X11FontError>
+auto X11Font::create(const X11DisplaySharedResource &dpy,
+                     FcPattern *font_pattern) noexcept -> Result<X11Font, X11FontError>
 {
     if (font_pattern == nullptr)
     {

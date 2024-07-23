@@ -40,12 +40,12 @@ class TILEBOX_EXPORT X11Font
 
   public:
     /// @brief Creates a font based on the name of the font.
-    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const std::string &font_name) noexcept
-        -> etl::Result<X11Font, X11FontError>;
+    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy,
+                                     const std::string &font_name) noexcept -> etl::Result<X11Font, X11FontError>;
 
     /// @brief Creates a font based on the pattern of the font.
-    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern) noexcept
-        -> etl::Result<X11Font, X11FontError>;
+    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy,
+                                     FcPattern *font_pattern) noexcept -> etl::Result<X11Font, X11FontError>;
 
     [[nodiscard]] auto xftfont() const noexcept -> const XftFontSharedResource &;
     [[nodiscard]] auto pattern() const noexcept -> FcPattern *;
