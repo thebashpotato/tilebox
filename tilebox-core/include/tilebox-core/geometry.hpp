@@ -12,14 +12,6 @@ namespace tilebox::core
 namespace TILEBOX_INTERNAL detail
 {
 
-class TILEBOX_INTERNAL Atag
-{
-};
-
-class TILEBOX_INTERNAL Btag
-{
-};
-
 class TILEBOX_INTERNAL Xtag
 {
 };

@@ -119,7 +119,7 @@ auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
 }
 
 auto X11Draw::get_text_extents(const X11Font &font, const std::string_view &text,
-                           uint32_t len) noexcept -> Result<Vec2D, X11FontError>
+                               uint32_t len) noexcept -> Result<Vec2D, X11FontError>
 {
     XGlyphInfo ext;
 
