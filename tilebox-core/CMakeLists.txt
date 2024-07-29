@@ -23,12 +23,14 @@ set(SOURCE_FILES
     "${APP_SOURCE_DIR}/x11/event_loop.cpp"
     "${APP_SOURCE_DIR}/draw/font.cpp"
     "${APP_SOURCE_DIR}/draw/utf8_codec.cpp"
-    "${APP_SOURCE_DIR}/draw/draw.cpp")
+    "${APP_SOURCE_DIR}/draw/draw.cpp"
+    "${APP_SOURCE_DIR}/draw/color.cpp"
+    "${APP_SOURCE_DIR}/draw/colorscheme.cpp")
 
 #
 # If dev-mode is enabled add the tests and examples directories
 #
-if(DEVELOPER_MODE)
+if(ENABLE_DEVELOPER_MODE)
     add_subdirectory(tests)
     add_subdirectory(examples)
 endif()
@@ -42,8 +44,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD ${CMAKE_CXX_STANDA
 # Link required dependencies
 target_link_libraries(
     ${PROJECT_NAME}
-    PRIVATE tilebox_workspace_project_options
-            tilebox_workspace_project_warnings
+    PRIVATE workspace_project_options
+            workspace_project_warnings
             stdc++fs
             fmt
             ${X11_Xft_LIB}
@@ -62,13 +64,12 @@ target_include_directories(
 #
 # Clang tooling needs to be ran after all libraries/targets are declared
 #
-if(DEVELOPER_MODE)
+if(ENABLE_DEVELOPER_MODE)
     run_clang_format(${APP_SOURCE_DIR})
     run_clang_format(${APP_INCLUDE_DIR})
     run_clang_format(${APP_TEST_DIR})
     run_clang_format(${APP_EXAMPLE_DIR})
 else()
-
     # Create an installable target
     install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 endif()

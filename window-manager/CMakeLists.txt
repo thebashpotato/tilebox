@@ -1,8 +1,8 @@
 project(
-    tilebox-wm
-    VERSION 0.1.0
-    DESCRIPTION "X11 Tiling Window Manager in C++23"
-    LANGUAGES CXX)
+  tilebox-wm
+  VERSION 0.1.0
+  DESCRIPTION "X11 Tiling Window Manager in C++${CMAKE_CXX_STANDARD}"
+  LANGUAGES CXX)
 
 #
 # Set our source directory variable for use through the build
@@ -17,13 +17,14 @@ set(APP_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 #
 # Declare all source files
 #
-set(SOURCE_FILES "${APP_SOURCE_DIR}/window_manager.cpp" "${APP_SOURCE_DIR}/main.cpp")
+set(SOURCE_FILES "${APP_SOURCE_DIR}/window_manager.cpp"
+                 "${APP_SOURCE_DIR}/main.cpp")
 
 #
 # If dev-mode is enabled add the tests and examples
 #
-if(DEVELOPER_MODE)
-    add_subdirectory(tests)
+if(ENABLE_DEVELOPER_MODE)
+  add_subdirectory(tests)
 endif()
 
 #
@@ -38,21 +39,16 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 # Link required dependencies
 target_link_libraries(
-    ${PROJECT_NAME}
-    PRIVATE tilebox_workspace_project_options
-            tilebox_workspace_project_warnings
-            stdc++fs
-            fmt
-            tilebox-core
-            ${X11_LIBRARIES})
+  ${PROJECT_NAME} PRIVATE workspace_project_options workspace_project_warnings
+                          stdc++fs fmt tilebox-core ${X11_LIBRARIES})
 
 #
 # Clang tooling needs to be ran after all libraries/targets are declared.
 #
-if(DEVELOPER_MODE)
-    run_clang_format(${APP_SOURCE_DIR})
-    run_clang_format(${APP_TEST_DIR})
+if(ENABLE_DEVELOPER_MODE)
+  run_clang_format(${APP_SOURCE_DIR})
+  run_clang_format(${APP_TEST_DIR})
 else()
-    # Create an installable target
-    install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+  # Create an installable target
+  install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 endif()

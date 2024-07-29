@@ -20,11 +20,8 @@ add_executable(${PROJECT_UNIT_TEST} ${TEST_SOURCE_FILES})
 #
 target_include_directories(${PROJECT_UNIT_TEST} PUBLIC ${APP_INCLUDE_DIR})
 target_link_libraries(
-    ${PROJECT_UNIT_TEST}
-    PRIVATE tilebox_workspace_project_options
-            tilebox-core
-            gtest
-            gtest_main)
+  ${PROJECT_UNIT_TEST} PRIVATE workspace_project_options tilebox-core gtest
+                               gtest_main)
 
 #
 # Instruct gtest to discover all tests

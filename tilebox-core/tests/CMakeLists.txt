@@ -3,7 +3,9 @@ include(GoogleTest)
 #
 # Add all test source files
 #
-set(TEST_SOURCE_FILES "version_tests.cpp" "x11_display_tests.cpp" "geometry_tests.cpp" "utf8_codec_tests.cpp" "font_tests.cpp")
+set(TEST_SOURCE_FILES
+    "version_tests.cpp" "x11_display_tests.cpp" "geometry_tests.cpp"
+    "utf8_codec_tests.cpp" "font_tests.cpp" "colorscheme_tests.cpp")
 
 #
 # Declare a custom name for the text executable
@@ -20,7 +22,9 @@ add_executable(${PROJECT_UNIT_TEST} ${TEST_SOURCE_FILES})
 #
 target_include_directories(${PROJECT_UNIT_TEST} PUBLIC ${APP_INCLUDE_DIR})
 target_link_libraries(${PROJECT_UNIT_TEST} PRIVATE ${PROJECT_NAME})
-target_link_libraries(${PROJECT_UNIT_TEST} PRIVATE tilebox_workspace_project_options gtest gtest_main ${X11_LIBRARIES} tilebox-core)
+target_link_libraries(
+  ${PROJECT_UNIT_TEST} PRIVATE workspace_project_options gtest gtest_main
+                               ${X11_LIBRARIES} tilebox-core)
 
 #
 # Instruct gtest to discover all tests
