@@ -102,7 +102,7 @@ auto X11Font::create(const X11DisplaySharedResource &dpy,
 {
     if (font_name.empty())
     {
-        return Result<X11Font, X11FontError>({"Error, no font name was specified", RUNTIME_INFO});
+        return Result<X11Font, X11FontError>(X11FontError("Error, empty font name", RUNTIME_INFO));
     }
 
     // Using the pattern found at `_xftfont->pattern` does not yield the
@@ -114,21 +114,21 @@ auto X11Font::create(const X11DisplaySharedResource &dpy,
     if (raw_font == nullptr)
     {
         return Result<X11Font, X11FontError>(
-            {std::string("Error, could not load font from: ").append(font_name), RUNTIME_INFO});
+            X11FontError(std::string("Error, could not load font from: ").append(font_name), RUNTIME_INFO));
     }
 
     FcPattern *pattern = FcNameParse(reinterpret_cast<const FcChar8 *>(font_name.c_str()));
     if (pattern == nullptr)
     {
         XftFontClose(dpy->raw(), raw_font);
-        return Result<X11Font, X11FontError>(
-            {std::string("Error, could not parse font name from pattern: ").append(font_name), RUNTIME_INFO});
+        return Result<X11Font, X11FontError>(X11FontError(
+            std::string("Error, could not parse font name from pattern: ").append(font_name), RUNTIME_INFO));
     }
 
     Height height(static_cast<uint32_t>(raw_font->ascent + raw_font->descent));
 
     return Result<X11Font, X11FontError>(
-        {XftFontSharedResource(raw_font, XftFontDeleter(dpy)), pattern, std::move(height)});
+        X11Font(XftFontSharedResource(raw_font, XftFontDeleter(dpy)), pattern, std::move(height)));
 }
 
 auto X11Font::create(const X11DisplaySharedResource &dpy,
@@ -148,7 +148,7 @@ auto X11Font::create(const X11DisplaySharedResource &dpy,
     Height height(static_cast<uint32_t>(raw_font->ascent + raw_font->descent));
 
     return Result<X11Font, X11FontError>(
-        {XftFontSharedResource(raw_font, XftFontDeleter(dpy)), font_pattern, std::move(height)});
+        X11Font(XftFontSharedResource(raw_font, XftFontDeleter(dpy)), font_pattern, std::move(height)));
 }
 
 auto X11Font::xftfont() const noexcept -> const XftFontSharedResource &

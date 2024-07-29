@@ -21,7 +21,7 @@
 /// WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 /// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ///
-/// Original Source: https://github.com/thebashpotato/extra-template-library
+/// Original Source: https://github.com/thebashpotato/etl
 
 #pragma once
 
@@ -519,6 +519,9 @@ class IError
     [[nodiscard]] virtual inline auto msg() const noexcept -> std::string = 0;
     [[nodiscard]] virtual inline auto info() const noexcept -> std::string = 0;
 };
+
+/// @brief Polymorphic error type definition
+using DynError = std::shared_ptr<etl::IError>;
 
 /// @brief A basic Error object which can be built using an error message and the
 /// SourceCodeLocation RUNTIME_INFO macro.
