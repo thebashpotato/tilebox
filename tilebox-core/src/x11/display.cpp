@@ -44,7 +44,7 @@ auto X11Display::raw() const noexcept -> Display *
     return _dpy.get();
 }
 
-auto X11Display::refresh() -> void
+auto X11Display::refresh() noexcept -> void
 {
     if (is_connected())
     {
@@ -93,7 +93,7 @@ auto X11Display::server_vendor() const noexcept -> std::string
     return _server_vendor;
 }
 
-auto X11Display::sync(bool discard) const noexcept -> void
+auto X11Display::sync(const bool discard) const noexcept -> void
 {
     if (is_connected())
     {

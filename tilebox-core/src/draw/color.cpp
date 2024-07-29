@@ -17,7 +17,7 @@ XftColorDeleter::XftColorDeleter(X11DisplaySharedResource display) noexcept : dp
 
 auto XftColorDeleter::operator()(XftColor *color) const noexcept -> void
 {
-    if (color != nullptr)
+    if (color != nullptr && dpy->is_connected())
     {
         XftColorFree(dpy->raw(), DefaultVisual(dpy->raw(), dpy->screen_id()),
                      DefaultColormap(dpy->raw(), dpy->screen_id()), color);

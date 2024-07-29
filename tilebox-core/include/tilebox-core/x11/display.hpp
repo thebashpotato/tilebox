@@ -56,7 +56,7 @@ class TILEBOX_EXPORT X11Display
     [[nodiscard]] auto raw() const noexcept -> Display *;
 
     /// @brief Refreshes all internal display values.
-    auto refresh() -> void;
+    auto refresh() noexcept -> void;
 
     /// @brief Gets the active screen id
     [[nodiscard]] auto screen_id() const noexcept -> std::int32_t;
@@ -85,7 +85,7 @@ class TILEBOX_EXPORT X11Display
     /// @details Should be called before shutdown, calls `XSync`.
     ///
     /// @param `discard` Specifies whether the X server should discard all events in the event queue.
-    auto sync(bool discard = false) const noexcept -> void;
+    auto sync(const bool discard = false) const noexcept -> void;
 
   private:
     explicit X11Display(const std::optional<std::string> &display_name) noexcept;

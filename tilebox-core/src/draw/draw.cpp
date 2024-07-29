@@ -26,13 +26,13 @@ X11Draw::X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, Drawable drawabl
 
 X11Draw::~X11Draw() noexcept
 {
-    if (_drawable != False)
+    if (_drawable != False && _dpy->is_connected())
     {
         XFreePixmap(_dpy->raw(), _drawable);
         _drawable = False;
     }
 
-    if (_graphics_ctx != nullptr)
+    if (_graphics_ctx != nullptr && _dpy->is_connected())
     {
         XFreeGC(_dpy->raw(), _graphics_ctx);
         _graphics_ctx = nullptr;
@@ -51,28 +51,28 @@ auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
 {
     if (this != &rhs)
     {
-        this->_height = std::move(rhs._height);
-        this->_width = std::move(rhs._width);
+        _height = std::move(rhs._height);
+        _width = std::move(rhs._width);
 
-        if (this->_drawable != False)
+        if (_drawable != False)
         {
-            XFreePixmap(this->_dpy->raw(), this->_drawable);
+            XFreePixmap(_dpy->raw(), _drawable);
         }
-        this->_drawable = rhs._drawable;
+        _drawable = rhs._drawable;
 
-        if (this->_graphics_ctx != nullptr)
+        if (_graphics_ctx != nullptr)
         {
-            XFreeGC(this->_dpy->raw(), this->_graphics_ctx);
+            XFreeGC(_dpy->raw(), _graphics_ctx);
         }
         _graphics_ctx = rhs._graphics_ctx;
 
-        if (!this->_fonts.empty())
+        if (!_fonts.empty())
         {
-            this->_fonts.clear();
+            _fonts.clear();
         }
 
-        this->_fonts = std::move(rhs._fonts);
-        this->_dpy = std::move(rhs._dpy);
+        _fonts = std::move(rhs._fonts);
+        _dpy = std::move(rhs._dpy);
     }
 
     return *this;
@@ -109,9 +109,9 @@ auto X11Draw::create(const X11DisplaySharedResource &dpy, const Width &width,
 
 auto X11Draw::add_font_set(const std::string &font_name) noexcept -> Result<Void, X11FontError>
 {
-    if (const auto font_res = X11Font::create(this->_dpy, font_name); font_res.is_ok())
+    if (const auto font_res = X11Font::create(_dpy, font_name); font_res.is_ok())
     {
-        this->_fonts.emplace_back(std::move(font_res.ok().value()));
+        _fonts.emplace_back(std::move(font_res.ok().value()));
         return Result<Void, X11FontError>(Void());
     }
     else
@@ -122,18 +122,18 @@ auto X11Draw::add_font_set(const std::string &font_name) noexcept -> Result<Void
 
 auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
 {
-    this->_width = width;
-    this->_height = height;
-    if (this->_drawable != False)
+    _width = width;
+    _height = height;
+    if (_drawable != False)
     {
         XFreePixmap(_dpy->raw(), _drawable);
     }
-    this->_drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), width.value, height.value,
-                                    DefaultDepth(_dpy->raw(), _dpy->screen_id()));
+    _drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), width.value, height.value,
+                              DefaultDepth(_dpy->raw(), _dpy->screen_id()));
 }
 
 auto X11Draw::get_text_extents(const X11Font &font, const std::string_view &text,
-                               uint32_t len) noexcept -> Result<Vec2D, X11FontError>
+                               const uint32_t len) noexcept -> Result<Vec2D, X11FontError>
 {
     XGlyphInfo ext;
 

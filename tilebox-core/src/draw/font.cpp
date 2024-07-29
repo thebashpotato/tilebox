@@ -18,9 +18,9 @@ XftFontDeleter::XftFontDeleter(X11DisplaySharedResource display) noexcept : dpy(
 
 auto XftFontDeleter::operator()(XftFont *font) const noexcept -> void
 {
-    if (font != nullptr)
+    if (font != nullptr && dpy->is_connected())
     {
-        XftFontClose(this->dpy->raw(), font);
+        XftFontClose(dpy->raw(), font);
         font = nullptr;
     }
 }
@@ -32,10 +32,10 @@ X11Font::X11Font(XftFontSharedResource &&xft_font, FcPattern *pattern, Height he
 
 X11Font::~X11Font()
 {
-    if (this->_pattern != nullptr)
+    if (_pattern != nullptr)
     {
-        FcPatternDestroy(this->_pattern);
-        this->_pattern = nullptr;
+        FcPatternDestroy(_pattern);
+        _pattern = nullptr;
     }
 }
 
@@ -49,11 +49,11 @@ X11Font::X11Font(const X11Font &rhs) noexcept : _xftfont(rhs._xftfont), _height(
 {
     if (rhs._pattern != nullptr)
     {
-        this->_pattern = FcPatternDuplicate(rhs._pattern);
+        _pattern = FcPatternDuplicate(rhs._pattern);
     }
     else
     {
-        this->_pattern = nullptr;
+        _pattern = nullptr;
     }
 }
 
@@ -61,15 +61,15 @@ auto X11Font::operator=(X11Font &&rhs) noexcept -> X11Font &
 {
     if (this != &rhs)
     {
-        if (this->_pattern != nullptr)
+        if (_pattern != nullptr)
         {
-            FcPatternDestroy(this->_pattern);
+            FcPatternDestroy(_pattern);
         }
-        this->_pattern = rhs._pattern;
+        _pattern = rhs._pattern;
         rhs._pattern = nullptr;
 
-        this->_height = std::move(rhs._height);
-        this->_xftfont = std::move(rhs._xftfont);
+        _height = std::move(rhs._height);
+        _xftfont = std::move(rhs._xftfont);
     }
     return *this;
 }
@@ -78,21 +78,21 @@ auto X11Font::operator=(const X11Font &rhs) noexcept -> X11Font &
 {
     if (this != &rhs)
     {
-        if (this->_pattern != nullptr)
+        if (_pattern != nullptr)
         {
-            FcPatternDestroy(this->_pattern);
+            FcPatternDestroy(_pattern);
         }
         if (rhs._pattern != nullptr)
         {
-            this->_pattern = FcPatternDuplicate(rhs._pattern);
+            _pattern = FcPatternDuplicate(rhs._pattern);
         }
         else
         {
-            this->_pattern = nullptr;
+            _pattern = nullptr;
         }
 
-        this->_height = rhs._height;
-        this->_xftfont = rhs._xftfont;
+        _height = rhs._height;
+        _xftfont = rhs._xftfont;
     }
     return *this;
 }
@@ -153,15 +153,15 @@ auto X11Font::create(const X11DisplaySharedResource &dpy,
 
 auto X11Font::xftfont() const noexcept -> const XftFontSharedResource &
 {
-    return this->_xftfont;
+    return _xftfont;
 }
 
 auto X11Font::height() const noexcept -> Height
 {
-    return this->_height;
+    return _height;
 }
 
 auto X11Font::pattern() const noexcept -> FcPattern *
 {
-    return this->_pattern;
+    return _pattern;
 }

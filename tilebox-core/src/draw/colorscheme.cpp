@@ -58,7 +58,7 @@ auto X11ColorScheme::create(const X11DisplaySharedResource &dpy, const std::stri
     return Result<X11ColorScheme, X11ColorError>(X11ColorScheme(std::move(colors)));
 }
 
-auto X11ColorScheme::get_color(const X11ColorScheme::Index color_index) noexcept -> const X11Color &
+auto X11ColorScheme::get_color(const X11ColorScheme::Index color_index) const noexcept -> const X11Color &
 {
     return this->_colors[color_index];
 }

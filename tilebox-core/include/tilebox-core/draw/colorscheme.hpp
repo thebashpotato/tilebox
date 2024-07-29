@@ -32,7 +32,12 @@ class TILEBOX_EXPORT X11ColorScheme
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const std::string &fg, const std::string &bg,
                                      const std::string &border) noexcept -> etl::Result<X11ColorScheme, X11ColorError>;
 
-    [[nodiscard]] auto get_color(const X11ColorScheme::Index color_index) noexcept -> const X11Color &;
+    /// @brief Gets the specified color scheme index
+    ///
+    /// @details The underlying array is indexed into directly, which is technically undefined behaviour if the index
+    /// was to be out of range. But since an enum is being used as the index this is not possible. Any other type being
+    /// passed through will cause a compile time error.
+    [[nodiscard]] auto get_color(const X11ColorScheme::Index color_index) const noexcept -> const X11Color &;
 
   private:
     using ColorSchemeArray = std::array<X11Color, Index::Border + 1>;

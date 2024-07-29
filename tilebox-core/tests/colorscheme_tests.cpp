@@ -44,7 +44,7 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorMoveContructor)
     ASSERT_NE(color_2.raw(), nullptr);
 }
 
-TEST(TileboxCoreColorschmeTestSuite, VerifyColorCopySemantics)
+TEST(TileboxCoreColorschmeTestSuite, VerifyColorCopyConstructor)
 {
     auto dpy_opt = X11Display::create();
 
@@ -81,4 +81,37 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorSchemeCreation)
     const auto scheme_res = X11ColorScheme::create(dpy, "#bbbbbb", "#222222", "#444444");
 
     ASSERT_EQ(scheme_res.is_ok(), true);
+}
+
+TEST(TileboxCoreColorschmeTestSuite, VerifyColorGetters)
+{
+    auto dpy_opt = X11Display::create();
+
+    if (!dpy_opt.has_value())
+    {
+        testing::AssertionFailure() << "Could not open x11 display";
+    }
+
+    const X11DisplaySharedResource dpy = dpy_opt.value();
+    if (const auto scheme_res = X11ColorScheme::create(dpy, "#bbbbbb", "#222222", "#444444"); scheme_res.is_ok())
+    {
+        ASSERT_EQ(scheme_res.is_ok(), true);
+        const X11ColorScheme scheme = scheme_res.ok().value();
+
+        const X11Color &fg = scheme.get_color(X11ColorScheme::Foreground);
+        const X11Color &bg = scheme.get_color(X11ColorScheme::Background);
+        const X11Color &border = scheme.get_color(X11ColorScheme::Border);
+
+        ASSERT_NE(fg.raw(), nullptr);
+        ASSERT_NE(bg.raw(), nullptr);
+        ASSERT_NE(border.raw(), nullptr);
+
+        ASSERT_EQ(fg.raw()->pixel, 12303291);
+        ASSERT_EQ(bg.raw()->pixel, 2236962);
+        ASSERT_EQ(border.raw()->pixel, 4473924);
+    }
+    else
+    {
+        testing::AssertionFailure() << scheme_res.err().value().info() << '\n';
+    }
 }
