@@ -1,4 +1,5 @@
 #include "tilebox-core/x11/display.hpp"
+#include "tilebox-core/geometry.hpp"
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <cstdint>
@@ -18,7 +19,7 @@ auto DisplayDeleter::operator()(Display *display) const noexcept -> void
 }
 
 X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
-    : _dpy(XOpenDisplay(display_name.has_value() ? display_name.value().c_str() : nullptr), DisplayDeleter())
+    : _dpy(XOpenDisplay(display_name.has_value() ? display_name->c_str() : nullptr), DisplayDeleter())
 {
     refresh();
 }
@@ -63,14 +64,24 @@ auto X11Display::screen_id() const noexcept -> std::int32_t
     return _screen_id;
 }
 
-auto X11Display::screen_width() const noexcept -> std::int32_t
+auto X11Display::screen_width_raw() const noexcept -> std::int32_t
 {
     return _screen_width;
 }
 
-auto X11Display::screen_height() const noexcept -> std::int32_t
+auto X11Display::screen_height_raw() const noexcept -> std::int32_t
 {
     return _screen_height;
+}
+
+auto X11Display::screen_width() const noexcept -> Width
+{
+    return Width(static_cast<uint32_t>(_screen_width));
+}
+
+auto X11Display::screen_height() const noexcept -> Height
+{
+    return Height(static_cast<uint32_t>(_screen_height));
 }
 
 auto X11Display::screen_count() const noexcept -> std::int32_t

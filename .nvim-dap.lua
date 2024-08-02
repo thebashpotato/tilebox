@@ -27,4 +27,14 @@ dap.configurations.cpp = {
 		cwd = "${workspaceFolder}",
 		stopOnEntry = false,
 	},
+	{
+		name = "Launch tilebox unit tests",
+		type = "lldb",
+		request = "launch",
+		program = function()
+			return vim.fn.getcwd() .. "/build/tilebox-core/tests/tilebox-core-tests"
+		end,
+		cwd = "${workspaceFolder}",
+		stopOnEntry = false,
+	},
 }

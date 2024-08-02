@@ -21,7 +21,7 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorCreation)
     const auto color_res = X11Color::create(dpy, "#000000");
     ASSERT_EQ(color_res.is_ok(), true);
 
-    const X11Color color = std::move(color_res.ok().value());
+    const X11Color color = std::move(*color_res.ok());
     ASSERT_NE(color.raw(), nullptr);
 }
 
@@ -39,7 +39,7 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorMoveContructor)
     const auto color_res = X11Color::create(dpy, "#000000");
     ASSERT_EQ(color_res.is_ok(), true);
 
-    X11Color color = std::move(color_res.ok().value());
+    X11Color color = std::move(*color_res.ok());
 
     auto color_2 = std::move(color);
     ASSERT_NE(color_2.raw(), nullptr);
@@ -59,7 +59,7 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorCopyConstructor)
     const auto color_res = X11Color::create(dpy, "#000000");
     ASSERT_EQ(color_res.is_ok(), true);
 
-    const X11Color color = std::move(color_res.ok().value());
+    const X11Color color = std::move(*color_res.ok());
 
     {
         const auto color_2 = color; // NOLINT
@@ -121,8 +121,7 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorGetters)
 
     if (const auto scheme_res = X11ColorScheme::create(dpy, primary); scheme_res.is_ok())
     {
-        ASSERT_EQ(scheme_res.is_ok(), true);
-        const X11ColorScheme scheme = scheme_res.ok().value();
+        const X11ColorScheme scheme = *scheme_res.ok();
 
         const X11Color &fg = scheme.get_color(X11ColorScheme::Foreground);
         const X11Color &bg = scheme.get_color(X11ColorScheme::Background);
@@ -138,6 +137,6 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorGetters)
     }
     else
     {
-        testing::AssertionFailure() << scheme_res.err().value().info() << '\n';
+        testing::AssertionFailure() << scheme_res.err()->info() << '\n';
     }
 }

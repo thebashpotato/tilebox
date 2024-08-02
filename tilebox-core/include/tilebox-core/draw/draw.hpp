@@ -38,7 +38,7 @@ class TILEBOX_EXPORT X11Draw
     [[nodiscard]] auto add_colorscheme(const ColorSchemeConfig &config) noexcept
         -> etl::Result<etl::Void, X11ColorError>;
 
-    auto remove_colorscheme(const ColorSchemeKind kind) noexcept -> void;
+    [[nodiscard]] auto remove_colorscheme(const ColorSchemeKind kind) noexcept -> bool;
 
     [[nodiscard]] auto get_colorscheme(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>;
 

@@ -87,7 +87,6 @@ auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
         }
 
         _colorschemes = std::move(rhs._colorschemes);
-
         _dpy = std::move(rhs._dpy);
     }
 
@@ -161,12 +160,15 @@ auto X11Draw::add_colorscheme(const ColorSchemeConfig &config) noexcept -> Resul
     return Result<Void, X11ColorError>(Void());
 }
 
-auto X11Draw::remove_colorscheme(const ColorSchemeKind kind) noexcept -> void
+auto X11Draw::remove_colorscheme(const ColorSchemeKind kind) noexcept -> bool
 {
+    const auto original_size = _colorschemes.size();
     _colorschemes.erase(
         std::remove_if(_colorschemes.begin(), _colorschemes.end(),
                        [&kind](const X11ColorScheme &colorscheme) { return colorscheme.kind() == kind; }),
         _colorschemes.end());
+
+    return original_size != _colorschemes.size();
 }
 
 auto X11Draw::get_colorscheme(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>

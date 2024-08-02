@@ -1,8 +1,6 @@
-#include <cstdint>
 #include <cstdlib>
 #include <fmt/core.h>
 #include <tilebox-core/draw/draw.hpp>
-#include <tilebox-core/geometry.hpp>
 #include <tilebox-core/version.hpp>
 #include <tilebox-core/x11/display.hpp>
 
@@ -20,8 +18,7 @@ auto main() -> int
     }
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
-    auto draw_res = X11Draw::create(dpy, Width(static_cast<uint32_t>(dpy->screen_width())),
-                                    Height(static_cast<uint32_t>(dpy->screen_height())));
+    auto draw_res = X11Draw::create(dpy, dpy->screen_width(), dpy->screen_height());
 
     if (draw_res.is_err())
     {

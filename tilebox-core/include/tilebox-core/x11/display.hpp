@@ -1,5 +1,6 @@
 #pragma once
 
+#include "tilebox-core/geometry.hpp"
 #include "tilebox-core/utils/attributes.hpp"
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -61,11 +62,17 @@ class TILEBOX_EXPORT X11Display
     /// @brief Gets the active screen id
     [[nodiscard]] auto screen_id() const noexcept -> std::int32_t;
 
-    /// @brief Gets the screen width
-    [[nodiscard]] auto screen_width() const noexcept -> std::int32_t;
+    /// @brief Gets the raw screen width as reported from the X server
+    [[nodiscard]] auto screen_width_raw() const noexcept -> std::int32_t;
 
-    /// @brief Gets the screen height
-    [[nodiscard]] auto screen_height() const noexcept -> std::int32_t;
+    /// @brief Gets the raw screen height as reported from the X server
+    [[nodiscard]] auto screen_height_raw() const noexcept -> std::int32_t;
+
+    /// @brief Gets the screen width cast to a uint32_t for use in geometry objects
+    [[nodiscard]] auto screen_width() const noexcept -> Width;
+
+    /// @brief Gets the screen height cast to a uint32_t for use in geometry objects
+    [[nodiscard]] auto screen_height() const noexcept -> Height;
 
     /// @brief Gets the number of screens
     [[nodiscard]] auto screen_count() const noexcept -> std::int32_t;

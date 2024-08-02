@@ -9,7 +9,8 @@ namespace tilebox::core
 enum class ColorSchemeKind
 {
     Primary,
-    Secondary
+    Secondary,
+    Tertiary
 };
 
 class ColorSchemeConfigBuilder;

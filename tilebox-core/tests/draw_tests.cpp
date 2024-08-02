@@ -8,7 +8,7 @@
 
 using namespace tilebox::core;
 
-TEST(TileboxCoreDrawTestSuite, VerifyX11DrawCreation)
+TEST(TileboxCoreX11DrawTestSuite, VerifyCreate)
 {
     auto dpy_opt = X11Display::create();
 
@@ -18,14 +18,14 @@ TEST(TileboxCoreDrawTestSuite, VerifyX11DrawCreation)
     }
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
-    const Width width = Width(static_cast<uint32_t>(dpy->screen_width()));
-    const Height height = Height(static_cast<uint32_t>(dpy->screen_height()));
+    const Width width = Width(static_cast<uint32_t>(dpy->screen_width_raw()));
+    const Height height = Height(static_cast<uint32_t>(dpy->screen_height_raw()));
     auto draw_res = X11Draw::create(dpy, width, height);
 
     EXPECT_EQ(draw_res.is_ok(), true);
 }
 
-TEST(TileboxCoreDrawTestSuite, VerifyMoveConstruction)
+TEST(TileboxCoreX11DrawTestSuite, VerifyMoveConstruction)
 {
     auto dpy_opt = X11Display::create();
 
@@ -35,8 +35,8 @@ TEST(TileboxCoreDrawTestSuite, VerifyMoveConstruction)
     }
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
-    const Width mon_width = Width(static_cast<uint32_t>(dpy->screen_width()));
-    const Height mon_height = Height(static_cast<uint32_t>(dpy->screen_height()));
+    const Width mon_width = Width(static_cast<uint32_t>(dpy->screen_width_raw()));
+    const Height mon_height = Height(static_cast<uint32_t>(dpy->screen_height_raw()));
 
     /// First draw object
     auto draw_res1 = X11Draw::create(dpy, mon_width, mon_height);
@@ -48,7 +48,7 @@ TEST(TileboxCoreDrawTestSuite, VerifyMoveConstruction)
     EXPECT_EQ(draw1.height(), mon_height);
 }
 
-TEST(TileboxCoreDrawTestSuite, VerifyMoveAssignment)
+TEST(TileboxX11CoreDrawTestSuite, VerifyMoveAssignment)
 {
     auto dpy_opt = X11Display::create();
 
@@ -58,17 +58,17 @@ TEST(TileboxCoreDrawTestSuite, VerifyMoveAssignment)
     }
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
-    const Width mon_width = Width(static_cast<uint32_t>(dpy->screen_width()));
-    const Height mon_height = Height(static_cast<uint32_t>(dpy->screen_height()));
+    const Width screenw = dpy->screen_width();
+    const Height screenh = dpy->screen_height();
 
     /// First draw object
-    auto draw_res1 = X11Draw::create(dpy, mon_width, mon_height);
+    auto draw_res1 = X11Draw::create(dpy, screenw, screenh);
     EXPECT_EQ(draw_res1.is_ok(), true);
 
     auto draw1 = std::move(*draw_res1.ok());
 
-    EXPECT_EQ(draw1.width(), mon_width);
-    EXPECT_EQ(draw1.height(), mon_height);
+    EXPECT_EQ(draw1.width(), screenw);
+    EXPECT_EQ(draw1.height(), screenh);
 
     /// Second draw object
     auto draw_res2 = X11Draw::create(dpy, Width(12), Height(12));
@@ -81,11 +81,11 @@ TEST(TileboxCoreDrawTestSuite, VerifyMoveAssignment)
 
     // draw2 should now have all of draw1's properties
     draw2 = std::move(draw1);
-    EXPECT_EQ(draw2.width(), mon_width);
-    EXPECT_EQ(draw2.height(), mon_height);
+    EXPECT_EQ(draw2.width(), screenw);
+    EXPECT_EQ(draw2.height(), screenh);
 }
 
-TEST(TileboxCoreDrawTestSuite, VerifyX11DrawAddColorscheme)
+TEST(TileboxCoreX11DrawTestSuite, VerifyAddFontSet)
 {
     auto dpy_opt = X11Display::create();
 
@@ -95,10 +95,29 @@ TEST(TileboxCoreDrawTestSuite, VerifyX11DrawAddColorscheme)
     }
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
-    const Width width = Width(static_cast<uint32_t>(dpy->screen_width()));
-    const Height height = Height(static_cast<uint32_t>(dpy->screen_height()));
 
-    if (auto draw_res = X11Draw::create(dpy, width, height); draw_res.is_ok())
+    /// First draw object
+    auto draw_res = X11Draw::create(dpy, dpy->screen_width(), dpy->screen_height());
+    EXPECT_EQ(draw_res.is_ok(), true);
+
+    auto draw = std::move(*draw_res.ok());
+    EXPECT_EQ(draw.add_font_set("monospace:size=12").is_ok(), true);
+}
+
+TEST(TileboxCoreX11DrawTestSuite, VerifyAddColorscheme)
+{
+    auto dpy_opt = X11Display::create();
+
+    if (!dpy_opt.has_value())
+    {
+        testing::AssertionFailure() << "Could not open x11 display";
+    }
+
+    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const Width screenw = dpy->screen_width();
+    const Height screenh = dpy->screen_height();
+
+    if (auto draw_res = X11Draw::create(dpy, screenw, screenh); draw_res.is_ok())
     {
         auto draw = std::move(*draw_res.ok());
         const ColorSchemeConfig primary = ColorSchemeConfig::build(ColorSchemeKind::Primary)
@@ -108,17 +127,62 @@ TEST(TileboxCoreDrawTestSuite, VerifyX11DrawAddColorscheme)
 
         const ColorSchemeConfig primary2 = ColorSchemeConfig::build(ColorSchemeKind::Primary)
                                                .foreground("#000000")
-                                               .background("#ffacf")
+                                               .background("#ffacff")
                                                .border("#fff781");
 
         ASSERT_EQ(draw.add_colorscheme(primary).is_ok(), true);
         ASSERT_EQ(draw.add_colorscheme(primary2).is_ok(), true);
 
         const auto opt = draw.get_colorscheme(ColorSchemeKind::Primary);
+        ASSERT_EQ(opt.has_value(), true);
         const auto &colorscheme = opt.value();
         ASSERT_EQ(colorscheme.get_color(X11ColorScheme::Index::Foreground).raw()->pixel, 12303291);
 
         ASSERT_EQ(opt.has_value(), true);
+    }
+    else
+    {
+        testing::AssertionFailure() << draw_res.err()->msg();
+    }
+}
+
+TEST(TileboxCoreX11DrawTestSuite, VerifyRemoveColorScheme)
+{
+    auto dpy_opt = X11Display::create();
+
+    if (!dpy_opt.has_value())
+    {
+        testing::AssertionFailure() << "Could not open x11 display";
+    }
+
+    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const Width screenw = dpy->screen_width();
+    const Height screenh = dpy->screen_height();
+
+    if (auto draw_res = X11Draw::create(dpy, screenw, screenh); draw_res.is_ok())
+    {
+        auto draw = std::move(*draw_res.ok());
+
+        const ColorSchemeConfig primary = ColorSchemeConfig::build(ColorSchemeKind::Primary)
+                                              .foreground("#bbbbbb")
+                                              .background("#222222")
+                                              .border("#444444");
+
+        const ColorSchemeConfig secondary = ColorSchemeConfig::build(ColorSchemeKind::Secondary)
+                                                .foreground("#000000")
+                                                .background("#ffacff")
+                                                .border("#fff781");
+
+        const ColorSchemeConfig tertiary = ColorSchemeConfig::build(ColorSchemeKind::Tertiary)
+                                               .foreground("#23451a")
+                                               .background("#333333")
+                                               .border("#444444");
+
+        ASSERT_EQ(draw.add_colorscheme(primary).is_ok(), true);
+        ASSERT_EQ(draw.add_colorscheme(secondary).is_ok(), true);
+        ASSERT_EQ(draw.add_colorscheme(tertiary).is_ok(), true);
+
+        ASSERT_EQ(draw.remove_colorscheme(ColorSchemeKind::Tertiary), true);
     }
     else
     {
