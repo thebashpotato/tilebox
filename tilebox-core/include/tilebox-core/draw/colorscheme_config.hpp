@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tilebox-core/utils/attributes.hpp"
+#include <cstddef>
 #include <string>
 
 namespace tilebox::core
@@ -10,8 +11,13 @@ enum class ColorSchemeKind
 {
     Primary,
     Secondary,
-    Tertiary
+    Tertiary,
 };
+
+constexpr inline auto colorscheme_kind_size() -> std::size_t
+{
+    return static_cast<std::size_t>(static_cast<size_t>(ColorSchemeKind::Tertiary) + 1);
+}
 
 class ColorSchemeConfigBuilder;
 

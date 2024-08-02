@@ -26,7 +26,7 @@ X11Draw::X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, Drawable drawabl
       _height(std::move(height))
 {
     _fonts.reserve(2);
-    _colorschemes.reserve(2);
+    _colorschemes.reserve(colorscheme_kind_size());
 }
 
 X11Draw::~X11Draw() noexcept
