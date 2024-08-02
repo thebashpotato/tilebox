@@ -47,7 +47,7 @@ class TILEBOX_EXPORT X11Display
 
     /// @brief Check to see if the the underlying display is connected to the X server.
     ///
-    /// @detail Should be used after creating the connection to check for failure.
+    /// @details Should be used after creating the connection to check for failure.
     ///
     /// @return true if connected, false otherwise.
     [[nodiscard]] auto is_connected() const noexcept -> bool;

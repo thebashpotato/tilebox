@@ -1,4 +1,6 @@
 #include "tilebox-core/draw/draw.hpp"
+#include "tilebox-core/draw/colorscheme.hpp"
+#include "tilebox-core/draw/colorscheme_config.hpp"
 #include "tilebox-core/draw/font.hpp"
 #include "tilebox-core/error.hpp"
 #include "tilebox-core/geometry.hpp"
@@ -9,7 +11,9 @@
 #include <X11/Xft/XftCompat.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrender.h>
+#include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -22,6 +26,7 @@ X11Draw::X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, Drawable drawabl
       _height(std::move(height))
 {
     _fonts.reserve(2);
+    _colorschemes.reserve(2);
 }
 
 X11Draw::~X11Draw() noexcept
@@ -40,8 +45,9 @@ X11Draw::~X11Draw() noexcept
 }
 
 X11Draw::X11Draw(X11Draw &&rhs) noexcept
-    : _dpy(std::move(rhs._dpy)), _fonts(std::move(rhs._fonts)), _graphics_ctx(rhs._graphics_ctx),
-      _drawable(rhs._drawable), _width(std::move(rhs._width)), _height(std::move(rhs._height))
+    : _dpy(std::move(rhs._dpy)), _fonts(std::move(rhs._fonts)), _colorschemes(std::move(rhs._colorschemes)),
+      _graphics_ctx(rhs._graphics_ctx), _drawable(rhs._drawable), _width(std::move(rhs._width)),
+      _height(std::move(rhs._height))
 {
     rhs._drawable = False;
     rhs._graphics_ctx = nullptr;
@@ -59,12 +65,14 @@ auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
             XFreePixmap(_dpy->raw(), _drawable);
         }
         _drawable = rhs._drawable;
+        rhs._drawable = False;
 
         if (_graphics_ctx != nullptr)
         {
             XFreeGC(_dpy->raw(), _graphics_ctx);
         }
         _graphics_ctx = rhs._graphics_ctx;
+        rhs._graphics_ctx = nullptr;
 
         if (!_fonts.empty())
         {
@@ -72,6 +80,14 @@ auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
         }
 
         _fonts = std::move(rhs._fonts);
+
+        if (!_colorschemes.empty())
+        {
+            _colorschemes.clear();
+        }
+
+        _colorschemes = std::move(rhs._colorschemes);
+
         _dpy = std::move(rhs._dpy);
     }
 
@@ -120,6 +136,54 @@ auto X11Draw::add_font_set(const std::string &font_name) noexcept -> Result<Void
     }
 }
 
+auto X11Draw::add_colorscheme(const ColorSchemeConfig &config) noexcept -> Result<Void, X11ColorError>
+{
+    // check if the colorscheme kind is already defined, if it is, it will not be redefined
+    const auto it =
+        std::find_if(_colorschemes.begin(), _colorschemes.end(), [&config](const X11ColorScheme &colorscheme) -> bool {
+            return colorscheme.kind() == config.kind();
+        });
+
+    // The colorscheme kind is not yet defined, we will create it and add it to the colorscheme vector.
+    // otherwise just return Result<Void>
+    if (it == _colorschemes.end())
+    {
+        if (const auto colorscheme_res = X11ColorScheme::create(_dpy, config); colorscheme_res.is_ok())
+        {
+            _colorschemes.emplace_back(std::move(colorscheme_res.ok().value()));
+        }
+        else
+        {
+            return Result<Void, X11ColorError>(std::move(colorscheme_res.err().value()));
+        }
+    }
+
+    return Result<Void, X11ColorError>(Void());
+}
+
+auto X11Draw::remove_colorscheme(const ColorSchemeKind kind) noexcept -> void
+{
+    _colorschemes.erase(
+        std::remove_if(_colorschemes.begin(), _colorschemes.end(),
+                       [&kind](const X11ColorScheme &colorscheme) { return colorscheme.kind() == kind; }),
+        _colorschemes.end());
+}
+
+auto X11Draw::get_colorscheme(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>
+{
+    std::optional<X11ColorScheme> ret;
+
+    const auto it = std::find_if(_colorschemes.begin(), _colorschemes.end(),
+                                 [&kind](const X11ColorScheme &colorscheme) { return colorscheme.kind() == kind; });
+
+    if (it != _colorschemes.end())
+    {
+        ret.emplace(*it);
+    }
+
+    return ret;
+}
+
 auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
 {
     _width = width;
@@ -128,12 +192,22 @@ auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
     {
         XFreePixmap(_dpy->raw(), _drawable);
     }
-    _drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), width.value, height.value,
+    _drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), _width.value, _height.value,
                               DefaultDepth(_dpy->raw(), _dpy->screen_id()));
 }
 
-auto X11Draw::get_text_extents(const X11Font &font, const std::string_view &text,
-                               const uint32_t len) noexcept -> Result<Vec2D, X11FontError>
+auto X11Draw::width() const noexcept -> const Width &
+{
+    return _width;
+}
+
+auto X11Draw::height() const noexcept -> const Height &
+{
+    return _height;
+}
+
+auto X11Draw::_get_text_extents(const X11Font &font, const std::string_view &text,
+                                const uint32_t len) noexcept -> Result<Vec2D, X11FontError>
 {
     XGlyphInfo ext;
 

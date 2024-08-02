@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <tilebox-core/draw/color.hpp>
 #include <tilebox-core/draw/colorscheme.hpp>
+#include <tilebox-core/draw/colorscheme_config.hpp>
 #include <tilebox-core/x11/display.hpp>
 #include <utility>
 
@@ -68,6 +69,19 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorCopyConstructor)
     ASSERT_NE(color.raw(), nullptr);
 }
 
+TEST(TileboxCoreColorschmeTestSuite, VerifyColorSchemeConfigBuilder)
+{
+    const ColorSchemeConfig primary = ColorSchemeConfig::build(ColorSchemeKind::Primary)
+                                          .foreground("#bbbbbb")
+                                          .background("#222222")
+                                          .border("#444444");
+
+    EXPECT_EQ(primary.kind(), ColorSchemeKind::Primary);
+    EXPECT_EQ(primary.foreground(), "#bbbbbb");
+    EXPECT_EQ(primary.background(), "#222222");
+    EXPECT_EQ(primary.border(), "#444444");
+}
+
 TEST(TileboxCoreColorschmeTestSuite, VerifyColorSchemeCreation)
 {
     auto dpy_opt = X11Display::create();
@@ -78,7 +92,13 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorSchemeCreation)
     }
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
-    const auto scheme_res = X11ColorScheme::create(dpy, "#bbbbbb", "#222222", "#444444");
+
+    const ColorSchemeConfig primary = ColorSchemeConfig::build(ColorSchemeKind::Primary)
+                                          .foreground("#bbbbbb")
+                                          .background("#222222")
+                                          .border("#444444");
+
+    const auto scheme_res = X11ColorScheme::create(dpy, primary);
 
     ASSERT_EQ(scheme_res.is_ok(), true);
 }
@@ -93,7 +113,13 @@ TEST(TileboxCoreColorschmeTestSuite, VerifyColorGetters)
     }
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
-    if (const auto scheme_res = X11ColorScheme::create(dpy, "#bbbbbb", "#222222", "#444444"); scheme_res.is_ok())
+
+    const ColorSchemeConfig primary = ColorSchemeConfig::build(ColorSchemeKind::Primary)
+                                          .foreground("#bbbbbb")
+                                          .background("#222222")
+                                          .border("#444444");
+
+    if (const auto scheme_res = X11ColorScheme::create(dpy, primary); scheme_res.is_ok())
     {
         ASSERT_EQ(scheme_res.is_ok(), true);
         const X11ColorScheme scheme = scheme_res.ok().value();

@@ -39,12 +39,12 @@ auto PeripheralLogger::_setup() noexcept -> Result<Void, Error>
 
     if (!_win.create(r))
     {
-        return Result<Void, Error>(Error::create("Could not create the application window", RUNTIME_INFO));
+        return Result<Void, Error>(Error("Could not create the application window", RUNTIME_INFO));
     }
 
     if (!_win.map())
     {
-        return Result<Void, Error>(Error::create("Could not map the window", RUNTIME_INFO));
+        return Result<Void, Error>(Error("Could not map the window", RUNTIME_INFO));
     }
 
     // Set up the inputs we are going to listen to

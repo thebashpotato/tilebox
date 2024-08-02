@@ -450,11 +450,6 @@ template <typename Tag, typename FundamentalType> class TaggedFundamental
 /// macro invocation.
 class SourceCodeLocation
 {
-  private:
-    std::string _file;
-    uint32_t _line;
-    std::string _func;
-
   public:
     SourceCodeLocation() = delete;
 
@@ -463,7 +458,7 @@ class SourceCodeLocation
     /// @param `file` name of the file where the error occurred
     /// @param `line` line number where the error occurred
     /// @param `func` name of the function where the error occurred
-    SourceCodeLocation(std::string_view const &file, uint32_t line, std::string_view const &func) noexcept
+    SourceCodeLocation(const std::string_view &file, const uint32_t line, const std::string_view &func) noexcept
         : _file(file), _line(line), _func(func)
     {
     }
@@ -472,8 +467,8 @@ class SourceCodeLocation
     virtual ~SourceCodeLocation() = default;
     SourceCodeLocation(SourceCodeLocation &&other) noexcept = default;
     auto operator=(SourceCodeLocation &&other) noexcept -> SourceCodeLocation & = default;
-    SourceCodeLocation(SourceCodeLocation const &other) = default;
-    auto operator=(SourceCodeLocation const &other) -> SourceCodeLocation & = default;
+    SourceCodeLocation(const SourceCodeLocation &other) = default;
+    auto operator=(const SourceCodeLocation &other) -> SourceCodeLocation & = default;
 
   public:
     /// @brief Get the file name in which the error occured
@@ -493,6 +488,11 @@ class SourceCodeLocation
     {
         return _func;
     }
+
+  private:
+    std::string _file;
+    uint32_t _line;
+    std::string _func;
 };
 
 /// @brief Wrapper macro which constructs an instance of SourceCodeLocation in-place
@@ -512,8 +512,8 @@ class IError
     virtual ~IError() = default;
     IError(IError &&other) noexcept = default;
     auto operator=(IError &&other) noexcept -> IError & = default;
-    IError(IError const &other) = default;
-    auto operator=(IError const &other) -> IError & = default;
+    IError(const IError &other) = default;
+    auto operator=(const IError &other) -> IError & = default;
 
   public:
     [[nodiscard]] virtual inline auto msg() const noexcept -> std::string = 0;
@@ -527,15 +527,9 @@ using DynError = std::shared_ptr<etl::IError>;
 /// SourceCodeLocation RUNTIME_INFO macro.
 class Error : public IError
 {
-  private:
-    std::string _msg;
-    std::string _info;
-
-  private:
+  public:
     /// @brief Constructs the error with only a message
-    ///
-    /// @details This constructor is private to prevent the user from circumventing the create() method
-    explicit Error(std::string_view const &msg) noexcept : _msg(msg)
+    explicit Error(const std::string_view &msg) noexcept : _msg(msg)
     {
     }
 
@@ -558,41 +552,18 @@ class Error : public IError
             .append(std::to_string(slc.line()));
     }
 
-  public:
     /// @brief Default Destructor, Move/Copy constructor and assignment
     ~Error() override = default;
     Error(Error &&other) noexcept = default;
     auto operator=(Error &&other) noexcept -> Error & = default;
-    Error(Error const &other) = default;
-    auto operator=(Error const &other) -> Error & = default;
-
-  public:
-    /// @brief Creates an Error object with only an error message via string_view
-    [[nodiscard]] inline static auto create(std::string_view const &msg) -> Error
-    {
-        auto error = Error(msg);
-        return error;
-    }
-
-    /// @brief Creates an Error object with error message and source location information
-    /// using move semantics
-    [[nodiscard]] inline static auto create(std::string_view const &msg, SourceCodeLocation const &slc) -> Error
-    {
-        auto error = Error(msg, slc);
-        return error;
-    }
+    Error(const Error &other) = default;
+    auto operator=(const Error &other) -> Error & = default;
 
   public:
     /// @brief Get just the error message
     [[nodiscard]] inline auto msg() const noexcept -> std::string override
     {
         return _msg;
-    }
-
-    /// @brief Override the current error message, useful when using the Result.mapErr method.
-    [[nodiscard]] inline auto set(std::string_view const &msg) noexcept
-    {
-        _msg = msg;
     }
 
     /// @brief Get the pre-formatted (pretty printed) error string.
@@ -607,6 +578,10 @@ class Error : public IError
         }
         return _msg;
     }
+
+  private:
+    std::string _msg;
+    std::string _info;
 };
 
 /// @brief Empty stub type for when the user wants a result with an Ok type
@@ -631,12 +606,15 @@ template <typename OkType, typename ErrType> class Result
     explicit Result(OkType const &value) noexcept : _result(value), _is_ok(true)
     {
     }
+
     explicit Result(OkType &&value) noexcept : _result(std::move(value)), _is_ok(true)
     {
     }
+
     explicit Result(ErrType const &error) noexcept : _result(error)
     {
     }
+
     explicit Result(ErrType &&error) noexcept : _result(std::move(error))
     {
     }
@@ -669,14 +647,15 @@ template <typename OkType, typename ErrType> class Result
     /// is_ok() before using this method.
     [[nodiscard]] inline auto ok() const noexcept -> std::optional<OkType>
     {
+        std::optional<OkType> ret;
         if (_is_ok)
         {
             if (auto *value = std::get_if<OkType>(&_result))
             {
-                return *value;
+                ret.emplace(*value);
             }
         }
-        return std::nullopt;
+        return ret;
     }
 
     /// @brief Get the ErrType value
@@ -687,14 +666,15 @@ template <typename OkType, typename ErrType> class Result
     /// is_err() before using this method.
     [[nodiscard]] inline auto err() const noexcept -> std::optional<ErrType>
     {
+        std::optional<ErrType> ret;
         if (!_is_ok)
         {
             if (auto *err = std::get_if<ErrType>(&_result))
             {
-                return *err;
+                ret.emplace(*err);
             }
         }
-        return std::nullopt;
+        return ret;
     }
 
     /// @brief Maps a custom/lambda function to the [OkType] leaving the [ErrType] untouched.
@@ -764,9 +744,11 @@ template <typename OkType, typename ErrType> class Result<std::unique_ptr<OkType
     explicit Result(std::unique_ptr<OkType> &&value) noexcept : _result(std::move(value)), _is_ok(true)
     {
     }
+
     explicit Result(ErrType const &error) noexcept : _result(error)
     {
     }
+
     explicit Result(ErrType &&error) noexcept : _result(std::move(error))
     {
     }
@@ -790,16 +772,19 @@ template <typename OkType, typename ErrType> class Result<std::unique_ptr<OkType
     ///
     /// @return std::optinal<OkType> for safety, incase the user did not call
     /// is_ok() before using this method.
-    [[nodiscard]] inline auto ok() const noexcept -> std::optional<std::unique_ptr<OkType>>
+    ///
+    /// FIXME: Removed const qualifier. This needs to be tested
+    [[nodiscard]] inline auto ok() noexcept -> std::optional<std::unique_ptr<OkType>>
     {
+        std::optional<std::unique_ptr<OkType>> ret;
         if (_is_ok)
         {
             if (auto *value = std::get_if<std::unique_ptr<OkType>>(&_result))
             {
-                return std::make_unique<OkType>(**value);
+                ret.emplace(std::move(std::make_unique<OkType>(**value)));
             }
         }
-        return std::nullopt;
+        return ret;
     }
 
     /// @brief Get the [ErrType] value from the variant
@@ -810,14 +795,15 @@ template <typename OkType, typename ErrType> class Result<std::unique_ptr<OkType
     /// is_err() before using this method.
     [[nodiscard]] inline auto err() const noexcept -> std::optional<ErrType>
     {
+        std::optional<ErrType> ret;
         if (!_is_ok)
         {
             if (auto *err = std::get_if<ErrType>(&_result))
             {
-                return *err;
+                ret.emplace(*err);
             }
         }
-        return std::nullopt;
+        return ret;
     }
 };
 

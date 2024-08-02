@@ -1,12 +1,12 @@
 #pragma once
 
 #include "tilebox-core/draw/color.hpp"
+#include "tilebox-core/draw/colorscheme_config.hpp"
 #include "tilebox-core/error.hpp"
 #include "tilebox-core/utils/attributes.hpp"
 #include "tilebox-core/vendor/etl.hpp"
 #include "tilebox-core/x11/display.hpp"
 #include <array>
-#include <string>
 
 namespace tilebox::core
 {
@@ -29,8 +29,11 @@ class TILEBOX_EXPORT X11ColorScheme
     ///
     /// @details The X11ColorError can contain an error from the XftColor allocation function or std::out_of_range for
     /// invalid array access. However the latter will not happen, it's just for safety.
-    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const std::string &fg, const std::string &bg,
-                                     const std::string &border) noexcept -> etl::Result<X11ColorScheme, X11ColorError>;
+    [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const ColorSchemeConfig &config) noexcept
+        -> etl::Result<X11ColorScheme, X11ColorError>;
+
+    /// @brief Gets the kind of color scheme this is
+    [[nodiscard]] auto kind() const noexcept -> ColorSchemeKind;
 
     /// @brief Gets the specified color scheme index
     ///
@@ -43,10 +46,11 @@ class TILEBOX_EXPORT X11ColorScheme
     using ColorSchemeArray = std::array<X11Color, Index::Border + 1>;
 
   private:
-    explicit X11ColorScheme(ColorSchemeArray &&colors) noexcept;
+    explicit X11ColorScheme(ColorSchemeArray &&colors, const ColorSchemeKind kind) noexcept;
 
   private:
     ColorSchemeArray _colors;
+    ColorSchemeKind _kind{};
 };
 
 } // namespace tilebox::core

@@ -14,7 +14,7 @@ class CoreError : public etl::IError
     /// @brief Constructs the error with only a message
     ///
     /// @details This constructor is private to prevent the user from circumventing the create() method
-    explicit CoreError(std::string_view const &msg) noexcept : _msg(msg)
+    explicit CoreError(const std::string_view &msg) noexcept : _msg(msg)
     {
     }
 
@@ -25,7 +25,7 @@ class CoreError : public etl::IError
     ///
     /// @param `msg` the error message
     /// @param `slc` the source code location object
-    CoreError(std::string_view const &msg, etl::SourceCodeLocation const &slc) noexcept : _msg(msg)
+    CoreError(const std::string_view &msg, const etl::SourceCodeLocation &slc) noexcept : _msg(msg)
     {
         _info.append("Error: ")
             .append(msg)
@@ -41,8 +41,8 @@ class CoreError : public etl::IError
     ~CoreError() override = default;
     CoreError(CoreError &&other) noexcept = default;
     auto operator=(CoreError &&other) noexcept -> CoreError & = default;
-    CoreError(CoreError const &other) = default;
-    auto operator=(CoreError const &other) -> CoreError & = default;
+    CoreError(const CoreError &other) = default;
+    auto operator=(const CoreError &other) -> CoreError & = default;
 
   public:
     /// @brief Get just the error message
@@ -76,7 +76,7 @@ class X11FontError : public etl::IError
     /// @brief Constructs the error with only a message
     ///
     /// @details This constructor is private to prevent the user from circumventing the create() method
-    explicit X11FontError(std::string_view const &msg) noexcept : _msg(msg)
+    explicit X11FontError(const std::string_view &msg) noexcept : _msg(msg)
     {
     }
 
@@ -87,7 +87,7 @@ class X11FontError : public etl::IError
     ///
     /// @param `msg` the error message
     /// @param `slc` the source code location object
-    X11FontError(std::string_view const &msg, etl::SourceCodeLocation const &slc) noexcept : _msg(msg)
+    X11FontError(const std::string_view &msg, const etl::SourceCodeLocation &slc) noexcept : _msg(msg)
     {
         _info.append("Error: ")
             .append(msg)
@@ -103,20 +103,14 @@ class X11FontError : public etl::IError
     ~X11FontError() override = default;
     X11FontError(X11FontError &&other) noexcept = default;
     auto operator=(X11FontError &&other) noexcept -> X11FontError & = default;
-    X11FontError(X11FontError const &other) = default;
-    auto operator=(X11FontError const &other) -> X11FontError & = default;
+    X11FontError(const X11FontError &other) = default;
+    auto operator=(const X11FontError &other) -> X11FontError & = default;
 
   public:
     /// @brief Get just the error message
     [[nodiscard]] inline auto msg() const noexcept -> std::string override
     {
         return _msg;
-    }
-
-    /// @brief Override the current error message, useful when using the Result.mapErr method.
-    [[nodiscard]] inline auto set(std::string_view const &msg) noexcept
-    {
-        _msg = msg;
     }
 
     /// @brief Get the pre-formatted (pretty printed) error string.
@@ -144,7 +138,7 @@ class X11ColorError : public etl::IError
     /// @brief Constructs the error with only a message
     ///
     /// @details This constructor is private to prevent the user from circumventing the create() method
-    explicit X11ColorError(std::string_view const &msg) noexcept : _msg(msg)
+    explicit X11ColorError(const std::string_view &msg) noexcept : _msg(msg)
     {
     }
 
@@ -155,7 +149,7 @@ class X11ColorError : public etl::IError
     ///
     /// @param `msg` the error message
     /// @param `slc` the source code location object
-    X11ColorError(std::string_view const &msg, etl::SourceCodeLocation const &slc) noexcept : _msg(msg)
+    X11ColorError(const std::string_view &msg, const etl::SourceCodeLocation &slc) noexcept : _msg(msg)
     {
         _info.append("Error: ")
             .append(msg)
@@ -171,20 +165,14 @@ class X11ColorError : public etl::IError
     ~X11ColorError() override = default;
     X11ColorError(X11ColorError &&other) noexcept = default;
     auto operator=(X11ColorError &&other) noexcept -> X11ColorError & = default;
-    X11ColorError(X11ColorError const &other) = default;
-    auto operator=(X11ColorError const &other) -> X11ColorError & = default;
+    X11ColorError(const X11ColorError &other) = default;
+    auto operator=(const X11ColorError &other) -> X11ColorError & = default;
 
   public:
     /// @brief Get just the error message
     [[nodiscard]] inline auto msg() const noexcept -> std::string override
     {
         return _msg;
-    }
-
-    /// @brief Override the current error message, useful when using the Result.mapErr method.
-    [[nodiscard]] inline auto set(std::string_view const &msg) noexcept
-    {
-        _msg = msg;
     }
 
     /// @brief Get the pre-formatted (pretty printed) error string.

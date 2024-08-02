@@ -9,7 +9,7 @@
 namespace tilebox::core
 {
 
-namespace TILEBOX_INTERNAL detail
+namespace TILEBOX_INTERNAL _private
 {
 
 class TILEBOX_EXPORT Xtag
@@ -36,19 +36,19 @@ class TILEBOX_EXPORT DeltaTwoTag
 {
 };
 
-} // namespace TILEBOX_INTERNAL detail
+} // namespace TILEBOX_INTERNAL _private
 
 /// @brief Tagged type for uint32_t x coordinate
-using X = etl::TaggedFundamental<detail::Xtag, int32_t>;
+using X = etl::TaggedFundamental<_private::Xtag, int32_t>;
 
 /// @brief Tagged type for uint32_t y coordinate
-using Y = etl::TaggedFundamental<detail::Ytag, int32_t>;
+using Y = etl::TaggedFundamental<_private::Ytag, int32_t>;
 
 /// @brief Tagged type for uint32_t width size
-using Width = etl::TaggedFundamental<detail::WidthTag, uint32_t>;
+using Width = etl::TaggedFundamental<_private::WidthTag, uint32_t>;
 
 /// @brief Tagged type for uint32_t height size
-using Height = etl::TaggedFundamental<detail::HeightTag, uint32_t>;
+using Height = etl::TaggedFundamental<_private::HeightTag, uint32_t>;
 
 /// @brief Represents a pair of unsigned integers.
 class TILEBOX_EXPORT Vec2D

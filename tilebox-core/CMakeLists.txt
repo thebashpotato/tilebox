@@ -25,7 +25,9 @@ set(SOURCE_FILES
     "${APP_SOURCE_DIR}/draw/utf8_codec.cpp"
     "${APP_SOURCE_DIR}/draw/draw.cpp"
     "${APP_SOURCE_DIR}/draw/color.cpp"
-    "${APP_SOURCE_DIR}/draw/colorscheme.cpp")
+    "${APP_SOURCE_DIR}/draw/colorscheme.cpp"
+    "${APP_SOURCE_DIR}/draw/colorscheme_config.cpp")
+
 
 #
 # If dev-mode is enabled add the tests and examples directories
