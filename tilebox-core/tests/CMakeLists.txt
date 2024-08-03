@@ -10,7 +10,8 @@ set(TEST_SOURCE_FILES
     "utf8_codec_tests.cpp"
     "font_tests.cpp"
     "colorscheme_tests.cpp"
-    "draw_tests.cpp")
+    "draw_tests.cpp"
+    "cursor_tests.cpp")
 
 #
 # Declare a custom name for the text executable
