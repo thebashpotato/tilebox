@@ -8,7 +8,9 @@
 #include <X11/cursorfont.h>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <type_traits>
 
 namespace tilebox::core
 {
@@ -21,12 +23,12 @@ namespace tilebox::core
 /// BadAlloc: The server failed to allocate the requested source or server memory
 ///
 /// BadValue: Some numeric value falls outside the range of values accepted by the request. (This won't happen due to
-/// constrained State enum)
+/// constrained Type enum)
 class TILEBOX_EXPORT X11Cursor
 {
   public:
-    /// @brief Supported cursor states
-    enum class State
+    /// @brief Supported cursor types
+    enum class Type : std::uint32_t
     {
         Normal,
         Resize,
@@ -34,11 +36,36 @@ class TILEBOX_EXPORT X11Cursor
     };
 
   public:
-    /// @brief Returns the size of the X11Cursor::State enum for the purposes of statically
+    X11Cursor() = default;
+
+    /// @brief Returns the size of the X11Cursor::Type enum for the purposes of statically
     /// defining stack allocated containers.
-    [[nodiscard]] constexpr static inline auto state_size() -> std::size_t
+    [[nodiscard]] constexpr static inline auto get_underlying_size() noexcept -> std::size_t
     {
-        return static_cast<std::size_t>(static_cast<std::size_t>(X11Cursor::State::Move) + 1);
+        return static_cast<std::size_t>(static_cast<std::size_t>(X11Cursor::Type::Move) + 1);
+    }
+
+    /// @brief Converts the underlying Type enum class to its indexed
+    [[nodiscard]] constexpr static inline auto to_underlying(const X11Cursor::Type type) noexcept -> std::uint32_t
+    {
+        return static_cast<std::underlying_type_t<X11Cursor::Type>>(type);
+    }
+
+    /// @brief Translates an X11Cursor::Type to a valid Xlib fontcursor value
+    [[nodiscard]] constexpr static inline auto to_cursor_font(const X11Cursor::Type type) noexcept -> std::uint32_t
+    {
+        switch (type)
+        {
+        case X11Cursor::Type::Normal: {
+            return XC_left_ptr;
+        }
+        case X11Cursor::Type::Resize: {
+            return XC_sizing;
+        }
+        case X11Cursor::Type::Move: {
+            return XC_fleur;
+        }
+        }
     }
 
     /// @brief Creates a new X11Cursor.
@@ -47,38 +74,21 @@ class TILEBOX_EXPORT X11Cursor
     /// will be returned. Although client side code will need to check their error callback that they registered with
     /// the X Server.
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy,
-                                     const X11Cursor::State state) noexcept -> etl::Result<X11Cursor, X11CursorError>;
+                                     const X11Cursor::Type type) noexcept -> etl::Result<X11Cursor, X11CursorError>;
 
-    /// @brief Translates an X11Cursor::State to a valid Xlib fontcursor value
-    [[nodiscard]] constexpr static inline auto to_cursor_font(const X11Cursor::State state) noexcept -> std::uint32_t
+    /// @brief Translates an X11Cursor::type to a valid Xlib fontcursor value
+    [[nodiscard]] constexpr static inline auto to_string(const X11Cursor::Type type) noexcept -> std::string
     {
-        switch (state)
+        std::string ret("X11Cursor::Type::");
+        switch (type)
         {
-        case X11Cursor::State::Normal: {
-            return XC_left_ptr;
-        }
-        case X11Cursor::State::Resize: {
-            return XC_sizing;
-        }
-        case X11Cursor::State::Move: {
-            return XC_fleur;
-        }
-        }
-    }
-
-    /// @brief Translates an X11Cursor::State to a valid Xlib fontcursor value
-    [[nodiscard]] constexpr static inline auto to_string(const X11Cursor::State state) noexcept -> std::string
-    {
-        std::string ret("X11Cursor::State::");
-        switch (state)
-        {
-        case X11Cursor::State::Normal: {
+        case X11Cursor::Type::Normal: {
             ret.append("Normal");
         }
-        case X11Cursor::State::Resize: {
+        case X11Cursor::Type::Resize: {
             ret.append("Resize");
         }
-        case X11Cursor::State::Move: {
+        case X11Cursor::Type::Move: {
             ret.append("Move");
         }
         }
@@ -88,6 +98,9 @@ class TILEBOX_EXPORT X11Cursor
 
     /// @brief Gets the underlying Cursor XID
     [[nodiscard]] auto cursor() const noexcept -> Cursor;
+
+    /// @brief Gets the underlying type this cursor was initialized with.
+    [[nodiscard]] auto type() const noexcept -> std::optional<X11Cursor::Type>;
 
   public:
     ~X11Cursor();
@@ -99,11 +112,12 @@ class TILEBOX_EXPORT X11Cursor
     auto operator=(const X11Cursor &rhs) noexcept -> X11Cursor & = delete;
 
   private:
-    X11Cursor(X11DisplaySharedResource dpy, const Cursor cursor) noexcept;
+    X11Cursor(X11DisplaySharedResource dpy, const X11Cursor::Type type, const Cursor cursor) noexcept;
 
   private:
     X11DisplaySharedResource _dpy;
-    Cursor _cursor;
+    std::optional<X11Cursor::Type> _type;
+    Cursor _cursor{};
 };
 
 } // namespace tilebox::core

@@ -2,6 +2,7 @@
 
 #include "tilebox-core/draw/colorscheme.hpp"
 #include "tilebox-core/draw/colorscheme_config.hpp"
+#include "tilebox-core/draw/cursor.hpp"
 #include "tilebox-core/draw/font.hpp"
 #include "tilebox-core/error.hpp"
 #include "tilebox-core/geometry.hpp"
@@ -10,6 +11,7 @@
 #include "tilebox-core/x11/display.hpp"
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <array>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,7 +19,10 @@
 namespace tilebox::core
 {
 
-/// @brief The main class of the drawing library, it handles drawing text, and colors to rectangles.
+/// @brief The main class of the drawing library, it handles drawing text and colors to an X window.
+///
+/// @details X11Draw offers Font, Colorscheme, and Cursor management. Everything you need to build simple
+/// yet powerful X client applications without the bloat of populuar *Nix font/color rendering libraries.
 class TILEBOX_EXPORT X11Draw
 {
   public:
@@ -33,15 +38,67 @@ class TILEBOX_EXPORT X11Draw
     [[nodiscard]] static auto create(const X11DisplaySharedResource &dpy, const Width &width,
                                      const Height &height) noexcept -> etl::Result<X11Draw, CoreError>;
 
-    [[nodiscard]] auto add_font_set(const std::string &font_name) noexcept -> etl::Result<etl::Void, X11FontError>;
+    ///////////////////////////////////////
+    /// Font Management
+    //////////////////////////////////////
 
-    [[nodiscard]] auto add_colorscheme(const ColorSchemeConfig &config) noexcept
+    /// @brief Initializes a font set based off of an XftFont compatible string
+    ///
+    /// @param `font_name` "monospace:size=14"
+    ///
+    /// @returns A result type containing an error if the underlying XftFont or FcPattern could not be allocated.
+    [[nodiscard]] auto init_font_set(const std::string &font_name) noexcept -> etl::Result<etl::Void, X11FontError>;
+
+    ///////////////////////////////////////
+    /// Colorscheme Management
+    ///////////////////////////////////////
+
+    /// @brief Initializes a colorscheme based off a ColorSchemeConfig
+    ///
+    /// @details If the ColorSchemeKind is already initialized it will be treated as a success.
+    /// For example to replace the ColorSchemeKind::Primary, it must first be removed.
+    ///
+    /// @param `config` colorscheme config to initialize
+    ///
+    /// @returns Void meaning success, X11ColorError other wise.
+    [[nodiscard]] auto init_colorscheme(const ColorSchemeConfig &config) noexcept
         -> etl::Result<etl::Void, X11ColorError>;
 
+    /// @brief Removes a colorscheme
+    ///
+    /// @param `kind` Specified scheme kind
+    ///
+    /// @returns true if the scheme kind was removed successfully, false if not.
     [[nodiscard]] auto remove_colorscheme(const ColorSchemeKind kind) noexcept -> bool;
 
     [[nodiscard]] auto get_colorscheme(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>;
 
+    ///////////////////////////////////////
+    /// Cursor Management
+    ///////////////////////////////////////
+
+    /// @brief Initializes a cursor type
+    ///
+    /// @details If the specified type is already found to be initialized success will still be returned
+    /// but a reinitialization will not happen.
+    ///
+    /// @details Runtime complexity is constant time and stack allocated.
+    ///
+    /// @param `type` enum
+    ///
+    /// @returns Void is an empty type denoting success, otherwise X11CursorError
+    [[nodiscard]] auto init_cursor(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>;
+
+    /// @brief Get a X11Cursor based on the type
+    ///
+    /// @details Runtime complexity is constant time and stack allocated.
+    ///
+    /// @param `type` enum
+    ///
+    /// @returns optional containing the X11Cursor implementation for the specified type iff the type was initialized.
+    [[nodiscard]] auto get_cursor(const X11Cursor::Type type) noexcept -> std::optional<Cursor>;
+
+  public:
     auto resize(const Width &width, const Height &height) noexcept -> void;
 
     [[nodiscard]] auto width() const noexcept -> const Width &;
@@ -59,6 +116,7 @@ class TILEBOX_EXPORT X11Draw
     X11DisplaySharedResource _dpy;
     std::vector<X11Font> _fonts;
     std::vector<X11ColorScheme> _colorschemes;
+    std::array<X11Cursor, X11Cursor::get_underlying_size()> _cursors;
     GC _graphics_ctx;
     Drawable _drawable;
     Width _width;

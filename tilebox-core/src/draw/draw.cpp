@@ -1,6 +1,7 @@
 #include "tilebox-core/draw/draw.hpp"
 #include "tilebox-core/draw/colorscheme.hpp"
 #include "tilebox-core/draw/colorscheme_config.hpp"
+#include "tilebox-core/draw/cursor.hpp"
 #include "tilebox-core/draw/font.hpp"
 #include "tilebox-core/error.hpp"
 #include "tilebox-core/geometry.hpp"
@@ -122,7 +123,7 @@ auto X11Draw::create(const X11DisplaySharedResource &dpy, const Width &width,
     });
 }
 
-auto X11Draw::add_font_set(const std::string &font_name) noexcept -> Result<Void, X11FontError>
+auto X11Draw::init_font_set(const std::string &font_name) noexcept -> Result<Void, X11FontError>
 {
     if (const auto font_res = X11Font::create(_dpy, font_name); font_res.is_ok())
     {
@@ -135,7 +136,7 @@ auto X11Draw::add_font_set(const std::string &font_name) noexcept -> Result<Void
     }
 }
 
-auto X11Draw::add_colorscheme(const ColorSchemeConfig &config) noexcept -> Result<Void, X11ColorError>
+auto X11Draw::init_colorscheme(const ColorSchemeConfig &config) noexcept -> Result<Void, X11ColorError>
 {
     // check if the colorscheme kind is already defined, if it is, it will not be redefined
     const auto it =
@@ -196,6 +197,34 @@ auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
     }
     _drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), _width.value, _height.value,
                               DefaultDepth(_dpy->raw(), _dpy->screen_id()));
+}
+
+auto X11Draw::init_cursor(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>
+{
+    // if the underlying type is std::nullopt, we can initialize this font.
+    if (!_cursors[X11Cursor::to_underlying(type)].type().has_value())
+    {
+        if (auto cursor_ret = X11Cursor::create(_dpy, type); cursor_ret.is_ok())
+        {
+            _cursors[X11Cursor::to_underlying(type)] = std::move(*cursor_ret.ok());
+        }
+        else
+        {
+            return Result<Void, X11CursorError>(*cursor_ret.err());
+        }
+    }
+    return Result<Void, X11CursorError>(Void());
+}
+
+auto X11Draw::get_cursor(const X11Cursor::Type type) noexcept -> std::optional<Cursor>
+{
+    std::optional<Cursor> ret;
+    if (_cursors[X11Cursor::to_underlying(type)].type().has_value())
+    {
+        ret.emplace(_cursors[X11Cursor::to_underlying(type)].cursor());
+    }
+
+    return ret;
 }
 
 auto X11Draw::width() const noexcept -> const Width &
