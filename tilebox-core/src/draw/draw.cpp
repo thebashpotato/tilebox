@@ -47,8 +47,8 @@ X11Draw::~X11Draw() noexcept
 
 X11Draw::X11Draw(X11Draw &&rhs) noexcept
     : _dpy(std::move(rhs._dpy)), _fonts(std::move(rhs._fonts)), _colorschemes(std::move(rhs._colorschemes)),
-      _graphics_ctx(rhs._graphics_ctx), _drawable(rhs._drawable), _width(std::move(rhs._width)),
-      _height(std::move(rhs._height))
+      _cursors(std::move(rhs._cursors)), _graphics_ctx(rhs._graphics_ctx), _drawable(rhs._drawable),
+      _width(std::move(rhs._width)), _height(std::move(rhs._height))
 {
     rhs._drawable = False;
     rhs._graphics_ctx = nullptr;
@@ -88,6 +88,8 @@ auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
         }
 
         _colorschemes = std::move(rhs._colorschemes);
+        _cursors = std::move(rhs._cursors);
+
         _dpy = std::move(rhs._dpy);
     }
 
