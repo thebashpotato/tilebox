@@ -26,7 +26,6 @@ X11Draw::X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, Drawable drawabl
     : _dpy(std::move(dpy)), _graphics_ctx(graphics_ctx), _drawable(drawable), _width(std::move(width)),
       _height(std::move(height))
 {
-    _fonts.reserve(2);
     _colorschemes.reserve(colorscheme_kind_size());
 }
 
@@ -46,8 +45,8 @@ X11Draw::~X11Draw() noexcept
 }
 
 X11Draw::X11Draw(X11Draw &&rhs) noexcept
-    : _dpy(std::move(rhs._dpy)), _fonts(std::move(rhs._fonts)), _colorschemes(std::move(rhs._colorschemes)),
-      _cursors(std::move(rhs._cursors)), _graphics_ctx(rhs._graphics_ctx), _drawable(rhs._drawable),
+    : _dpy(std::move(rhs._dpy)), _fonts(std::move(rhs._fonts)), _cursors(std::move(rhs._cursors)),
+      _colorschemes(std::move(rhs._colorschemes)), _graphics_ctx(rhs._graphics_ctx), _drawable(rhs._drawable),
       _width(std::move(rhs._width)), _height(std::move(rhs._height))
 {
     rhs._drawable = False;
@@ -75,20 +74,15 @@ auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
         _graphics_ctx = rhs._graphics_ctx;
         rhs._graphics_ctx = nullptr;
 
-        if (!_fonts.empty())
-        {
-            _fonts.clear();
-        }
-
-        _fonts = std::move(rhs._fonts);
-
         if (!_colorschemes.empty())
         {
             _colorschemes.clear();
         }
-
         _colorschemes = std::move(rhs._colorschemes);
+
         _cursors = std::move(rhs._cursors);
+
+        _fonts = std::move(rhs._fonts);
 
         _dpy = std::move(rhs._dpy);
     }
@@ -125,20 +119,36 @@ auto X11Draw::create(const X11DisplaySharedResource &dpy, const Width &width,
     });
 }
 
-auto X11Draw::init_font_set(const std::string &font_name) noexcept -> Result<Void, X11FontError>
+auto X11Draw::font_init(const std::string &font_name, const X11Font::Type type) noexcept -> Result<Void, X11FontError>
 {
-    if (const auto font_res = X11Font::create(_dpy, font_name); font_res.is_ok())
+
+    // if the underlying type is std::nullopt, we can initialize this font.
+    if (!_fonts[X11Font::to_underlying(type)].type().has_value())
     {
-        _fonts.emplace_back(std::move(font_res.ok().value()));
-        return Result<Void, X11FontError>(Void());
+        if (auto result = X11Font::create(_dpy, font_name, type); result.is_ok())
+        {
+            _fonts[X11Font::to_underlying(type)] = std::move(*result.ok());
+        }
+        else
+        {
+            return Result<Void, X11FontError>(std::move(*result.err()));
+        }
     }
-    else
-    {
-        return Result<Void, X11FontError>(font_res.err().value());
-    }
+    return Result<Void, X11FontError>(Void());
 }
 
-auto X11Draw::init_colorscheme(const ColorSchemeConfig &config) noexcept -> Result<Void, X11ColorError>
+auto X11Draw::font_get(const X11Font::Type type) const noexcept -> std::optional<X11Font>
+{
+    std::optional<X11Font> ret;
+    if (_fonts[X11Font::to_underlying(type)].type().has_value())
+    {
+        ret.emplace(_fonts[X11Font::to_underlying(type)]);
+    }
+
+    return ret;
+}
+
+auto X11Draw::colorscheme_init(const ColorSchemeConfig &config) noexcept -> Result<Void, X11ColorError>
 {
     // check if the colorscheme kind is already defined, if it is, it will not be redefined
     const auto it =
@@ -150,20 +160,20 @@ auto X11Draw::init_colorscheme(const ColorSchemeConfig &config) noexcept -> Resu
     // otherwise just return Result<Void>
     if (it == _colorschemes.end())
     {
-        if (const auto colorscheme_res = X11ColorScheme::create(_dpy, config); colorscheme_res.is_ok())
+        if (const auto result = X11ColorScheme::create(_dpy, config); result.is_ok())
         {
-            _colorschemes.emplace_back(std::move(colorscheme_res.ok().value()));
+            _colorschemes.emplace_back(std::move(result.ok().value()));
         }
         else
         {
-            return Result<Void, X11ColorError>(std::move(colorscheme_res.err().value()));
+            return Result<Void, X11ColorError>(std::move(result.err().value()));
         }
     }
 
     return Result<Void, X11ColorError>(Void());
 }
 
-auto X11Draw::remove_colorscheme(const ColorSchemeKind kind) noexcept -> bool
+auto X11Draw::colorscheme_remove(const ColorSchemeKind kind) noexcept -> bool
 {
     const auto original_size = _colorschemes.size();
     _colorschemes.erase(
@@ -174,7 +184,7 @@ auto X11Draw::remove_colorscheme(const ColorSchemeKind kind) noexcept -> bool
     return original_size != _colorschemes.size();
 }
 
-auto X11Draw::get_colorscheme(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>
+auto X11Draw::colorscheme_get(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>
 {
     std::optional<X11ColorScheme> ret;
 
@@ -184,6 +194,34 @@ auto X11Draw::get_colorscheme(const ColorSchemeKind kind) const noexcept -> std:
     if (it != _colorschemes.end())
     {
         ret.emplace(*it);
+    }
+
+    return ret;
+}
+
+auto X11Draw::cursor_init(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>
+{
+    // if the underlying type is std::nullopt, we can initialize this font.
+    if (!_cursors[X11Cursor::to_underlying(type)].type().has_value())
+    {
+        if (auto result = X11Cursor::create(_dpy, type); result.is_ok())
+        {
+            _cursors[X11Cursor::to_underlying(type)] = std::move(*result.ok());
+        }
+        else
+        {
+            return Result<Void, X11CursorError>(std::move(*result.err()));
+        }
+    }
+    return Result<Void, X11CursorError>(Void());
+}
+
+auto X11Draw::cursor_get(const X11Cursor::Type type) const noexcept -> std::optional<Cursor>
+{
+    std::optional<Cursor> ret;
+    if (_cursors[X11Cursor::to_underlying(type)].type().has_value())
+    {
+        ret.emplace(_cursors[X11Cursor::to_underlying(type)].cursor_id());
     }
 
     return ret;
@@ -199,34 +237,6 @@ auto X11Draw::resize(const Width &width, const Height &height) noexcept -> void
     }
     _drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), _width.value, _height.value,
                               DefaultDepth(_dpy->raw(), _dpy->screen_id()));
-}
-
-auto X11Draw::init_cursor(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>
-{
-    // if the underlying type is std::nullopt, we can initialize this font.
-    if (!_cursors[X11Cursor::to_underlying(type)].type().has_value())
-    {
-        if (auto cursor_ret = X11Cursor::create(_dpy, type); cursor_ret.is_ok())
-        {
-            _cursors[X11Cursor::to_underlying(type)] = std::move(*cursor_ret.ok());
-        }
-        else
-        {
-            return Result<Void, X11CursorError>(*cursor_ret.err());
-        }
-    }
-    return Result<Void, X11CursorError>(Void());
-}
-
-auto X11Draw::get_cursor(const X11Cursor::Type type) noexcept -> std::optional<Cursor>
-{
-    std::optional<Cursor> ret;
-    if (_cursors[X11Cursor::to_underlying(type)].type().has_value())
-    {
-        ret.emplace(_cursors[X11Cursor::to_underlying(type)].cursor());
-    }
-
-    return ret;
 }
 
 auto X11Draw::width() const noexcept -> const Width &

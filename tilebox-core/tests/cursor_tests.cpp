@@ -40,12 +40,12 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyMoveConstructor)
     ASSERT_EQ(cursor_ret.is_ok(), true);
 
     auto cursor = *cursor_ret.ok();
-    const auto cached_cursor_id = cursor.cursor();
+    const auto cached_cursor_id = cursor.cursor_id();
 
     ASSERT_NE(cached_cursor_id, 0);
 
     auto cursor_2 = std::move(cursor);
-    ASSERT_EQ(cursor_2.cursor(), cached_cursor_id);
+    ASSERT_EQ(cursor_2.cursor_id(), cached_cursor_id);
 }
 
 TEST(TileboxCoreX11CursorTestSuite, VerifyMoveAssignment)
@@ -63,7 +63,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyMoveAssignment)
     ASSERT_EQ(cursor_ret.is_ok(), true);
 
     auto cursor = *cursor_ret.ok();
-    const auto cached_cursor_id = cursor.cursor();
+    const auto cached_cursor_id = cursor.cursor_id();
 
     ASSERT_NE(cached_cursor_id, 0);
 
@@ -73,5 +73,5 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyMoveAssignment)
     auto cursor2 = *cursor_ret.ok();
 
     cursor2 = std::move(cursor);
-    ASSERT_EQ(cursor2.cursor(), cached_cursor_id);
+    ASSERT_EQ(cursor2.cursor_id(), cached_cursor_id);
 }

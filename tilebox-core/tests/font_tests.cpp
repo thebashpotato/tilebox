@@ -17,7 +17,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyFontCreation)
     }
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
-    const auto font_res = X11Font::create(dpy, "monospace:size=12");
+    const auto font_res = X11Font::create(dpy, "monospace:size=12", X11Font::Type::Primary);
 
     ASSERT_EQ(font_res.is_ok(), true);
     const auto font = *font_res.ok();
@@ -37,7 +37,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyMoveConstructor)
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
 
-    const auto font_res1 = X11Font::create(dpy, "monospace:size=12");
+    const auto font_res1 = X11Font::create(dpy, "monospace:size=12", X11Font::Type::Primary);
 
     ASSERT_EQ(font_res1.is_ok(), true);
 
@@ -66,7 +66,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyCopyConstructor)
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
 
-    const auto font_res1 = X11Font::create(dpy, "monospace:size=12");
+    const auto font_res1 = X11Font::create(dpy, "monospace:size=12", X11Font::Type::Primary);
 
     ASSERT_EQ(font_res1.is_ok(), true);
 
@@ -101,8 +101,8 @@ TEST(TileboxCoreX11FontTestSuite, VerifyMoveAssignment)
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
 
-    const auto font_res1 = X11Font::create(dpy, "monospace:size=12");
-    const auto font_res2 = X11Font::create(dpy, "monospace:size=16");
+    const auto font_res1 = X11Font::create(dpy, "monospace:size=12", X11Font::Type::Primary);
+    const auto font_res2 = X11Font::create(dpy, "monospace:size=16", X11Font::Type::Secondary);
 
     ASSERT_EQ(font_res1.is_ok(), true);
     ASSERT_EQ(font_res2.is_ok(), true);
@@ -115,6 +115,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyMoveAssignment)
     font1 = std::move(font2);
 
     ASSERT_EQ(font1.height(), 30);
+    ASSERT_EQ(font1.type(), X11Font::Type::Secondary);
 }
 
 TEST(TileboxCoreX11FontTestSuite, VerifyCopyAssignment)
@@ -129,8 +130,8 @@ TEST(TileboxCoreX11FontTestSuite, VerifyCopyAssignment)
 
     const X11DisplaySharedResource dpy = dpy_opt.value();
 
-    const auto font_res1 = X11Font::create(dpy, "monospace:size=12");
-    const auto font_res2 = X11Font::create(dpy, "monospace:size=16");
+    const auto font_res1 = X11Font::create(dpy, "monospace:size=12", X11Font::Type::Primary);
+    const auto font_res2 = X11Font::create(dpy, "monospace:size=16", X11Font::Type::Secondary);
 
     ASSERT_EQ(font_res1.is_ok(), true);
     ASSERT_EQ(font_res2.is_ok(), true);
@@ -143,5 +144,6 @@ TEST(TileboxCoreX11FontTestSuite, VerifyCopyAssignment)
     font1 = font2;
 
     ASSERT_EQ(font1.height(), 30);
+    ASSERT_EQ(font1.type(), X11Font::Type::Secondary);
     ASSERT_EQ(font2.height(), 30);
 }

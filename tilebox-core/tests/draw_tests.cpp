@@ -3,6 +3,7 @@
 #include <tilebox-core/draw/colorscheme_config.hpp>
 #include <tilebox-core/draw/cursor.hpp>
 #include <tilebox-core/draw/draw.hpp>
+#include <tilebox-core/draw/font.hpp>
 #include <tilebox-core/geometry.hpp>
 #include <tilebox-core/x11/display.hpp>
 #include <utility>
@@ -86,7 +87,7 @@ TEST(TileboxX11CoreDrawTestSuite, VerifyMoveAssignment)
     EXPECT_EQ(draw2.height(), screenh);
 }
 
-TEST(TileboxCoreX11DrawTestSuite, VerifyAddFontSet)
+TEST(TileboxCoreX11DrawTestSuite, VerifyFontInit)
 {
     auto dpy_opt = X11Display::create();
 
@@ -102,7 +103,29 @@ TEST(TileboxCoreX11DrawTestSuite, VerifyAddFontSet)
     EXPECT_EQ(draw_res.is_ok(), true);
 
     auto draw = std::move(*draw_res.ok());
-    EXPECT_EQ(draw.init_font_set("monospace:size=12").is_ok(), true);
+    EXPECT_EQ(draw.font_init("monospace:size=12", X11Font::Type::Primary).is_ok(), true);
+}
+
+TEST(TileboxCoreX11DrawTestSuite, VerifyGetFont)
+{
+    auto dpy_opt = X11Display::create();
+
+    if (!dpy_opt.has_value())
+    {
+        testing::AssertionFailure() << "Could not open x11 display";
+    }
+
+    const X11DisplaySharedResource dpy = dpy_opt.value();
+
+    /// First draw object
+    auto draw_res = X11Draw::create(dpy, dpy->screen_width(), dpy->screen_height());
+    EXPECT_EQ(draw_res.is_ok(), true);
+
+    auto draw = std::move(*draw_res.ok());
+    ASSERT_EQ(draw.font_init("monospace:size=12", X11Font::Type::Primary).is_ok(), true);
+    ASSERT_EQ(draw.font_get(X11Font::Type::Primary).has_value(), true);
+    ASSERT_EQ(draw.font_get(X11Font::Type::Secondary).has_value(), false);
+    ASSERT_EQ(draw.font_get(X11Font::Type::Tertiary).has_value(), false);
 }
 
 TEST(TileboxCoreX11DrawTestSuite, VerifyInitColorscheme)
@@ -131,10 +154,10 @@ TEST(TileboxCoreX11DrawTestSuite, VerifyInitColorscheme)
                                                .background("#ffacff")
                                                .border("#fff781");
 
-        ASSERT_EQ(draw.init_colorscheme(primary).is_ok(), true);
-        ASSERT_EQ(draw.init_colorscheme(primary2).is_ok(), true);
+        ASSERT_EQ(draw.colorscheme_init(primary).is_ok(), true);
+        ASSERT_EQ(draw.colorscheme_init(primary2).is_ok(), true);
 
-        const auto opt = draw.get_colorscheme(ColorSchemeKind::Primary);
+        const auto opt = draw.colorscheme_get(ColorSchemeKind::Primary);
         ASSERT_EQ(opt.has_value(), true);
         const auto &colorscheme = opt.value();
         ASSERT_EQ(colorscheme.get_color(X11ColorScheme::Index::Foreground).raw()->pixel, 12303291);
@@ -179,11 +202,11 @@ TEST(TileboxCoreX11DrawTestSuite, VerifyRemoveColorScheme)
                                                .background("#333333")
                                                .border("#444444");
 
-        ASSERT_EQ(draw.init_colorscheme(primary).is_ok(), true);
-        ASSERT_EQ(draw.init_colorscheme(secondary).is_ok(), true);
-        ASSERT_EQ(draw.init_colorscheme(tertiary).is_ok(), true);
+        ASSERT_EQ(draw.colorscheme_init(primary).is_ok(), true);
+        ASSERT_EQ(draw.colorscheme_init(secondary).is_ok(), true);
+        ASSERT_EQ(draw.colorscheme_init(tertiary).is_ok(), true);
 
-        ASSERT_EQ(draw.remove_colorscheme(ColorSchemeKind::Tertiary), true);
+        ASSERT_EQ(draw.colorscheme_remove(ColorSchemeKind::Tertiary), true);
     }
     else
     {
@@ -208,13 +231,13 @@ TEST(TileboxCoreX11DrawTestSuite, VerifyInitCursor)
     {
         auto draw = std::move(*draw_res.ok());
 
-        ASSERT_EQ(draw.init_cursor(X11Cursor::Type::Normal).is_ok(), true);
-        ASSERT_EQ(draw.init_cursor(X11Cursor::Type::Resize).is_ok(), true);
-        ASSERT_EQ(draw.init_cursor(X11Cursor::Type::Move).is_ok(), true);
+        ASSERT_EQ(draw.cursor_init(X11Cursor::Type::Normal).is_ok(), true);
+        ASSERT_EQ(draw.cursor_init(X11Cursor::Type::Resize).is_ok(), true);
+        ASSERT_EQ(draw.cursor_init(X11Cursor::Type::Move).is_ok(), true);
 
-        ASSERT_EQ(draw.init_cursor(X11Cursor::Type::Normal).is_ok(), true);
-        ASSERT_EQ(draw.init_cursor(X11Cursor::Type::Resize).is_ok(), true);
-        ASSERT_EQ(draw.init_cursor(X11Cursor::Type::Move).is_ok(), true);
+        ASSERT_EQ(draw.cursor_init(X11Cursor::Type::Normal).is_ok(), true);
+        ASSERT_EQ(draw.cursor_init(X11Cursor::Type::Resize).is_ok(), true);
+        ASSERT_EQ(draw.cursor_init(X11Cursor::Type::Move).is_ok(), true);
     }
     else
     {
@@ -239,11 +262,11 @@ TEST(TileboxCoreX11DrawTestSuite, VerifyGetCursor)
     {
         auto draw = std::move(*draw_res.ok());
 
-        ASSERT_EQ(draw.init_cursor(X11Cursor::Type::Normal).is_ok(), true);
+        ASSERT_EQ(draw.cursor_init(X11Cursor::Type::Normal).is_ok(), true);
 
-        ASSERT_EQ(draw.get_cursor(X11Cursor::Type::Normal).has_value(), true);
-        ASSERT_EQ(draw.get_cursor(X11Cursor::Type::Move).has_value(), false);
-        ASSERT_EQ(draw.get_cursor(X11Cursor::Type::Resize).has_value(), false);
+        ASSERT_EQ(draw.cursor_get(X11Cursor::Type::Normal).has_value(), true);
+        ASSERT_EQ(draw.cursor_get(X11Cursor::Type::Move).has_value(), false);
+        ASSERT_EQ(draw.cursor_get(X11Cursor::Type::Resize).has_value(), false);
     }
     else
     {

@@ -29,7 +29,7 @@ auto X11Cursor::create(const X11DisplaySharedResource &dpy,
     }
 }
 
-auto X11Cursor::cursor() const noexcept -> Cursor
+auto X11Cursor::cursor_id() const noexcept -> Cursor
 {
     return _cursor;
 }

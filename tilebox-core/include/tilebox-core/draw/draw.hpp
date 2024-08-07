@@ -19,7 +19,8 @@
 namespace tilebox::core
 {
 
-/// @brief The main class of the drawing library, it handles drawing text and colors to an X window.
+/// @brief The main class of the drawing library, it handles drawing text and colors to an X window as well as rendering
+/// cursors.
 ///
 /// @details X11Draw offers Font, Colorscheme, and Cursor management. Everything you need to build simple
 /// yet powerful X client applications without the bloat of populuar *Nix font/color rendering libraries.
@@ -42,12 +43,28 @@ class TILEBOX_EXPORT X11Draw
     /// Font Management
     //////////////////////////////////////
 
-    /// @brief Initializes a font set based off of an XftFont compatible string
+    /// @brief Initializes a font set based on an XftFont compatible string.
+    ///
+    /// @details If the type is already found to be initialized in the underlying array,
+    /// it will not be reinitialized and success will be returned.
     ///
     /// @param `font_name` "monospace:size=14"
+    /// @param `type` The font type enum to initialize
     ///
-    /// @returns A result type containing an error if the underlying XftFont or FcPattern could not be allocated.
-    [[nodiscard]] auto init_font_set(const std::string &font_name) noexcept -> etl::Result<etl::Void, X11FontError>;
+    /// @returns A result type containing Void if success, or an error if the underlying XftFont or FcPattern could not
+    /// be allocated.
+    [[nodiscard]] auto font_init(const std::string &font_name,
+                                 const X11Font::Type type) noexcept -> etl::Result<etl::Void, X11FontError>;
+
+    /// @brief Gets a font by enum type
+    ///
+    /// @details Runtime complexity is constant time and stack allocated.
+    ///
+    /// @param `type` enum
+    ///
+    /// @returns optional containing the X11Font implementation for the specified type iff the type was
+    /// initialized.
+    [[nodiscard]] auto font_get(const X11Font::Type type) const noexcept -> std::optional<X11Font>;
 
     ///////////////////////////////////////
     /// Colorscheme Management
@@ -61,7 +78,7 @@ class TILEBOX_EXPORT X11Draw
     /// @param `config` colorscheme config to initialize
     ///
     /// @returns Void meaning success, X11ColorError other wise.
-    [[nodiscard]] auto init_colorscheme(const ColorSchemeConfig &config) noexcept
+    [[nodiscard]] auto colorscheme_init(const ColorSchemeConfig &config) noexcept
         -> etl::Result<etl::Void, X11ColorError>;
 
     /// @brief Removes a colorscheme
@@ -69,9 +86,17 @@ class TILEBOX_EXPORT X11Draw
     /// @param `kind` Specified scheme kind
     ///
     /// @returns true if the scheme kind was removed successfully, false if not.
-    [[nodiscard]] auto remove_colorscheme(const ColorSchemeKind kind) noexcept -> bool;
+    [[nodiscard]] auto colorscheme_remove(const ColorSchemeKind kind) noexcept -> bool;
 
-    [[nodiscard]] auto get_colorscheme(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>;
+    /// @brief Gets a colorscheme by enum type
+    ///
+    /// @details Runtime complexity is constant time and stack allocated.
+    ///
+    /// @param `kind` enum
+    ///
+    /// @returns optional containing the X11ColorScheme implementation for the specified type iff the type was
+    /// initialized.
+    [[nodiscard]] auto colorscheme_get(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>;
 
     ///////////////////////////////////////
     /// Cursor Management
@@ -82,21 +107,19 @@ class TILEBOX_EXPORT X11Draw
     /// @details If the specified type is already found to be initialized success will still be returned
     /// but a reinitialization will not happen.
     ///
-    /// @details Runtime complexity is constant time and stack allocated.
-    ///
     /// @param `type` enum
     ///
     /// @returns Void is an empty type denoting success, otherwise X11CursorError
-    [[nodiscard]] auto init_cursor(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>;
+    [[nodiscard]] auto cursor_init(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>;
 
-    /// @brief Get a X11Cursor based on the type
+    /// @brief Gets the underlying X Cursor id
     ///
     /// @details Runtime complexity is constant time and stack allocated.
     ///
     /// @param `type` enum
     ///
     /// @returns optional containing the X11Cursor implementation for the specified type iff the type was initialized.
-    [[nodiscard]] auto get_cursor(const X11Cursor::Type type) noexcept -> std::optional<Cursor>;
+    [[nodiscard]] auto cursor_get(const X11Cursor::Type type) const noexcept -> std::optional<Cursor>;
 
   public:
     auto resize(const Width &width, const Height &height) noexcept -> void;
@@ -114,9 +137,9 @@ class TILEBOX_EXPORT X11Draw
 
   private:
     X11DisplaySharedResource _dpy;
-    std::vector<X11Font> _fonts;
-    std::vector<X11ColorScheme> _colorschemes;
+    std::array<X11Font, X11Font::get_underlying_size()> _fonts;
     std::array<X11Cursor, X11Cursor::get_underlying_size()> _cursors;
+    std::vector<X11ColorScheme> _colorschemes;
     GC _graphics_ctx;
     Drawable _drawable;
     Width _width;
@@ -161,10 +184,10 @@ template <typename ErrType> class Result<tilebox::core::X11Draw, ErrType>
 
     /// @brief Check if the union value is of the error type
     ///
-    /// @details The use should always use isOk() before using ok()
+    /// @details The use should always use is_ok() before using ok()
     ///
     /// @return std::optional<tilebox::core::X11Draw> for safety, incase the user did not call
-    /// isOk() before using this method.
+    /// is_ok() before using this method.
     [[nodiscard]] inline auto ok() noexcept -> std::optional<tilebox::core::X11Draw>
     {
         std::optional<tilebox::core::X11Draw> ret;
@@ -180,10 +203,10 @@ template <typename ErrType> class Result<tilebox::core::X11Draw, ErrType>
 
     /// @brief Check if the union value is of the error type
     ///
-    /// @details The use should always use isErr() before using err()
+    /// @details The use should always use is_err() before using err()
     ///
     /// @return std::optional<ErrType> for safety, incase the user did not call
-    /// isErr() before using this method.
+    /// is_err() before using this method.
     [[nodiscard]] inline auto err() const noexcept -> std::optional<ErrType>
     {
         std::optional<ErrType> ret;

@@ -45,7 +45,7 @@ class TILEBOX_EXPORT X11Cursor
         return static_cast<std::size_t>(static_cast<std::size_t>(X11Cursor::Type::Move) + 1);
     }
 
-    /// @brief Converts the underlying Type enum class to its indexed
+    /// @brief Converts the underlying Type enum class to its integer equivalent
     [[nodiscard]] constexpr static inline auto to_underlying(const X11Cursor::Type type) noexcept -> std::uint32_t
     {
         return static_cast<std::underlying_type_t<X11Cursor::Type>>(type);
@@ -97,7 +97,7 @@ class TILEBOX_EXPORT X11Cursor
     }
 
     /// @brief Gets the underlying Cursor XID
-    [[nodiscard]] auto cursor() const noexcept -> Cursor;
+    [[nodiscard]] auto cursor_id() const noexcept -> Cursor;
 
     /// @brief Gets the underlying type this cursor was initialized with.
     [[nodiscard]] auto type() const noexcept -> std::optional<X11Cursor::Type>;

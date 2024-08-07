@@ -6,6 +6,7 @@
 #include <X11/Xft/Xft.h>
 #include <cstdint>
 #include <fontconfig/fontconfig.h>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -25,8 +26,8 @@ auto XftFontDeleter::operator()(XftFont *font) const noexcept -> void
     }
 }
 
-X11Font::X11Font(XftFontSharedResource &&xft_font, FcPattern *pattern, Height height) noexcept
-    : _xftfont(std::move(xft_font)), _pattern(pattern), _height(std::move(height))
+X11Font::X11Font(XftFontSharedResource &&xft_font, FcPattern *pattern, const X11Font::Type type, Height height) noexcept
+    : _xftfont(std::move(xft_font)), _pattern(pattern), _type(type), _height(std::move(height))
 {
 }
 
@@ -40,12 +41,12 @@ X11Font::~X11Font()
 }
 
 X11Font::X11Font(X11Font &&rhs) noexcept
-    : _xftfont(std::move(rhs._xftfont)), _pattern(rhs._pattern), _height(std::move(rhs._height))
+    : _xftfont(std::move(rhs._xftfont)), _pattern(rhs._pattern), _type(rhs._type), _height(std::move(rhs._height))
 {
     rhs._pattern = nullptr;
 }
 
-X11Font::X11Font(const X11Font &rhs) noexcept : _xftfont(rhs._xftfont), _height(rhs._height)
+X11Font::X11Font(const X11Font &rhs) noexcept : _xftfont(rhs._xftfont), _type(rhs._type), _height(rhs._height)
 {
     if (rhs._pattern != nullptr)
     {
@@ -61,6 +62,9 @@ auto X11Font::operator=(X11Font &&rhs) noexcept -> X11Font &
 {
     if (this != &rhs)
     {
+        _height = std::move(rhs._height);
+        _type = rhs._type;
+
         if (_pattern != nullptr)
         {
             FcPatternDestroy(_pattern);
@@ -68,7 +72,6 @@ auto X11Font::operator=(X11Font &&rhs) noexcept -> X11Font &
         _pattern = rhs._pattern;
         rhs._pattern = nullptr;
 
-        _height = std::move(rhs._height);
         _xftfont = std::move(rhs._xftfont);
     }
     return *this;
@@ -78,10 +81,14 @@ auto X11Font::operator=(const X11Font &rhs) noexcept -> X11Font &
 {
     if (this != &rhs)
     {
+        _height = rhs._height;
+        _type = rhs._type;
+
         if (_pattern != nullptr)
         {
             FcPatternDestroy(_pattern);
         }
+
         if (rhs._pattern != nullptr)
         {
             _pattern = FcPatternDuplicate(rhs._pattern);
@@ -91,14 +98,13 @@ auto X11Font::operator=(const X11Font &rhs) noexcept -> X11Font &
             _pattern = nullptr;
         }
 
-        _height = rhs._height;
         _xftfont = rhs._xftfont;
     }
     return *this;
 }
 
-auto X11Font::create(const X11DisplaySharedResource &dpy,
-                     const std::string &font_name) noexcept -> Result<X11Font, X11FontError>
+auto X11Font::create(const X11DisplaySharedResource &dpy, const std::string &font_name,
+                     const X11Font::Type type) noexcept -> Result<X11Font, X11FontError>
 {
     if (font_name.empty())
     {
@@ -128,11 +134,11 @@ auto X11Font::create(const X11DisplaySharedResource &dpy,
     Height height(static_cast<uint32_t>(raw_font->ascent + raw_font->descent));
 
     return Result<X11Font, X11FontError>(
-        X11Font(XftFontSharedResource(raw_font, XftFontDeleter(dpy)), pattern, std::move(height)));
+        X11Font(XftFontSharedResource(raw_font, XftFontDeleter(dpy)), pattern, type, std::move(height)));
 }
 
-auto X11Font::create(const X11DisplaySharedResource &dpy,
-                     FcPattern *font_pattern) noexcept -> Result<X11Font, X11FontError>
+auto X11Font::create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern,
+                     const X11Font::Type type) noexcept -> Result<X11Font, X11FontError>
 {
     if (font_pattern == nullptr)
     {
@@ -148,7 +154,12 @@ auto X11Font::create(const X11DisplaySharedResource &dpy,
     Height height(static_cast<uint32_t>(raw_font->ascent + raw_font->descent));
 
     return Result<X11Font, X11FontError>(
-        X11Font(XftFontSharedResource(raw_font, XftFontDeleter(dpy)), font_pattern, std::move(height)));
+        X11Font(XftFontSharedResource(raw_font, XftFontDeleter(dpy)), font_pattern, type, std::move(height)));
+}
+
+auto X11Font::type() const noexcept -> std::optional<X11Font::Type>
+{
+    return _type;
 }
 
 auto X11Font::xftfont() const noexcept -> const XftFontSharedResource &

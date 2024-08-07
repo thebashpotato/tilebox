@@ -6,6 +6,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 using namespace tilebox::core;
 
@@ -30,7 +31,7 @@ auto X11Display::create(const std::optional<std::string> &display_name) -> std::
     auto display = std::shared_ptr<X11Display>(new X11Display(display_name));
     if (display->is_connected())
     {
-        ret.emplace(display);
+        ret.emplace(std::move(display));
     }
     return ret;
 }
