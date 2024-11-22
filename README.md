@@ -25,17 +25,13 @@ A Suckless inspired tiling window manager environment
 <details>
 <summary>Arch Linux</summary>
 <br>
-<code>
-    pacman -S base-devel libx11 libxft xorg-server-xephyr clang cmake ninja --noconfirm
-</code>
+<code>pacman -S base-devel libx11 libxft xorg-server-xephyr clang cmake ninja --noconfirm</code>
 </details>
 
 <details>
 <summary>Ubuntu Linux</summary>
 <br>
-<code>
-    apt-get install build-essential libx11-dev libxft-dev xserver-xephyr clang clangd clang-format cmake ninja-build -y
-</code>
+<code>apt-get install build-essential libx11-dev libxft-dev xserver-xephyr clang clangd clang-format cmake ninja-build -y</code>
 </details>
 
 
