@@ -50,7 +50,8 @@ target_link_libraries(
     PRIVATE workspace_project_options
             workspace_project_warnings
             stdc++fs
-            fmt
+            fmt::fmt
+            spdlog::spdlog
             ${X11_Xft_LIB}
             ${X11_X11_LIB}
             ${Fontconfig_LIBRARY})

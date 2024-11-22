@@ -90,6 +90,18 @@ else()
       CACHE STRING "Forcing build type to Release" FORCE)
 endif()
 
+cpmaddpackage("gh:fmtlib/fmt#11.0.2")
+
+cpmaddpackage(
+  NAME
+  spdlog
+  VERSION
+  1.14.1
+  GITHUB_REPOSITORY
+  "gabime/spdlog"
+  OPTIONS
+  "SPDLOG_FMT_EXTERNAL ON")
+
 message(
   STATUS
     "Compiling ${PROJECT_NAME} in [ ${CMAKE_BUILD_TYPE} ] mode using the C++${CMAKE_CXX_STANDARD} standard"

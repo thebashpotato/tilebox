@@ -39,8 +39,14 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 # Link required dependencies
 target_link_libraries(
-  ${PROJECT_NAME} PRIVATE workspace_project_options workspace_project_warnings
-                          stdc++fs fmt tilebox-core ${X11_LIBRARIES})
+  ${PROJECT_NAME}
+  PRIVATE workspace_project_options
+          workspace_project_warnings
+          stdc++fs
+          fmt::fmt
+          spdlog::spdlog
+          tilebox-core
+          ${X11_LIBRARIES})
 
 #
 # Clang tooling needs to be ran after all libraries/targets are declared.
