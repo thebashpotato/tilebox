@@ -8,9 +8,6 @@ endif
 list:
 	@$(call _list)
 
-init:
-	@$(call _init)
-
 init-dev:
 	@$(call _init_dev)
 
