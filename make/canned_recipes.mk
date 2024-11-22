@@ -4,8 +4,6 @@ define _list =
 		| Command   ||  Description  |
 		==============================
 		list        --  Lists all available commands
-		init        --  Install all dependencies for a release build
-		init-dev    --  Install all dependencies for development
 		embed       --  Embeds the window manager in a Xephyr window for testing and debugging
 		tests       --  Runs ctest on the test suite
 		install     --  Installs optimized binaries, libraries, files and scripts
@@ -44,16 +42,6 @@ define _clean =
 	[ -L compile_commands.json ] && rm compile_commands.json
 
 	echo "Project cleaned.."
-endef
-
-define _init_dev =
-	if command -v apt 1>/dev/null 2>&1; then
-		apt-get install libx11-dev libxft-dev bear clang clangd clang-format xserver-xephyr -y
-	elif command -v pacman 1>/dev/null 2>&1; then
-		pacman -S libx11 libxft clang xorg-server-xephyr --noconfirm
-	else
-		echo "You are not on a Debian or Arch based system, make a pull request for your package manager"
-	fi
 endef
 
 define _compile =

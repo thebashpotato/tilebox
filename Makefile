@@ -8,9 +8,6 @@ endif
 list:
 	@$(call _list)
 
-init-dev:
-	@$(call _init_dev)
-
 compile:
 	@$(CMAKE_COMPILE_COMMAND)
 	@$(call _compile)

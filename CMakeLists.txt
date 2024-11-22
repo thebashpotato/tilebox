@@ -57,6 +57,18 @@ find_package(Fontconfig REQUIRED)
 # NOTE: https://cmake.org/cmake/help/latest/module/FindFreetype.html
 find_package(Freetype REQUIRED)
 
+cpmaddpackage("gh:fmtlib/fmt#11.0.2")
+
+cpmaddpackage(
+  NAME
+  spdlog
+  VERSION
+  1.14.1
+  GITHUB_REPOSITORY
+  "gabime/spdlog"
+  OPTIONS
+  "SPDLOG_FMT_EXTERNAL ON")
+
 #
 # Check for developer mode, add google tests library if it is
 #
@@ -78,29 +90,13 @@ if(ENABLE_DEVELOPER_MODE)
     "BUILD_GMOCK ON"
     "INSTALL_GTEST OFF"
     "gtest_force_shared_crt ON")
-  if(googletest_ADDED)
-    message(STATUS "gtest configured correctly")
-  else()
-    message(WARNING "gtest was not configured properly")
-  endif()
+
   enable_testing()
 else()
   set(CMAKE_BUILD_TYPE
       Release
       CACHE STRING "Forcing build type to Release" FORCE)
-endif()
-
-cpmaddpackage("gh:fmtlib/fmt#11.0.2")
-
-cpmaddpackage(
-  NAME
-  spdlog
-  VERSION
-  1.14.1
-  GITHUB_REPOSITORY
-  "gabime/spdlog"
-  OPTIONS
-  "SPDLOG_FMT_EXTERNAL ON")
+endif(ENABLE_DEVELOPER_MODE)
 
 message(
   STATUS
