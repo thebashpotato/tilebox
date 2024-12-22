@@ -1,0 +1,23 @@
+#pragma once
+
+#include <string_view>
+
+namespace Tilebox
+{
+
+inline constexpr std::string_view kTileboxName = "@PROJECT_NAME@";
+inline constexpr std::string_view kTileboxVersion = "@PROJECT_VERSION@";
+inline constexpr int kTileboxVersionMajor
+{
+    @PROJECT_VERSION_MAJOR@
+};
+inline constexpr int kTileboxVersionMinor
+{
+    @PROJECT_VERSION_MINOR@
+};
+inline constexpr int kTileboxVersionPatch
+{
+    @PROJECT_VERSION_PATCH@
+};
+
+} // namespace Tilebox

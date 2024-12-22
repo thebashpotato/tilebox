@@ -1,42 +1,45 @@
-#
 # Set a default build type if none was specified
-#
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(
+    STATUS "Setting build type to 'RelWithDebInfo' as none was specified.")
   set(CMAKE_BUILD_TYPE
       RelWithDebInfo
-      CACHE STRING "Choose the type of build." FORCE) # Set the possible values
-                                                      # of build type for
-                                                      # cmake-gui, ccmake
+      CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui, ccmake
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
                                                "MinSizeRel" "RelWithDebInfo")
 endif()
 
-#
-# Set the C++ standard
-#
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-#
 # Generate compile_commands.json to make it easier to work with clang based
 # tools
-#
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-#
-# Language Flags
-#
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fdiagnostics-color=always")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
-
-option(ENABLE_ASAN "Enables address sanitizer" OFF)
-
-if(ENABLE_ASAN)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
-  set(CMAKE_C_FLAGS_DEBUG
-      "${CMAKE_C_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-  set(CMAKE_CXX_FLAGS_DEBUG
-      "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-  set(CMAKE_LINKER_FLAGS_DEBUG
-      "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+# Enhance error reporting and compiler messages
+if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+  if(WIN32)
+    # On Windows cuda nvcc uses cl and not clang
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fcolor-diagnostics>
+                        $<$<COMPILE_LANGUAGE:CXX>:-fcolor-diagnostics>)
+  else()
+    add_compile_options(-fcolor-diagnostics)
+  endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  if(WIN32)
+    # On Windows cuda nvcc uses cl and not gcc
+    add_compile_options($<$<COMPILE_LANGUAGE:C>:-fdiagnostics-color=always>
+                        $<$<COMPILE_LANGUAGE:CXX>:-fdiagnostics-color=always>)
+  else()
+    add_compile_options(-fdiagnostics-color=always)
+  endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND MSVC_VERSION GREATER 1900)
+  add_compile_options(/diagnostics:column)
+else()
+  message(
+    STATUS
+      "No colored compiler diagnostic set for '${CMAKE_CXX_COMPILER_ID}' compiler."
+  )
 endif()
+
+# run vcvarsall when msvc is used
+include("${CMAKE_CURRENT_LIST_DIR}/VCEnvironment.cmake")
+run_vcvarsall()

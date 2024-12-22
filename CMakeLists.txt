@@ -1,102 +1,41 @@
-#
-# Minimum required cmake version
-#
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.21)
 
 #
-# Set up workspace
+# Only set the cxx_standard if it is not set by someone else
 #
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+endif()
+
+# strongly encouraged to enable this globally to avoid conflicts between
+# -Wpedantic being enabled and -std=c++20 and -std=gnu++20 for example when
+# compiling with PCH enabled
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 project(
   tilebox_workspace
   VERSION 0.1.0
-  DESCRIPTION
-    "A box of X11 programs written for me, by me. Tiling window manager, screen locker, menu, terminal"
+  DESCRIPTION "Workspace for Tilebox software"
   LANGUAGES CXX)
 
-#
-# Project Options
-#
-option(ENABLE_DEVELOPER_MODE "Enables testing and example builds" ON)
+include(cmake/PreventInSourceBuilds.cmake)
+include(cmake/ClangFormat.cmake)
+include(ProjectOptions.cmake)
 
-#
-# Add custom cmake modules
-#
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+tilebox_setup_options()
+tilebox_global_options()
 
-#
-# Include all custom modules
-#
-include(CPM)
-include(StaticAnalyzers)
-include(CompilerWarnings)
-include(StandardProjectSettings)
-include(ClangFormat)
-include(ClangTidy)
+include(Dependencies.cmake)
+tilebox_setup_dependencies()
+tilebox_local_options()
 
-#
-# Create interfaced "libraries" for custom StandardProjectSettings and
-# CompilerWarnings
-#
-add_library(workspace_project_options INTERFACE)
-target_compile_features(workspace_project_options
-                        INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
-add_library(workspace_project_warnings INTERFACE)
-set_project_warnings(workspace_project_warnings)
+target_compile_features(tilebox_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
+add_library(tilebox_workspace::tilebox_options ALIAS tilebox_options)
+add_library(tilebox_workspace::tilebox_warnings ALIAS tilebox_warnings)
 
-#
-# NOTE: FindPackage and CPM (Dependencies needed by all projects are defined at
-# this level only.
-#
-
-# NOTE: https://cmake.org/cmake/help/latest/module/FindX11.html
-find_package(X11 REQUIRED)
-
-# NOTE: https://cmake.org/cmake/help/latest/module/FindFontconfig.html
-find_package(Fontconfig REQUIRED)
-
-# NOTE: https://cmake.org/cmake/help/latest/module/FindFreetype.html
-find_package(Freetype REQUIRED)
-
-#
-# Check for developer mode, add google tests library if it is
-#
-if(ENABLE_DEVELOPER_MODE)
-  set(CMAKE_BUILD_TYPE
-      Debug
-      CACHE STRING "Forcing build type to Debug" FORCE)
-
-  cpmaddpackage(
-    NAME
-    googletest
-    GITHUB_REPOSITORY
-    google/googletest
-    GIT_TAG
-    v1.14.0
-    VERSION
-    1.14.0
-    OPTIONS
-    "BUILD_GMOCK ON"
-    "INSTALL_GTEST OFF"
-    "gtest_force_shared_crt ON")
-  if(googletest_ADDED)
-    message(STATUS "gtest configured correctly")
-  else()
-    message(WARNING "gtest was not configured properly")
-  endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   enable_testing()
-else()
-  set(CMAKE_BUILD_TYPE
-      Release
-      CACHE STRING "Forcing build type to Release" FORCE)
 endif()
 
-message(
-  STATUS
-    "Compiling ${PROJECT_NAME} in [ ${CMAKE_BUILD_TYPE} ] mode using the C++${CMAKE_CXX_STANDARD} standard"
-)
-
-#
-# Add sub-projects
-#
-add_subdirectory(tilebox-core)
-add_subdirectory(window-manager)
+add_subdirectory(tilebox)
+add_subdirectory(twm)

@@ -1,0 +1,85 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Custom CMake: Clean Rebuild",
+            "command": "cmake --build build --config Debug --target clean --parallel",
+            "problemMatcher": [],
+            "detail": "Generic clean rebuild",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Custom CMake: Configure Debug [Clang]",
+            "command": "cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -B build -G Ninja",
+            "problemMatcher": [],
+            "detail": "Configures project in debug mode with clang compiler",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Custom CMake: Configure Release [Clang]",
+            "command": "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -B build -G Ninja",
+            "problemMatcher": [],
+            "detail": "Configures project in release mode with clang compiler",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Custom CMake: Configure Debug [GNU]",
+            "command": "cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -B build -G Ninja",
+            "problemMatcher": [],
+            "detail": "Configures project in debug mode with GNU compiler",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Custom CMake: Configure Release[GNU]",
+            "command": "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -B build -G Ninja",
+            "problemMatcher": [],
+            "detail": "Configures project in release mode with GNU compiler",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Custom CMake: Build",
+            "command": "cmake --build build --parallel",
+            "problemMatcher": [],
+            "detail": "Builds the project",
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "Custom CMake: Clean",
+            "type": "shell",
+            "command": "rm -rf build",
+            "detail": "Cleans entire project",
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Custom CMake: Unit Tests",
+            "type": "shell",
+            "command": "ctest --test-dir build",
+            "detail": "Runs Unit tests",
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

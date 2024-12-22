@@ -1,7 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Version=0.1.0
-Name=Tilebox Window Manager
-Comment=An X11 tiling window manager written in C++20
-Exec=/usr/local/bin/tilebox-wm
-Type=XSession

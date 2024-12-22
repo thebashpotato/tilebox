@@ -1,12 +1,12 @@
 {
-  "recommendations": [
-    "cheshirekow.cmake-format",
-    "xaver.clang-format",
-    "ms-vscode.cmake-tools",
-    "twxs.cmake",
-    "vadimcn.vscode-lldb",
-    "editorconfig.editorconfig",
-    "jeff-hykin.better-cpp-syntax",
-    "llvm-vs-code-extensions.vscode-clangd",
-  ]
+    "recommendations": [
+        "editorconfig.editorconfig",
+        "cheshirekow.cmake-format",
+        "twxs.cmake",
+        "xaver.clang-format",
+        "vadimcn.vscode-lldb",
+        "cs128.cs128-clang-tidy",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-vscode.cmake-tools"
+    ]
 }
