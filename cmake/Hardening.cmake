@@ -3,15 +3,7 @@ include(CheckCXXCompilerFlag)
 macro(tilebox_enable_hardening target global ubsan_minimal_runtime)
 
   message(STATUS "** Enabling Hardening (Target ${target}) **")
-
-  if(MSVC)
-    set(NEW_COMPILE_OPTIONS
-        "${NEW_COMPILE_OPTIONS} /sdl /DYNAMICBASE /guard:cf")
-    message(
-      STATUS "*** MSVC flags: /sdl /DYNAMICBASE /guard:cf /NXCOMPAT /CETCOMPAT")
-    set(NEW_LINK_OPTIONS "${NEW_LINK_OPTIONS} /NXCOMPAT /CETCOMPAT")
-
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang|GNU")
+  if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang|GNU")
     set(NEW_CXX_DEFINITIONS "${NEW_CXX_DEFINITIONS} -D_GLIBCXX_ASSERTIONS")
     message(STATUS "*** GLIBC++ Assertions (vector[], string[], ...) enabled")
 
@@ -20,13 +12,6 @@ macro(tilebox_enable_hardening target global ubsan_minimal_runtime)
           "${NEW_COMPILE_OPTIONS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3")
       message(STATUS "*** g++/clang _FORTIFY_SOURCE=3 enabled")
     endif()
-
-    # check_cxx_compiler_flag(-fpie PIE) if(PIE) set(NEW_COMPILE_OPTIONS
-    # ${NEW_COMPILE_OPTIONS} -fpie) set(NEW_LINK_OPTIONS ${NEW_LINK_OPTIONS}
-    # -pie)
-    #
-    # message(STATUS "*** g++/clang PIE mode enabled") else() message(STATUS
-    # "*** g++/clang PIE mode NOT enabled (not supported)") endif()
 
     check_cxx_compiler_flag(-fstack-protector-strong STACK_PROTECTOR)
     if(STACK_PROTECTOR)

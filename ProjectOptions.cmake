@@ -4,17 +4,10 @@ include(CheckCXXCompilerFlag)
 
 macro(tilebox_supports_sanitizers)
   if((CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*" OR CMAKE_CXX_COMPILER_ID MATCHES
-                                                   ".*GNU.*") AND NOT WIN32)
+                                                   ".*GNU.*"))
     set(SUPPORTS_UBSAN ON)
   else()
     set(SUPPORTS_UBSAN OFF)
-  endif()
-
-  if((CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*" OR CMAKE_CXX_COMPILER_ID MATCHES
-                                                   ".*GNU.*") AND WIN32)
-    set(SUPPORTS_ASAN OFF)
-  else()
-    set(SUPPORTS_ASAN ON)
   endif()
 endmacro()
 
@@ -114,8 +107,7 @@ macro(tilebox_local_options)
   add_library(tilebox_options INTERFACE)
 
   include(cmake/CompilerWarnings.cmake)
-  set_tilebox_warnings(tilebox_warnings ${tilebox_WARNINGS_AS_ERRORS} "" "" ""
-                       "")
+  set_tilebox_warnings(tilebox_warnings ${tilebox_WARNINGS_AS_ERRORS} "" "" "")
 
   if(tilebox_ENABLE_USER_LINKER)
     include(cmake/Linker.cmake)
