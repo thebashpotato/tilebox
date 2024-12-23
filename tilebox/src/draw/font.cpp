@@ -1,10 +1,10 @@
 #include "tilebox/draw/font.hpp"
 #include "tilebox/error.hpp"
 #include "tilebox/geometry.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/x11/display.hpp"
 
 #include <X11/Xft/Xft.h>
+#include <etl.hpp>
 #include <fontconfig/fontconfig.h>
 
 #include <cstdint>
@@ -23,9 +23,9 @@ XftFontDeleter::XftFontDeleter(X11DisplaySharedResource display) noexcept : dpy(
 
 auto XftFontDeleter::operator()(XftFont *font) const noexcept -> void
 {
-    if (font != nullptr && dpy->is_connected())
+    if (font != nullptr && dpy->IsConnected())
     {
-        XftFontClose(dpy->raw(), font);
+        XftFontClose(dpy->Raw(), font);
     }
 }
 
@@ -120,7 +120,7 @@ auto X11Font::Create(const X11DisplaySharedResource &dpy, const std::string &fon
     // FcNameParse; using the latter results in the desired fallback
     // behaviour whereas the former just results in missing-character
     // rectangles being drawn, at least with some fonts.
-    XftFont *raw_font = XftFontOpenName(dpy->raw(), dpy->screen_id(), font_name.c_str());
+    XftFont *raw_font = XftFontOpenName(dpy->Raw(), dpy->ScreenId(), font_name.c_str());
     if (raw_font == nullptr)
     {
         return Result<X11Font, X11FontError>(
@@ -130,7 +130,7 @@ auto X11Font::Create(const X11DisplaySharedResource &dpy, const std::string &fon
     FcPattern *pattern = FcNameParse(reinterpret_cast<const FcChar8 *>(font_name.c_str()));
     if (pattern == nullptr)
     {
-        XftFontClose(dpy->raw(), raw_font);
+        XftFontClose(dpy->Raw(), raw_font);
         return Result<X11Font, X11FontError>(X11FontError(
             std::string("Error, could not parse font name from pattern: ").append(font_name), RUNTIME_INFO));
     }
@@ -149,7 +149,7 @@ auto X11Font::Create(const X11DisplaySharedResource &dpy, FcPattern *font_patter
         return Result<X11Font, X11FontError>({"Error, no font name was specified", RUNTIME_INFO});
     }
 
-    XftFont *raw_font = XftFontOpenPattern(dpy->raw(), font_pattern);
+    XftFont *raw_font = XftFontOpenPattern(dpy->Raw(), font_pattern);
     if (raw_font == nullptr)
     {
         return Result<X11Font, X11FontError>({"Error, could not load font from pattern", RUNTIME_INFO});

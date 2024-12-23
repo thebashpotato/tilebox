@@ -3,11 +3,11 @@
 #include "tilebox/error.hpp"
 #include "tilebox/geometry.hpp"
 #include "tilebox/utils/attributes.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/x11/display.hpp"
 
 #include <X11/Xft/Xft.h>
 #include <cstddef>
+#include <etl.hpp>
 #include <fontconfig/fontconfig.h>
 #include <ft2build.h>
 
@@ -88,7 +88,7 @@ class TILEBOX_INTERNAL X11Font
     // we can't have a smart pointer, Keith Packard forward declared
     // the FcPattern type, thus the call to sizeof() in the unique_ptr constructor will
     // fail at compile time due to the incomplete type.
-    FcPattern *m_pattern{nullptr};
+    FcPattern *m_pattern{};
     std::optional<Type> m_type;
     Height m_height;
 };

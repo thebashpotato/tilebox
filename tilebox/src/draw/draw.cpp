@@ -5,8 +5,9 @@
 #include "tilebox/draw/font.hpp"
 #include "tilebox/error.hpp"
 #include "tilebox/geometry.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/x11/display.hpp"
+
+#include <etl.hpp>
 
 #include <X11/X.h>
 #include <X11/Xft/Xft.h>
@@ -30,81 +31,81 @@ namespace Tilebox
 // ReSharper disable once CppParameterMayBeConst
 X11Draw::X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, const Drawable drawable, Width width,
                  Height height) noexcept
-    : _dpy(std::move(dpy)), _graphics_ctx(graphics_ctx), _drawable(drawable), _width(std::move(width)),
-      _height(std::move(height))
+    : m_dpy(std::move(dpy)), m_graphics_ctx(graphics_ctx), m_drawable(drawable), m_width(std::move(width)),
+      m_height(std::move(height))
 {
-    _colorschemes.reserve(ColorSchemeKindSize());
+    m_colorschemes.reserve(ColorSchemeKindSize());
 }
 
 X11Draw::~X11Draw() noexcept
 {
-    if (_drawable != False && _dpy->is_connected())
+    if (m_drawable != False && m_dpy->IsConnected())
     {
-        XFreePixmap(_dpy->raw(), _drawable);
-        _drawable = False;
+        XFreePixmap(m_dpy->Raw(), m_drawable);
+        m_drawable = False;
     }
 
-    if (_graphics_ctx != nullptr && _dpy->is_connected())
+    if (m_graphics_ctx != nullptr && m_dpy->IsConnected())
     {
-        XFreeGC(_dpy->raw(), _graphics_ctx);
-        _graphics_ctx = nullptr;
+        XFreeGC(m_dpy->Raw(), m_graphics_ctx);
+        m_graphics_ctx = nullptr;
     }
 }
 
 X11Draw::X11Draw(X11Draw &&rhs) noexcept
-    : _dpy(std::move(rhs._dpy)), _fonts(std::move(rhs._fonts)), _cursors(std::move(rhs._cursors)),
-      _colorschemes(std::move(rhs._colorschemes)), _graphics_ctx(rhs._graphics_ctx), _drawable(rhs._drawable),
-      _width(std::move(rhs._width)), _height(std::move(rhs._height))
+    : m_dpy(std::move(rhs.m_dpy)), m_fonts(std::move(rhs.m_fonts)), m_cursors(std::move(rhs.m_cursors)),
+      m_colorschemes(std::move(rhs.m_colorschemes)), m_graphics_ctx(rhs.m_graphics_ctx), m_drawable(rhs.m_drawable),
+      m_width(std::move(rhs.m_width)), m_height(std::move(rhs.m_height))
 {
-    rhs._drawable = False;
-    rhs._graphics_ctx = nullptr;
+    rhs.m_drawable = False;
+    rhs.m_graphics_ctx = nullptr;
 }
 
 auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
 {
     if (this != &rhs)
     {
-        _height = std::move(rhs._height);
-        _width = std::move(rhs._width);
+        m_height = std::move(rhs.m_height);
+        m_width = std::move(rhs.m_width);
 
-        if (_drawable != False)
+        if (m_drawable != False)
         {
-            XFreePixmap(_dpy->raw(), _drawable);
+            XFreePixmap(m_dpy->Raw(), m_drawable);
         }
-        _drawable = rhs._drawable;
-        rhs._drawable = False;
+        m_drawable = rhs.m_drawable;
+        rhs.m_drawable = False;
 
-        if (_graphics_ctx != nullptr)
+        if (m_graphics_ctx != nullptr)
         {
-            XFreeGC(_dpy->raw(), _graphics_ctx);
+            XFreeGC(m_dpy->Raw(), m_graphics_ctx);
         }
-        _graphics_ctx = rhs._graphics_ctx;
-        rhs._graphics_ctx = nullptr;
+        m_graphics_ctx = rhs.m_graphics_ctx;
+        rhs.m_graphics_ctx = nullptr;
 
-        if (!_colorschemes.empty())
+        if (!m_colorschemes.empty())
         {
-            _colorschemes.clear();
+            m_colorschemes.clear();
         }
-        _colorschemes = std::move(rhs._colorschemes);
+        m_colorschemes = std::move(rhs.m_colorschemes);
 
-        _cursors = std::move(rhs._cursors);
+        m_cursors = std::move(rhs.m_cursors);
 
-        _fonts = std::move(rhs._fonts);
+        m_fonts = std::move(rhs.m_fonts);
 
-        _dpy = std::move(rhs._dpy);
+        m_dpy = std::move(rhs.m_dpy);
     }
 
     return *this;
 }
 
 auto X11Draw::Create(const X11DisplaySharedResource &dpy, const Width &width,
-                     const Height &height) noexcept -> Result<X11Draw, CoreError>
+                     const Height &height) noexcept -> Result<X11Draw, Error>
 {
-    GC gc = XCreateGC(dpy->raw(), dpy->root_window(), 0, nullptr);
+    GC gc = XCreateGC(dpy->Raw(), dpy->GetRootWindow(), 0, nullptr);
 
     if (gc == nullptr)
     {
-        return Result<X11Draw, CoreError>({
+        return Result<X11Draw, Error>({
             "Failed to create graphics context",
             RUNTIME_INFO,
         });
@@ -112,12 +113,12 @@ auto X11Draw::Create(const X11DisplaySharedResource &dpy, const Width &width,
 
     // FIXME: I think if XCreatePixmap fails it will generate an X11 error through the callback function, thus
     // we can't verify that here.
-    const Drawable drawable = XCreatePixmap(dpy->raw(), dpy->root_window(), width.value, height.value,
-                                            DefaultDepth(dpy->raw(), dpy->screen_id()));
+    const Drawable drawable = XCreatePixmap(dpy->Raw(), dpy->GetRootWindow(), width.value, height.value,
+                                            DefaultDepth(dpy->Raw(), dpy->ScreenId()));
 
-    XSetLineAttributes(dpy->raw(), gc, 1, LineSolid, CapButt, JoinMiter);
+    XSetLineAttributes(dpy->Raw(), gc, 1, LineSolid, CapButt, JoinMiter);
 
-    return Result<X11Draw, CoreError>({
+    return Result<X11Draw, Error>({
         dpy,
         gc,
         drawable,
@@ -130,11 +131,11 @@ auto X11Draw::InitFont(const std::string &font_name, const X11Font::Type type) n
 {
 
     // if the underlying type is std::nullopt, we can initialize this font.
-    if (!_fonts[X11Font::ToUnderlying(type)].type().has_value())
+    if (!m_fonts[X11Font::ToUnderlying(type)].type().has_value())
     {
-        if (const auto result = X11Font::Create(_dpy, font_name, type); result.is_ok())
+        if (const auto result = X11Font::Create(m_dpy, font_name, type); result.is_ok())
         {
-            _fonts[X11Font::ToUnderlying(type)] = std::move(*result.ok());
+            m_fonts[X11Font::ToUnderlying(type)] = std::move(*result.ok());
         }
         else
         {
@@ -147,9 +148,9 @@ auto X11Draw::InitFont(const std::string &font_name, const X11Font::Type type) n
 auto X11Draw::GetFont(const X11Font::Type type) const noexcept -> std::optional<X11Font>
 {
     std::optional<X11Font> ret;
-    if (_fonts[X11Font::ToUnderlying(type)].type().has_value())
+    if (m_fonts[X11Font::ToUnderlying(type)].type().has_value())
     {
-        ret.emplace(_fonts[X11Font::ToUnderlying(type)]);
+        ret.emplace(m_fonts[X11Font::ToUnderlying(type)]);
     }
 
     return ret;
@@ -158,17 +159,17 @@ auto X11Draw::GetFont(const X11Font::Type type) const noexcept -> std::optional<
 auto X11Draw::InitColorScheme(const ColorSchemeConfig &config) noexcept -> Result<Void, X11ColorError>
 {
     // check if the colorscheme kind is already defined, if it is, it will not be redefined
-    const auto it = std::ranges::find_if(_colorschemes, [&config](const X11ColorScheme &colorscheme) -> bool {
+    const auto it = std::ranges::find_if(m_colorschemes, [&config](const X11ColorScheme &colorscheme) -> bool {
         return colorscheme.Kind() == config.kind();
     });
 
     // The colorscheme kind is not yet defined, we will create it and add it to the colorscheme vector.
     // otherwise just return Result<Void>
-    if (it == _colorschemes.end())
+    if (it == m_colorschemes.end())
     {
-        if (const auto result = X11ColorScheme::Create(_dpy, config); result.is_ok())
+        if (const auto result = X11ColorScheme::Create(m_dpy, config); result.is_ok())
         {
-            _colorschemes.emplace_back(std::move(result.ok().value()));
+            m_colorschemes.emplace_back(std::move(result.ok().value()));
         }
         else
         {
@@ -181,10 +182,10 @@ auto X11Draw::InitColorScheme(const ColorSchemeConfig &config) noexcept -> Resul
 
 auto X11Draw::RemoveColorScheme(const ColorSchemeKind kind) noexcept -> bool
 {
-    const auto original_size = _colorschemes.size();
-    std::erase_if(_colorschemes, [&kind](const X11ColorScheme &colorscheme) { return colorscheme.Kind() == kind; });
+    const auto original_size = m_colorschemes.size();
+    std::erase_if(m_colorschemes, [&kind](const X11ColorScheme &colorscheme) { return colorscheme.Kind() == kind; });
 
-    return original_size != _colorschemes.size();
+    return original_size != m_colorschemes.size();
 }
 
 auto X11Draw::GetColorScheme(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>
@@ -192,9 +193,9 @@ auto X11Draw::GetColorScheme(const ColorSchemeKind kind) const noexcept -> std::
     std::optional<X11ColorScheme> ret;
 
     const auto it = std::ranges::find_if(
-        _colorschemes, [&kind](const X11ColorScheme &colorscheme) { return colorscheme.Kind() == kind; });
+        m_colorschemes, [&kind](const X11ColorScheme &colorscheme) { return colorscheme.Kind() == kind; });
 
-    if (it != _colorschemes.end())
+    if (it != m_colorschemes.end())
     {
         ret.emplace(*it);
     }
@@ -205,11 +206,11 @@ auto X11Draw::GetColorScheme(const ColorSchemeKind kind) const noexcept -> std::
 auto X11Draw::InitCursor(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>
 {
     // if the underlying type is std::nullopt, we can initialize this font.
-    if (!_cursors[X11Cursor::ToUnderlying(type)].type().has_value())
+    if (!m_cursors[X11Cursor::ToUnderlying(type)].type().has_value())
     {
-        if (auto result = X11Cursor::Create(_dpy, type); result.is_ok())
+        if (auto result = X11Cursor::Create(m_dpy, type); result.is_ok())
         {
-            _cursors[X11Cursor::ToUnderlying(type)] = std::move(*result.ok());
+            m_cursors[X11Cursor::ToUnderlying(type)] = std::move(*result.ok());
         }
         else
         {
@@ -222,9 +223,9 @@ auto X11Draw::InitCursor(const X11Cursor::Type type) noexcept -> etl::Result<etl
 auto X11Draw::GetCursor(const X11Cursor::Type type) const noexcept -> std::optional<Cursor>
 {
     std::optional<Cursor> ret;
-    if (_cursors[X11Cursor::ToUnderlying(type)].type().has_value())
+    if (m_cursors[X11Cursor::ToUnderlying(type)].type().has_value())
     {
-        ret.emplace(_cursors[X11Cursor::ToUnderlying(type)].CursorId());
+        ret.emplace(m_cursors[X11Cursor::ToUnderlying(type)].CursorId());
     }
 
     return ret;
@@ -232,24 +233,24 @@ auto X11Draw::GetCursor(const X11Cursor::Type type) const noexcept -> std::optio
 
 auto X11Draw::Resize(const Width &width, const Height &height) noexcept -> void
 {
-    _width = width;
-    _height = height;
-    if (_drawable != False)
+    m_width = width;
+    m_height = height;
+    if (m_drawable != False)
     {
-        XFreePixmap(_dpy->raw(), _drawable);
+        XFreePixmap(m_dpy->Raw(), m_drawable);
     }
-    _drawable = XCreatePixmap(_dpy->raw(), _dpy->root_window(), _width.value, _height.value,
-                              DefaultDepth(_dpy->raw(), _dpy->screen_id()));
+    m_drawable = XCreatePixmap(m_dpy->Raw(), m_dpy->GetRootWindow(), m_width.value, m_height.value,
+                               DefaultDepth(m_dpy->Raw(), m_dpy->ScreenId()));
 }
 
 auto X11Draw::width() const noexcept -> const Width &
 {
-    return _width;
+    return m_width;
 }
 
 auto X11Draw::height() const noexcept -> const Height &
 {
-    return _height;
+    return m_height;
 }
 
 auto X11Draw::GetTextExtents(const X11Font &font, const std::string_view &text,
@@ -262,7 +263,7 @@ auto X11Draw::GetTextExtents(const X11Font &font, const std::string_view &text,
         return Result<Vec2D, X11FontError>({"Cannot get text_extents, the text is empty", RUNTIME_INFO});
     }
 
-    XftTextExtentsUtf8(_dpy->raw(), font.xftfont().get(), reinterpret_cast<const XftChar8 *>(text.data()),
+    XftTextExtentsUtf8(m_dpy->Raw(), font.xftfont().get(), reinterpret_cast<const XftChar8 *>(text.data()),
                        static_cast<int32_t>(len), &ext);
 
     return Result<Vec2D, X11FontError>({Width(static_cast<uint32_t>(ext.xOff)), font.height()});

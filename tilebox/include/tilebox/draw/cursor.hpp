@@ -2,12 +2,11 @@
 
 #include "tilebox/error.hpp"
 #include "tilebox/utils/attributes.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/x11/display.hpp"
 
 #include <X11/X.h>
-// ReSharper disable once CppUnusedIncludeDirective
 #include <X11/cursorfont.h>
+#include <etl.hpp>
 
 #include <cstddef>
 #include <cstdint>
@@ -143,15 +142,15 @@ template <typename ErrType> class etl::Result<Tilebox::X11Cursor, ErrType>
   public:
     Result() noexcept = default;
 
-    explicit Result(Tilebox::X11Cursor &&value) noexcept : _result(std::move(value)), _is_ok(true)
+    explicit Result(Tilebox::X11Cursor &&value) noexcept : m_result(std::move(value)), m_is_ok(true)
     {
     }
 
-    explicit Result(const ErrType &error) noexcept : _result(error)
+    explicit Result(const ErrType &error) noexcept : m_result(error)
     {
     }
 
-    explicit Result(ErrType &&error) noexcept : _result(std::move(error))
+    explicit Result(ErrType &&error) noexcept : m_result(std::move(error))
     {
     }
 
@@ -159,13 +158,13 @@ template <typename ErrType> class etl::Result<Tilebox::X11Cursor, ErrType>
     /// @brief Check if the union value is of the ok type
     [[nodiscard]] auto is_ok() const noexcept -> bool
     {
-        return _is_ok;
+        return m_is_ok;
     }
 
     /// @brief Check if the union value is of the error type
     [[nodiscard]] auto is_err() const noexcept -> bool
     {
-        return !_is_ok;
+        return !m_is_ok;
     }
 
     /// @brief Check if the union value is of the error type
@@ -177,9 +176,9 @@ template <typename ErrType> class etl::Result<Tilebox::X11Cursor, ErrType>
     [[nodiscard]] auto ok() noexcept -> std::optional<Tilebox::X11Cursor>
     {
         std::optional<Tilebox::X11Cursor> ret;
-        if (_is_ok)
+        if (m_is_ok)
         {
-            if (auto *value = std::get_if<Tilebox::X11Cursor>(&_result))
+            if (auto *value = std::get_if<Tilebox::X11Cursor>(&m_result))
             {
                 ret.emplace(std::move(*value));
             }
@@ -196,9 +195,9 @@ template <typename ErrType> class etl::Result<Tilebox::X11Cursor, ErrType>
     [[nodiscard]] auto err() const noexcept -> std::optional<ErrType>
     {
         std::optional<ErrType> ret;
-        if (!_is_ok)
+        if (!m_is_ok)
         {
-            if (auto *err = std::get_if<ErrType>(&_result))
+            if (auto *err = std::get_if<ErrType>(&m_result))
             {
                 ret.emplace(*err);
             }
@@ -207,6 +206,6 @@ template <typename ErrType> class etl::Result<Tilebox::X11Cursor, ErrType>
     }
 
   private:
-    std::variant<Tilebox::X11Cursor, ErrType> _result;
-    bool _is_ok{};
+    std::variant<Tilebox::X11Cursor, ErrType> m_result;
+    bool m_is_ok{};
 }; // namespace etl

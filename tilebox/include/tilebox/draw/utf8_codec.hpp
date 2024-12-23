@@ -1,7 +1,8 @@
 #pragma once
 
 #include "tilebox/error.hpp"
-#include "tilebox/vendor/etl.hpp"
+
+#include <etl.hpp>
 
 #include <string>
 

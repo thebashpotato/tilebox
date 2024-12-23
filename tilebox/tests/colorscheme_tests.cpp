@@ -11,7 +11,7 @@ using namespace Tilebox;
 
 TEST(TileboxCoreColorschemeTestSuite, VerifyColorCreation)
 {
-    const auto dpy_opt = X11Display::create();
+    const auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -34,7 +34,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeSizeFunction)
 
 TEST(TileboxCoreColorschemeTestSuite, VerifyColorMoveContructor)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -54,7 +54,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorMoveContructor)
 
 TEST(TileboxCoreColorschemeTestSuite, VerifyColorCopyConstructor)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -91,7 +91,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeConfigBuilder)
 
 TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeCreation)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -112,7 +112,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeCreation)
 
 TEST(TileboxCoreColorschemeTestSuite, VerifyColorAccessors)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {

@@ -2,10 +2,10 @@
 
 #include "tilebox/error.hpp"
 #include "tilebox/utils/attributes.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/x11/display.hpp"
 
 #include <X11/Xft/Xft.h>
+#include <etl.hpp>
 
 #include <memory>
 #include <string>

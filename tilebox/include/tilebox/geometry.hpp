@@ -1,7 +1,9 @@
 #pragma once
 
 #include "tilebox/utils/attributes.hpp"
-#include "tilebox/vendor/etl.hpp"
+
+#include <etl.hpp>
+
 #include <cmath>
 #include <cstdint>
 #include <tuple>
@@ -12,31 +14,43 @@ namespace Tilebox
 namespace TILEBOX_INTERNAL detail
 {
 
-class TILEBOX_EXPORT Xtag{};
+class TILEBOX_EXPORT Xtag
+{
+};
 
-class TILEBOX_EXPORT Ytag{};
+class TILEBOX_EXPORT Ytag
+{
+};
 
-class TILEBOX_EXPORT WidthTag{};
+class TILEBOX_EXPORT WidthTag
+{
+};
 
-class TILEBOX_EXPORT HeightTag{};
+class TILEBOX_EXPORT HeightTag
+{
+};
 
-class TILEBOX_EXPORT DeltaOneTag{};
+class TILEBOX_EXPORT DeltaOneTag
+{
+};
 
-class TILEBOX_EXPORT DeltaTwoTag{};
+class TILEBOX_EXPORT DeltaTwoTag
+{
+};
 
 } // namespace TILEBOX_INTERNAL detail
 
 /// @brief Tagged type for uint32_t x coordinate
-using X = etl::TaggedFundamental<detail::Xtag, int32_t>;
+using X = etl::TaggedFundamental<detail::Xtag, std::int32_t>;
 
 /// @brief Tagged type for uint32_t y coordinate
-using Y = etl::TaggedFundamental<detail::Ytag, int32_t>;
+using Y = etl::TaggedFundamental<detail::Ytag, std::int32_t>;
 
 /// @brief Tagged type for uint32_t width size
-using Width = etl::TaggedFundamental<detail::WidthTag, uint32_t>;
+using Width = etl::TaggedFundamental<detail::WidthTag, std::uint32_t>;
 
 /// @brief Tagged type for uint32_t height size
-using Height = etl::TaggedFundamental<detail::HeightTag, uint32_t>;
+using Height = etl::TaggedFundamental<detail::HeightTag, std::uint32_t>;
 
 /// @brief Represents a pair of unsigned integers.
 class TILEBOX_EXPORT Vec2D

@@ -1,8 +1,9 @@
 #include "tilebox/draw/utf8_codec.hpp"
 #include "tilebox/error.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/vendor/utf8.h" // IWYU pragma: keep
 #include "tilebox/vendor/utf8/checked.h"
+
+#include <etl.hpp>
 
 #include <iterator>
 #include <string>

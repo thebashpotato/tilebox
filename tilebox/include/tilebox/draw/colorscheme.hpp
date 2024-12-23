@@ -4,11 +4,11 @@
 #include "tilebox/draw/colorscheme_config.hpp"
 #include "tilebox/error.hpp"
 #include "tilebox/utils/attributes.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/x11/display.hpp"
 
 #include <array>
 #include <cstdint>
+#include <etl.hpp>
 
 namespace Tilebox
 {

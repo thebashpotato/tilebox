@@ -32,14 +32,14 @@ class TILEBOX_EXPORT X11EventLoop
     ///
     /// @param event_type The event type to listen for
     /// @param callback The callback function to call when the event is received
-    void register_event_handler(X11EventType event_type, X11EventCallback callback);
+    void RegisterEventHandler(X11EventType event_type, X11EventCallback callback);
 
     /// @brief Starts the event loop
     /// @details This function will block until an event is received, the user needs
     /// should do substantial set up before calling this function.
     ///
     /// @param run A flag to keep the loop (program) running, change too false to shut down the event loop.
-    void start(const bool &run) const;
+    void Start(const bool &run) const;
 
   private:
     X11DisplaySharedResource _dpy;

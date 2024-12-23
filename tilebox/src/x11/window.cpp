@@ -10,64 +10,64 @@
 namespace Tilebox
 {
 
-X11Window::X11Window(X11DisplaySharedResource dpy) noexcept : _dpy(std::move(dpy))
+X11Window::X11Window(X11DisplaySharedResource dpy) noexcept : m_dpy(std::move(dpy))
 {
 }
 
 X11Window::~X11Window()
 {
-    unmap();
-    if (_id != 0 && _dpy->is_connected())
+    Unmap();
+    if (m_id != 0 && m_dpy->IsConnected())
     {
         // TODO: Check return codes
-        XDestroyWindow(_dpy->raw(), _id);
-        _id = 0;
+        XDestroyWindow(m_dpy->Raw(), m_id);
+        m_id = 0;
     }
 }
 
 auto X11Window::id() const noexcept -> Window
 {
-    return _id;
+    return m_id;
 }
 
-auto X11Window::create(const Rect &r) noexcept -> bool
+auto X11Window::Create(const Rect &r) noexcept -> bool
 {
     XSetWindowAttributes wa;
-    wa.background_pixel = BlackPixel(_dpy->raw(), _dpy->screen_id());
-    wa.border_pixel = WhitePixel(_dpy->raw(), _dpy->screen_id());
+    wa.background_pixel = BlackPixel(m_dpy->Raw(), m_dpy->ScreenId());
+    wa.border_pixel = WhitePixel(m_dpy->Raw(), m_dpy->ScreenId());
     wa.event_mask = ButtonPress | DestroyNotify;
 
-    if (!_is_mapped)
+    if (!m_is_mapped)
     {
-        _id = XCreateWindow(_dpy->raw(), _dpy->root_window(), r.GetX(), r.GetY(), r.GetW(), r.GetH(), 0,
-                            DefaultDepth(_dpy->raw(), _dpy->screen_id()), InputOutput,
-                            DefaultVisual(_dpy->raw(), _dpy->screen_id()), CWBackPixel | CWBorderPixel | CWEventMask,
-                            &wa);
+        m_id =
+            XCreateWindow(m_dpy->Raw(), m_dpy->GetRootWindow(), r.GetX(), r.GetY(), r.GetW(), r.GetH(), 0,
+                          DefaultDepth(m_dpy->Raw(), m_dpy->ScreenId()), InputOutput,
+                          DefaultVisual(m_dpy->Raw(), m_dpy->ScreenId()), CWBackPixel | CWBorderPixel | CWEventMask, &wa);
 
-        return _id != BadAlloc && _id != BadMatch && _id != BadValue && _id != BadWindow;
+        return m_id != BadAlloc && m_id != BadMatch && m_id != BadValue && m_id != BadWindow;
     }
 
     return false;
 }
 
-auto X11Window::map() noexcept -> bool
+auto X11Window::Map() noexcept -> bool
 {
-    if (!_is_mapped)
+    if (!m_is_mapped)
     {
-        if (XMapWindow(_dpy->raw(), _id) == BadWindow)
+        if (XMapWindow(m_dpy->Raw(), m_id) == BadWindow)
         {
-            return _is_mapped;
+            return m_is_mapped;
         }
-        _is_mapped = true;
+        m_is_mapped = true;
     }
-    return _is_mapped;
+    return m_is_mapped;
 }
 
-auto X11Window::unmap() const noexcept -> void
+auto X11Window::Unmap() const noexcept -> void
 {
-    if (_is_mapped)
+    if (m_is_mapped)
     {
-        XUnmapWindow(_dpy->raw(), _id);
+        XUnmapWindow(m_dpy->Raw(), m_id);
     }
 }
 

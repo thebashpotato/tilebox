@@ -15,7 +15,7 @@ X11EventLoop::X11EventLoop(X11DisplaySharedResource dpy) noexcept : _dpy(std::mo
 {
 }
 
-auto X11EventLoop::register_event_handler(const X11EventType event_type, X11EventCallback callback) -> void
+auto X11EventLoop::RegisterEventHandler(const X11EventType event_type, X11EventCallback callback) -> void
 {
     if (!_event_handlers.contains(event_type))
     {
@@ -28,10 +28,10 @@ auto X11EventLoop::register_event_handler(const X11EventType event_type, X11Even
     }
 }
 
-auto X11EventLoop::start(const bool &run) const -> void
+auto X11EventLoop::Start(const bool &run) const -> void
 {
     XEvent event;
-    while (run && (XNextEvent(_dpy->raw(), &event) == 0))
+    while (run && (XNextEvent(_dpy->Raw(), &event) == 0))
     {
         if (const X11EventType event_type = EventFromXlibEvent(event.type); _event_handlers.contains(event_type))
         {

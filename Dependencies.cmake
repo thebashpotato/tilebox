@@ -3,7 +3,6 @@ include(cmake/CPM.cmake)
 # Done as a function so that updates to variables like CMAKE_CXX_FLAGS don't
 # propagate out to other targets
 function(tilebox_setup_dependencies)
-
   # NOTE: https://cmake.org/cmake/help/latest/module/FindX11.html
   find_package(X11 REQUIRED)
 
@@ -13,10 +12,9 @@ function(tilebox_setup_dependencies)
   # NOTE: https://cmake.org/cmake/help/latest/module/FindFreetype.html
   find_package(Freetype REQUIRED)
 
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    if(NOT TARGET gtest)
-      cpmaddpackage(
-        NAME
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if (NOT TARGET gtest)
+      cpmaddpackage(NAME
         googletest
         GITHUB_REPOSITORY
         google/googletest
@@ -28,16 +26,20 @@ function(tilebox_setup_dependencies)
         "BUILD_GMOCK ON"
         "INSTALL_GTEST OFF"
         "gtest_force_shared_crt ON")
-    endif()
-  endif()
+    endif ()
+  endif ()
+
+  if (NOT TARGET etl::etl)
+    cpmaddpackage("gh:thebashpotato/etl#v0.8.3")
+  endif ()
 
   # For each dependency, see if it's already been provided to us by a parent
   # project
-  if(NOT TARGET fmtlib::fmtlib)
+  if (NOT TARGET fmtlib::fmtlib)
     cpmaddpackage("gh:fmtlib/fmt#11.0.2")
-  endif()
+  endif ()
 
-  if(NOT TARGET spdlog::spdlog)
+  if (NOT TARGET spdlog::spdlog)
     cpmaddpackage(
       NAME
       spdlog
@@ -47,5 +49,5 @@ function(tilebox_setup_dependencies)
       "gabime/spdlog"
       OPTIONS
       "SPDLOG_FMT_EXTERNAL ON")
-  endif()
+  endif ()
 endfunction()

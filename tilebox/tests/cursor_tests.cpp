@@ -14,7 +14,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyCursorStateSize)
 
 TEST(TileboxCoreX11CursorTestSuite, VerifyCreation)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -29,7 +29,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyCreation)
 
 TEST(TileboxCoreX11CursorTestSuite, VerifyMoveConstructor)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -52,7 +52,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyMoveConstructor)
 
 TEST(TileboxCoreX11CursorTestSuite, VerifyMoveAssignment)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {

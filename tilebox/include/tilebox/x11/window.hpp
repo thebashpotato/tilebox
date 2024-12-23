@@ -32,7 +32,7 @@ class TILEBOX_EXPORT X11Window
     ///
     /// @error The following Xlib errors can cause failure.
     ///     `BadAlloc`, `BadMatch`, `BadValue`, and `BadWindow`.
-    [[nodiscard]] auto create(const Rect &r) noexcept -> bool;
+    [[nodiscard]] auto Create(const Rect &r) noexcept -> bool;
 
     /// @brief Maps a window using the Xlib `XMapWindow` function.
     ///
@@ -41,18 +41,18 @@ class TILEBOX_EXPORT X11Window
     ///
     /// @returns false if `BadWindow` error code is received from `XMapWindow`,
     /// true if Success
-    [[nodiscard]] auto map() noexcept -> bool;
+    [[nodiscard]] auto Map() noexcept -> bool;
 
     /// @brief Wrapper around XUnmapWindow
     ///
     /// @details Does not free any memory e.g. XDestroyWindow is not called,
     /// that happens in the Destructor
-    auto unmap() const noexcept -> void;
+    auto Unmap() const noexcept -> void;
 
   private:
-    X11DisplaySharedResource _dpy;
-    bool _is_mapped{false};
-    Window _id{0};
+    X11DisplaySharedResource m_dpy;
+    bool m_is_mapped{};
+    Window m_id{};
 };
 
 } // namespace Tilebox

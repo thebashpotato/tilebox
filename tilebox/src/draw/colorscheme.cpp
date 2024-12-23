@@ -2,8 +2,9 @@
 #include "tilebox/draw/color.hpp"
 #include "tilebox/draw/colorscheme_config.hpp"
 #include "tilebox/error.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/x11/display.hpp"
+
+#include <etl.hpp>
 
 #include <optional>
 #include <stdexcept>

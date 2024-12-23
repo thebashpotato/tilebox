@@ -7,11 +7,11 @@
 #include "tilebox/error.hpp"
 #include "tilebox/geometry.hpp"
 #include "tilebox/utils/attributes.hpp"
-#include "tilebox/vendor/etl.hpp"
 #include "tilebox/x11/display.hpp"
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <etl.hpp>
 
 #include <array>
 #include <cstdint>
@@ -43,7 +43,7 @@ class TILEBOX_EXPORT X11Draw
 
   public:
     [[nodiscard]] static auto Create(const X11DisplaySharedResource &dpy, const Width &width,
-                                     const Height &height) noexcept -> etl::Result<X11Draw, CoreError>;
+                                     const Height &height) noexcept -> etl::Result<X11Draw, Error>;
 
     ///////////////////////////////////////
     /// Font Management
@@ -142,14 +142,14 @@ class TILEBOX_EXPORT X11Draw
     X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, Drawable drawable, Width width, Height height) noexcept;
 
   private:
-    X11DisplaySharedResource _dpy;
-    std::array<X11Font, X11Font::GetUnderlyingSize()> _fonts;
-    std::array<X11Cursor, X11Cursor::GetUnderlyingSize()> _cursors;
-    std::vector<X11ColorScheme> _colorschemes;
-    GC _graphics_ctx;
-    Drawable _drawable;
-    Width _width;
-    Height _height;
+    X11DisplaySharedResource m_dpy;
+    std::array<X11Font, X11Font::GetUnderlyingSize()> m_fonts;
+    std::array<X11Cursor, X11Cursor::GetUnderlyingSize()> m_cursors;
+    std::vector<X11ColorScheme> m_colorschemes;
+    GC m_graphics_ctx;
+    Drawable m_drawable;
+    Width m_width;
+    Height m_height;
 };
 
 } // namespace Tilebox
@@ -160,15 +160,15 @@ template <typename ErrType> class etl::Result<Tilebox::X11Draw, ErrType>
   public:
     Result() noexcept = default;
 
-    explicit Result(Tilebox::X11Draw &&value) noexcept : _result(std::move(value)), _is_ok(true)
+    explicit Result(Tilebox::X11Draw &&value) noexcept : m_result(std::move(value)), m_is_ok(true)
     {
     }
 
-    explicit Result(const ErrType &error) noexcept : _result(error)
+    explicit Result(const ErrType &error) noexcept : m_result(error)
     {
     }
 
-    explicit Result(ErrType &&error) noexcept : _result(std::move(error))
+    explicit Result(ErrType &&error) noexcept : m_result(std::move(error))
     {
     }
 
@@ -176,13 +176,13 @@ template <typename ErrType> class etl::Result<Tilebox::X11Draw, ErrType>
     /// @brief Check if the union value is of the ok type
     [[nodiscard]] auto is_ok() const noexcept -> bool
     {
-        return _is_ok;
+        return m_is_ok;
     }
 
     /// @brief Check if the union value is of the error type
     [[nodiscard]] auto is_err() const noexcept -> bool
     {
-        return !_is_ok;
+        return !m_is_ok;
     }
 
     /// @brief Check if the union value is of the error type
@@ -194,9 +194,9 @@ template <typename ErrType> class etl::Result<Tilebox::X11Draw, ErrType>
     [[nodiscard]] auto ok() noexcept -> std::optional<Tilebox::X11Draw>
     {
         std::optional<Tilebox::X11Draw> ret;
-        if (_is_ok)
+        if (m_is_ok)
         {
-            if (auto *value = std::get_if<Tilebox::X11Draw>(&_result))
+            if (auto *value = std::get_if<Tilebox::X11Draw>(&m_result))
             {
                 ret.emplace(std::move(*value));
             }
@@ -213,9 +213,9 @@ template <typename ErrType> class etl::Result<Tilebox::X11Draw, ErrType>
     [[nodiscard]] auto err() const noexcept -> std::optional<ErrType>
     {
         std::optional<ErrType> ret;
-        if (!_is_ok)
+        if (!m_is_ok)
         {
-            if (auto *err = std::get_if<ErrType>(&_result))
+            if (auto *err = std::get_if<ErrType>(&m_result))
             {
                 ret.emplace(*err);
             }
@@ -224,6 +224,6 @@ template <typename ErrType> class etl::Result<Tilebox::X11Draw, ErrType>
     }
 
   private:
-    std::variant<Tilebox::X11Draw, ErrType> _result;
-    bool _is_ok{};
+    std::variant<Tilebox::X11Draw, ErrType> m_result;
+    bool m_is_ok{};
 }; // namespace etl

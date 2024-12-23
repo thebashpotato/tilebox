@@ -11,7 +11,7 @@ using namespace Tilebox;
 
 TEST(TileboxCoreX11FontTestSuite, VerifyFontCreation)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -30,7 +30,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyFontCreation)
 
 TEST(TileboxCoreX11FontTestSuite, VerifyMoveConstructor)
 {
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -59,7 +59,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyMoveConstructor)
 TEST(TileboxCoreX11FontTestSuite, VerifyCopyConstructor)
 {
 
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -94,7 +94,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyCopyConstructor)
 TEST(TileboxCoreX11FontTestSuite, VerifyMoveAssignment)
 {
 
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
@@ -123,7 +123,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyMoveAssignment)
 TEST(TileboxCoreX11FontTestSuite, VerifyCopyAssignment)
 {
 
-    auto dpy_opt = X11Display::create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {

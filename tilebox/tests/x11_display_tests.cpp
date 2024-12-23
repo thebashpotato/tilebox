@@ -22,7 +22,7 @@ namespace
 auto BuildDisplay() -> X11DisplaySharedResource
 {
 
-    if (const auto display_optional = X11Display::create(); display_optional.has_value())
+    if (const auto display_optional = X11Display::Create(); display_optional.has_value())
     {
         auto display = display_optional.value();
         return display;
@@ -37,7 +37,7 @@ TEST(TileboxCoreX11TestSuite, VerifyX11DisplayLifetimeManagement)
     auto dpy = BuildDisplay();
 
     ASSERT_NE(dpy, nullptr);
-    ASSERT_TRUE(dpy->is_connected());
+    ASSERT_TRUE(dpy->IsConnected());
     ASSERT_EQ(dpy.use_count(), 1);
 
     Lifetime l1(dpy);
@@ -49,12 +49,12 @@ TEST(TileboxCoreX11TestSuite, VerifyX11DisplayLifetimeManagement)
     }
 
     ASSERT_EQ(dpy.use_count(), 2);
-    ASSERT_TRUE(dpy->is_connected());
+    ASSERT_TRUE(dpy->IsConnected());
 
     l1.dpy.reset();
 
     ASSERT_EQ(dpy.use_count(), 1);
-    ASSERT_TRUE(dpy->is_connected());
+    ASSERT_TRUE(dpy->IsConnected());
 
     dpy.reset();
     ASSERT_EQ(dpy, nullptr);

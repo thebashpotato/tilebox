@@ -18,102 +18,101 @@ auto DisplayDeleter::operator()(Display *display) const noexcept -> void
     if (display != nullptr)
     {
         XCloseDisplay(display);
-        display = nullptr;
     }
 }
 
 X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
-    : _dpy(XOpenDisplay(display_name.has_value() ? display_name->c_str() : nullptr), DisplayDeleter())
+    : m_dpy(XOpenDisplay(display_name.has_value() ? display_name->c_str() : nullptr), DisplayDeleter())
 {
-    refresh();
+    Refresh();
 }
 
-auto X11Display::create(const std::optional<std::string> &display_name) -> std::optional<X11DisplaySharedResource>
+auto X11Display::Create(const std::optional<std::string> &display_name) -> std::optional<X11DisplaySharedResource>
 {
     std::optional<X11DisplaySharedResource> ret;
     auto display = std::shared_ptr<X11Display>(new X11Display(display_name));
-    if (display->is_connected())
+    if (display->IsConnected())
     {
         ret.emplace(std::move(display));
     }
     return ret;
 }
 
-auto X11Display::is_connected() const noexcept -> bool
+auto X11Display::IsConnected() const noexcept -> bool
 {
-    return _dpy != nullptr;
+    return m_dpy != nullptr;
 }
 
-auto X11Display::raw() const noexcept -> Display *
+auto X11Display::Raw() const noexcept -> Display *
 {
-    return _dpy.get();
+    return m_dpy.get();
 }
 
-auto X11Display::refresh() noexcept -> void
+auto X11Display::Refresh() noexcept -> void
 {
-    if (is_connected())
+    if (IsConnected())
     {
-        _screen_id = DefaultScreen(_dpy.get());
-        _screen_width = DisplayWidth(_dpy.get(), _screen_id);
-        _screen_height = DisplayHeight(_dpy.get(), _screen_id);
-        _screen_count = ScreenCount(_dpy.get());
-        _default_root_window = DefaultRootWindow(_dpy.get());
-        _root_window = RootWindow(_dpy.get(), _screen_id);
-        _server_vendor = XServerVendor(_dpy.get());
+        m_screen_id = DefaultScreen(m_dpy.get());
+        m_screen_width = DisplayWidth(m_dpy.get(), m_screen_id);
+        m_screen_height = DisplayHeight(m_dpy.get(), m_screen_id);
+        m_screen_count = ScreenCount(m_dpy.get());
+        m_default_root_window = DefaultRootWindow(m_dpy.get());
+        m_root_window = RootWindow(m_dpy.get(), m_screen_id);
+        m_server_vendor = XServerVendor(m_dpy.get());
     }
 }
 
-auto X11Display::screen_id() const noexcept -> std::int32_t
+auto X11Display::ScreenId() const noexcept -> std::int32_t
 {
-    return _screen_id;
+    return m_screen_id;
 }
 
-auto X11Display::screen_width_raw() const noexcept -> std::int32_t
+auto X11Display::ScreenWidthRaw() const noexcept -> std::int32_t
 {
-    return _screen_width;
+    return m_screen_width;
 }
 
-auto X11Display::screen_height_raw() const noexcept -> std::int32_t
+auto X11Display::ScreenHeightRaw() const noexcept -> std::int32_t
 {
-    return _screen_height;
+    return m_screen_height;
 }
 
-auto X11Display::screen_width() const noexcept -> Width
+auto X11Display::ScreenWidth() const noexcept -> Width
 {
-    return Width(static_cast<uint32_t>(_screen_width));
+    return Width(static_cast<uint32_t>(m_screen_width));
 }
 
-auto X11Display::screen_height() const noexcept -> Height
+auto X11Display::ScreenHeight() const noexcept -> Height
 {
-    return Height(static_cast<uint32_t>(_screen_height));
+    return Height(static_cast<uint32_t>(m_screen_height));
 }
 
-auto X11Display::screen_count() const noexcept -> std::int32_t
+auto X11Display::GetScreenCount() const noexcept -> std::int32_t
 {
-    return _screen_count;
+    return m_screen_count;
 }
 
-auto X11Display::default_root_window() const noexcept -> Window
+auto X11Display::GetDefaultWindow() const noexcept -> Window
 {
-    return _default_root_window;
+    return m_default_root_window;
 }
 
-auto X11Display::root_window() const noexcept -> Window
+auto X11Display::GetRootWindow() const noexcept -> Window
 {
-    return _root_window;
+    return m_root_window;
 }
 
-auto X11Display::server_vendor() const noexcept -> std::string
+auto X11Display::GetServerVendor() const noexcept -> std::string
 {
-    return _server_vendor;
+    return m_server_vendor;
 }
 
-auto X11Display::sync(const bool discard) const noexcept -> void
+auto X11Display::Sync(const bool discard) const noexcept -> void
 {
-    if (is_connected())
+    if (IsConnected())
     {
         const auto xdiscard = discard ? True : False;
-        XSync(_dpy.get(), xdiscard);
+        XSync(m_dpy.get(), xdiscard);
     }
 }
 
