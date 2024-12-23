@@ -1,11 +1,12 @@
-#include <spdlog/spdlog.h>
+#include "log.hpp"
 
 #include <cstdlib>
 #include <tilebox/config.hpp>
 
 auto main() -> int
 {
-    spdlog::info("{} {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
+    Tilebox::Twm::Logging::Init();
+    Tilebox::Twm::Log::Info("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
 
     return EXIT_SUCCESS;
 }
