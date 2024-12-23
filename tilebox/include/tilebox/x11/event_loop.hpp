@@ -38,8 +38,8 @@ class TILEBOX_EXPORT X11EventLoop
     /// @details This function will block until an event is received, the user needs
     /// should do substantial set up before calling this function.
     ///
-    /// @param run A flag to keep the loop (program) running, change too false to shut down the event loop.
-    void Start(const bool &run) const;
+    /// @param run_flag A flag to keep the loop (program) running, change too false to shut down the event loop.
+    void Run(const bool &run_flag) const;
 
   private:
     X11DisplaySharedResource _dpy;

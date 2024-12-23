@@ -28,10 +28,10 @@ auto X11EventLoop::RegisterEventHandler(const X11EventType event_type, X11EventC
     }
 }
 
-auto X11EventLoop::Start(const bool &run) const -> void
+auto X11EventLoop::Run(const bool &run_flag) const -> void
 {
     XEvent event;
-    while (run && (XNextEvent(_dpy->Raw(), &event) == 0))
+    while (run_flag && (XNextEvent(_dpy->Raw(), &event) == 0))
     {
         if (const X11EventType event_type = EventFromXlibEvent(event.type); _event_handlers.contains(event_type))
         {

@@ -61,7 +61,7 @@ auto PeripheralLogger::Run() noexcept -> Result<Void, Error>
 {
     if (auto res = Setup(); res.is_err())
     {
-        return res;
+        return std::move(res);
     }
 
     m_event_loop.RegisterEventHandler(X11EventType::X11ButtonPress, [&](XEvent *event) -> void {
@@ -110,7 +110,7 @@ auto PeripheralLogger::Run() noexcept -> Result<Void, Error>
         }
     });
 
-    m_event_loop.Start(m_run);
+    m_event_loop.Run(m_run);
     m_dpy->Sync();
     return Result<Void, Error>(Void());
 }
