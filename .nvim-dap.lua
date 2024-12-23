@@ -12,7 +12,7 @@ dap.configurations.cpp = {
 		type = "lldb",
 		request = "launch",
 		program = function()
-			return vim.fn.getcwd() .. "/build/tilebox-core/examples/tilebox-core-peripheral-logger-example"
+			return vim.fn.getcwd() .. "/build/tilebox/examples/tilebox-peripheral-logger-example"
 		end,
 		cwd = "${workspaceFolder}",
 		stopOnEntry = false,
@@ -22,7 +22,7 @@ dap.configurations.cpp = {
 		type = "lldb",
 		request = "launch",
 		program = function()
-			return vim.fn.getcwd() .. "/build/tilebox-core/examples/tilebox-core-scratch-example"
+			return vim.fn.getcwd() .. "/build/tilebox/examples/tilebox-scratch-example"
 		end,
 		cwd = "${workspaceFolder}",
 		stopOnEntry = false,
@@ -32,7 +32,7 @@ dap.configurations.cpp = {
 		type = "lldb",
 		request = "launch",
 		program = function()
-			return vim.fn.getcwd() .. "/build/tilebox-core/tests/tilebox-core-tests"
+			return vim.fn.getcwd() .. "/build/tilebox/tests/tilebox-tests"
 		end,
 		cwd = "${workspaceFolder}",
 		stopOnEntry = false,

@@ -4,6 +4,15 @@ include(cmake/CPM.cmake)
 # propagate out to other targets
 function(tilebox_setup_dependencies)
 
+  # NOTE: https://cmake.org/cmake/help/latest/module/FindX11.html
+  find_package(X11 REQUIRED)
+
+  # NOTE: https://cmake.org/cmake/help/latest/module/FindFontconfig.html
+  find_package(Fontconfig REQUIRED)
+
+  # NOTE: https://cmake.org/cmake/help/latest/module/FindFreetype.html
+  find_package(Freetype REQUIRED)
+
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(NOT TARGET gtest)
       cpmaddpackage(
