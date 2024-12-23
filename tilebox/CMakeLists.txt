@@ -11,6 +11,7 @@ project(
 set(PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(PACKAGE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(PACKAGE_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+set(PACKAGE_EXAMPLE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/examples")
 
 #
 # Add all source files
@@ -39,8 +40,9 @@ message(
 # Add tests if in Debug mode
 #
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  message(STATUS "Tests active for project '${PROJECT_NAME}'")
+  message(STATUS "Tests and Examples active for project '${PROJECT_NAME}'")
   add_subdirectory(tests)
+  add_subdirectory(examples)
 endif ()
 
 #
@@ -85,4 +87,5 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   run_clang_format(${PACKAGE_INCLUDE_DIR})
   run_clang_format(${PACKAGE_SOURCE_DIR})
   run_clang_format(${PACKAGE_TEST_DIR})
+  run_clang_format(${PACKAGE_EXAMPLE_DIR})
 endif ()

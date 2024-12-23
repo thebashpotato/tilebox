@@ -39,10 +39,10 @@ auto X11Window::Create(const Rect &r) noexcept -> bool
 
     if (!m_is_mapped)
     {
-        m_id =
-            XCreateWindow(m_dpy->Raw(), m_dpy->GetRootWindow(), r.GetX(), r.GetY(), r.GetW(), r.GetH(), 0,
-                          DefaultDepth(m_dpy->Raw(), m_dpy->ScreenId()), InputOutput,
-                          DefaultVisual(m_dpy->Raw(), m_dpy->ScreenId()), CWBackPixel | CWBorderPixel | CWEventMask, &wa);
+        m_id = XCreateWindow(m_dpy->Raw(), m_dpy->GetRootWindow(), r.GetX(), r.GetY(), r.GetW(), r.GetH(), 0,
+                             DefaultDepth(m_dpy->Raw(), m_dpy->ScreenId()), InputOutput,
+                             DefaultVisual(m_dpy->Raw(), m_dpy->ScreenId()), CWBackPixel | CWBorderPixel | CWEventMask,
+                             &wa);
 
         return m_id != BadAlloc && m_id != BadMatch && m_id != BadValue && m_id != BadWindow;
     }
