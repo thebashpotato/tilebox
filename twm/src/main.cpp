@@ -8,16 +8,20 @@ using namespace Tilebox;
 
 auto main() -> int
 {
-    if (const auto create_res = Twm::WindowManager::Create(); create_res.is_ok())
+    auto twm_create_result = Twm::WindowManager::Create();
+    if (twm_create_result.is_err())
     {
-        const Twm::WindowManager wm = std::move(*create_res.ok());
-        if (const auto start_res = wm.Start(); start_res.is_err())
-        {
-            Twm::Log::Error("{}", start_res.err().value()->msg());
-            return EXIT_FAILURE;
-        }
-        Twm::Log::Info("Shutting down");
+        Twm::Log::Error("{}", twm_create_result.err().value().info());
+        return EXIT_FAILURE;
     }
+
+    const Twm::WindowManager wm = std::move(*twm_create_result.ok());
+    if (const auto twm_start_result = wm.Start(); twm_start_result.is_err())
+    {
+        Twm::Log::Error("{}", twm_start_result.err().value()->info());
+        return EXIT_FAILURE;
+    }
+    Twm::Log::Info("Shutting down");
 
     return EXIT_SUCCESS;
 }
