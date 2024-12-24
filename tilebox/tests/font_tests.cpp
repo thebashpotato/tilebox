@@ -18,7 +18,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyFontCreation)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
     const auto font_res = X11Font::Create(dpy, "monospace:size=12", X11Font::Type::Primary);
 
     ASSERT_EQ(font_res.is_ok(), true);
@@ -37,7 +37,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyMoveConstructor)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const auto font_res1 = X11Font::Create(dpy, "monospace:size=12", X11Font::Type::Primary);
 
@@ -66,7 +66,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyCopyConstructor)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const auto font_res1 = X11Font::Create(dpy, "monospace:size=12", X11Font::Type::Primary);
 
@@ -101,7 +101,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyMoveAssignment)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const auto font_res1 = X11Font::Create(dpy, "monospace:size=12", X11Font::Type::Primary);
     const auto font_res2 = X11Font::Create(dpy, "monospace:size=16", X11Font::Type::Secondary);
@@ -130,7 +130,7 @@ TEST(TileboxCoreX11FontTestSuite, VerifyCopyAssignment)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const auto font_res1 = X11Font::Create(dpy, "monospace:size=12", X11Font::Type::Primary);
     const auto font_res2 = X11Font::Create(dpy, "monospace:size=16", X11Font::Type::Secondary);

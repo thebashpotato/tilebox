@@ -11,14 +11,14 @@ using namespace Tilebox;
 
 TEST(TileboxCoreColorschemeTestSuite, VerifyColorCreation)
 {
-    const auto dpy_opt = X11Display::Create();
+    auto dpy_opt = X11Display::Create();
 
     if (!dpy_opt.has_value())
     {
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource &dpy = dpy_opt.value();
+    const X11DisplaySharedResource &dpy = std::move(dpy_opt.value());
 
     const auto color_res = X11Color::Create(dpy, "#000000");
     ASSERT_EQ(color_res.is_ok(), true);
@@ -41,7 +41,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorMoveContructor)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const auto color_res = X11Color::Create(dpy, "#000000");
     ASSERT_EQ(color_res.is_ok(), true);
@@ -61,7 +61,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorCopyConstructor)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const auto color_res = X11Color::Create(dpy, "#000000");
     ASSERT_EQ(color_res.is_ok(), true);
@@ -98,7 +98,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeCreation)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const ColorSchemeConfig primary = ColorSchemeConfig::Build(ColorSchemeKind::Primary)
                                           .foreground("#bbbbbb")
@@ -119,7 +119,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorAccessors)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const ColorSchemeConfig primary = ColorSchemeConfig::Build(ColorSchemeKind::Primary)
                                           .foreground("#bbbbbb")

@@ -21,7 +21,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyCreation)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     const auto cursor_opt = X11Cursor::Create(dpy, X11Cursor::Type::Normal);
     ASSERT_EQ(cursor_opt.is_ok(), true);
@@ -36,7 +36,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyMoveConstructor)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     auto cursor_ret = X11Cursor::Create(dpy, X11Cursor::Type::Normal);
     ASSERT_EQ(cursor_ret.is_ok(), true);
@@ -59,7 +59,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyMoveAssignment)
         testing::AssertionFailure() << "Could not open x11 display";
     }
 
-    const X11DisplaySharedResource dpy = dpy_opt.value();
+    const X11DisplaySharedResource dpy = std::move(dpy_opt.value());
 
     auto cursor_ret = X11Cursor::Create(dpy, X11Cursor::Type::Normal);
     ASSERT_EQ(cursor_ret.is_ok(), true);

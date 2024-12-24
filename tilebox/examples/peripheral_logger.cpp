@@ -61,7 +61,7 @@ auto PeripheralLogger::Run() noexcept -> Result<Void, Error>
 {
     if (auto res = Setup(); res.is_err())
     {
-        return std::move(res);
+        return res;
     }
 
     m_event_loop.RegisterEventHandler(X11EventType::X11ButtonPress, [&](XEvent *event) -> void {

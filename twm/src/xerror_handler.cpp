@@ -11,7 +11,6 @@
 namespace Tilebox::Twm
 {
 
-
 auto WmStartupErrorHandler([[maybe_unused]] Display *dpy, [[maybe_unused]] XErrorEvent *ee) -> std::int32_t
 {
     // TODO: Figure out a better way to handle errors other than abandoning all hope
