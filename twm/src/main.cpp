@@ -1,12 +1,23 @@
 #include "log.hpp"
+#include "wm.hpp"
 
 #include <cstdlib>
-#include <tilebox/config.hpp>
+#include <utility>
+
+using namespace Tilebox;
 
 auto main() -> int
 {
-    Tilebox::Twm::Logging::Init();
-    Tilebox::Twm::Log::Info("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
+    if (const auto create_res = Twm::WindowManager::Create(); create_res.is_ok())
+    {
+        const Twm::WindowManager wm = std::move(*create_res.ok());
+        if (const auto start_res = wm.Start(); start_res.is_err())
+        {
+            Twm::Log::Error("{}", start_res.err().value()->msg());
+            return EXIT_FAILURE;
+        }
+        Twm::Log::Info("Shutting down");
+    }
 
     return EXIT_SUCCESS;
 }

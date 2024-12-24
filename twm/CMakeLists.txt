@@ -17,7 +17,12 @@ set(PACKAGE_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests")
 #
 set(SOURCE_FILES
   "${PACKAGE_SOURCE_DIR}/main.cpp"
-  "${PACKAGE_SOURCE_DIR}/log.cpp")
+  "${PACKAGE_SOURCE_DIR}/log.hpp"
+  "${PACKAGE_SOURCE_DIR}/log.cpp"
+  "${PACKAGE_SOURCE_DIR}/wm.hpp"
+  "${PACKAGE_SOURCE_DIR}/wm.cpp"
+  "${PACKAGE_SOURCE_DIR}/xerror_handler.hpp"
+  "${PACKAGE_SOURCE_DIR}/xerror_handler.cpp")
 
 #
 # Output build information
@@ -38,7 +43,11 @@ target_link_libraries(
   ${TARGET_NAME} PRIVATE tilebox_workspace::tilebox_options
   tilebox_workspace::tilebox_warnings)
 
-target_link_system_libraries(${TARGET_NAME} PRIVATE fmt::fmt spdlog::spdlog
+target_link_system_libraries(${TARGET_NAME} PRIVATE
+  ${X11_X11_LIB}
+  fmt::fmt
+  spdlog::spdlog
+  etl::etl
   tilebox::tilebox)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
