@@ -79,7 +79,7 @@ class TILEBOX_EXPORT X11Display
     [[nodiscard]] auto GetScreenCount() const noexcept -> std::int32_t;
 
     /// @brief Gets default root window
-    [[nodiscard]] auto GetDefaultWindow() const noexcept -> Window;
+    [[nodiscard]] auto GetDefaultRootWindow() const noexcept -> Window;
 
     /// @brief Gets root window based on the current screen id
     [[nodiscard]] auto GetRootWindow() const noexcept -> Window;

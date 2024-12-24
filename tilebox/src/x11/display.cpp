@@ -30,8 +30,7 @@ X11Display::X11Display(const std::optional<std::string> &display_name) noexcept
 auto X11Display::Create(const std::optional<std::string> &display_name) -> std::optional<X11DisplaySharedResource>
 {
     std::optional<X11DisplaySharedResource> ret;
-    auto display = std::shared_ptr<X11Display>(new X11Display(display_name));
-    if (display->IsConnected())
+    if (auto display = std::shared_ptr<X11Display>(new X11Display(display_name)); display->IsConnected())
     {
         ret.emplace(std::move(display));
     }
@@ -92,7 +91,7 @@ auto X11Display::GetScreenCount() const noexcept -> std::int32_t
     return m_screen_count;
 }
 
-auto X11Display::GetDefaultWindow() const noexcept -> Window
+auto X11Display::GetDefaultRootWindow() const noexcept -> Window
 {
     return m_default_root_window;
 }

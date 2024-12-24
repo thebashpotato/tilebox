@@ -61,9 +61,10 @@ add_library(tilebox::tilebox ALIAS ${PROJECT_NAME})
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE tilebox_workspace::tilebox_options
-  tilebox_workspace::tilebox_warnings
+  tilebox_workspace::tilebox_warnings)
+
+target_link_system_libraries(${PROJECT_NAME} PRIVATE
   fmt::fmt
-  spdlog::spdlog
   etl::etl
   ${X11_Xft_LIB}
   ${X11_X11_LIB}
