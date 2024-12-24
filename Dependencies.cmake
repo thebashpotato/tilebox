@@ -33,6 +33,10 @@ function(tilebox_setup_dependencies)
     cpmaddpackage("gh:thebashpotato/etl#v0.8.3")
   endif ()
 
+  if (NOT TARGET utf8cpp)
+    cpmaddpackage("gh:nemtrif/utfcpp#v4.0.6")
+  endif ()
+
   # For each dependency, see if it's already been provided to us by a parent
   # project
   if (NOT TARGET fmtlib::fmtlib)

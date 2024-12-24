@@ -2,7 +2,7 @@ project(
   tilebox
   VERSION 0.1.0
   DESCRIPTION
-  "Provides a modern C++ RAII wrapper around X11 objects and idioms, as well as providing a very basic drawing and font utilities"
+  "Provides a modern C++ RAII wrapper around Xlib objects and idioms, as well as providing a very basic drawing and font utilities"
   LANGUAGES CXX)
 
 #
@@ -66,6 +66,7 @@ target_link_libraries(
 target_link_system_libraries(${PROJECT_NAME} PRIVATE
   fmt::fmt
   etl::etl
+  utf8cpp
   ${X11_Xft_LIB}
   ${X11_X11_LIB}
   ${Fontconfig_LIBRARY})
