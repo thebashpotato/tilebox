@@ -34,46 +34,46 @@ auto X11Cursor::Create(const X11DisplaySharedResource &dpy,
 
 auto X11Cursor::CursorId() const noexcept -> Cursor
 {
-    return _cursor;
+    return m_cursor;
 }
 
 auto X11Cursor::type() const noexcept -> std::optional<Type>
 {
-    return _type;
+    return m_type;
 }
 
 X11Cursor::X11Cursor(X11DisplaySharedResource dpy, const Type type, const Cursor cursor) noexcept
-    : _dpy(std::move(dpy)), _type(type), _cursor(cursor)
+    : m_dpy(std::move(dpy)), m_type(type), m_cursor(cursor)
 {
 }
 
 X11Cursor::~X11Cursor()
 {
-    if (_cursor != False && _dpy->IsConnected())
+    if (m_cursor != False && m_dpy->IsConnected())
     {
-        XFreeCursor(_dpy->Raw(), _cursor);
-        _type.reset();
-        _cursor = False;
+        XFreeCursor(m_dpy->Raw(), m_cursor);
+        m_type.reset();
+        m_cursor = False;
     }
 }
 
-X11Cursor::X11Cursor(X11Cursor &&rhs) noexcept : _dpy(std::move(rhs._dpy)), _type(rhs._type), _cursor(rhs._cursor)
+X11Cursor::X11Cursor(X11Cursor &&rhs) noexcept : m_dpy(std::move(rhs.m_dpy)), m_type(rhs.m_type), m_cursor(rhs.m_cursor)
 {
-    rhs._type.reset();
-    rhs._cursor = False;
+    rhs.m_type.reset();
+    rhs.m_cursor = False;
 }
 
 auto X11Cursor::operator=(X11Cursor &&rhs) noexcept -> X11Cursor &
 {
     if (this != &rhs)
     {
-        _dpy = std::move(rhs._dpy);
+        m_dpy = std::move(rhs.m_dpy);
 
-        _type = rhs._type;
-        rhs._type.reset();
+        m_type = rhs.m_type;
+        rhs.m_type.reset();
 
-        _cursor = rhs._cursor;
-        rhs._cursor = False;
+        m_cursor = rhs.m_cursor;
+        rhs.m_cursor = False;
     }
     return *this;
 }

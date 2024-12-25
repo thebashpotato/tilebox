@@ -59,8 +59,8 @@ class TILEBOX_EXPORT X11Draw
     ///
     /// @returns A result type containing Void if success, or an error if the underlying XftFont or FcPattern could not
     /// be allocated.
-    [[nodiscard]] auto InitFont(const std::string &font_name,
-                                X11Font::Type type) noexcept -> etl::Result<etl::Void, X11FontError>;
+    [[nodiscard]] auto InitFont(const std::string &font_name, X11Font::Type type) noexcept
+        -> etl::Result<etl::Void, X11FontError>;
 
     /// @brief Gets a font by enum type
     ///
@@ -127,8 +127,7 @@ class TILEBOX_EXPORT X11Draw
     /// @returns optional containing the X11Cursor implementation for the specified type iff the type was initialized.
     [[nodiscard]] auto GetCursor(X11Cursor::Type type) const noexcept -> std::optional<Cursor>;
 
-  public:
-    auto Resize(const Width &width, const Height &height) noexcept -> void;
+    void Resize(const Width &width, const Height &height) noexcept;
 
     [[nodiscard]] auto width() const noexcept -> const Width &;
 

@@ -6,9 +6,10 @@
 #include "tilebox/utils/attributes.hpp"
 #include "tilebox/x11/display.hpp"
 
+#include <etl.hpp>
+
 #include <array>
 #include <cstdint>
-#include <etl.hpp>
 
 namespace Tilebox
 {

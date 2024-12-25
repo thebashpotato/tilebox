@@ -129,9 +129,9 @@ class TILEBOX_EXPORT X11Cursor
     X11Cursor(X11DisplaySharedResource dpy, Type type, Cursor cursor) noexcept;
 
   private:
-    X11DisplaySharedResource _dpy;
-    std::optional<Type> _type;
-    Cursor _cursor{};
+    X11DisplaySharedResource m_dpy;
+    std::optional<Type> m_type;
+    Cursor m_cursor{};
 };
 
 } // namespace Tilebox

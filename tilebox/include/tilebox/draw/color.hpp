@@ -19,7 +19,7 @@ struct TILEBOX_INTERNAL XftColorDeleter
 
     explicit XftColorDeleter(X11DisplaySharedResource display) noexcept;
 
-    auto operator()(XftColor *color) const noexcept -> void;
+    void operator()(XftColor *color) const noexcept;
 };
 
 using XftColorSharedResource = std::shared_ptr<XftColor>;
