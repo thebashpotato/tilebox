@@ -7,7 +7,7 @@ conan-cache/
 .cache/
 
 # Generated config files
-core/include/tilebox_core/config.hpp
+tilebox/include/tilebox/config.hpp
 
 
 # User spesific settings
