@@ -46,7 +46,7 @@ auto WindowManager::Start() const noexcept -> etl::Result<etl::Void, etl::DynErr
     if (IsOtherWmRunning())
     {
         return etl::Result<etl::Void, etl::DynError>(
-            std::make_shared<Error>(Error("Another Window Manager is already running", etl::RUNTIME_INFO)));
+            std::make_shared<Error>("Another Window Manager is already running"));
     }
     ProcessCleanup();
     Log::Debug("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
