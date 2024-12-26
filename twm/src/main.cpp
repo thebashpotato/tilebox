@@ -15,8 +15,8 @@ auto main() -> int
         return EXIT_FAILURE;
     }
 
-    const Twm::WindowManager wm = std::move(*twm_create_result.ok());
-    if (const auto twm_start_result = wm.Start(); twm_start_result.is_err())
+    Twm::WindowManager wm = std::move(*twm_create_result.ok());
+    if (auto twm_start_result = wm.Start(); twm_start_result.is_err())
     {
         Twm::Log::Error("{}", twm_start_result.err().value()->info());
         return EXIT_FAILURE;

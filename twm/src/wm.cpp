@@ -41,7 +41,7 @@ auto WindowManager::Create() noexcept -> etl::Result<WindowManager, Error>
     return etl::Result<WindowManager, Error>(WindowManager(std::move(shared_display), std::move(draw)));
 }
 
-auto WindowManager::Start() const noexcept -> etl::Result<etl::Void, etl::DynError>
+auto WindowManager::Start() noexcept -> etl::Result<etl::Void, etl::DynError>
 {
     if (IsOtherWmRunning())
     {
@@ -50,8 +50,9 @@ auto WindowManager::Start() const noexcept -> etl::Result<etl::Void, etl::DynErr
     }
     ProcessCleanup();
     Log::Debug("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
-
     Log::Info("Starting twm");
+
+    Initialize();
 
     return etl::Result<etl::Void, etl::DynError>(etl::Void());
 }
@@ -108,6 +109,7 @@ void WindowManager::ProcessCleanup() noexcept
 
 void WindowManager::Initialize() noexcept
 {
+    m_atom_manager.Init(m_dpy);
 }
 
 } // namespace Tilebox::Twm

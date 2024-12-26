@@ -1,5 +1,7 @@
 #pragma once
 
+#include "atom_manager.hpp"
+
 #include <etl.hpp>
 #include <tilebox/draw/draw.hpp>
 #include <tilebox/error.hpp>
@@ -22,7 +24,7 @@ class WindowManager
 
   public:
     [[nodiscard]] static auto Create() noexcept -> etl::Result<WindowManager, Error>;
-    [[nodiscard]] auto Start() const noexcept -> etl::Result<etl::Void, etl::DynError>;
+    [[nodiscard]] auto Start() noexcept -> etl::Result<etl::Void, etl::DynError>;
 
   private:
     /// @brief Check to see if another window manager is already running
@@ -43,6 +45,7 @@ class WindowManager
     X11DisplaySharedResource m_dpy;
     X11Draw m_draw;
     X11EventLoop m_event_loop;
+    AtomManager m_atom_manager;
     bool m_run{true};
 };
 
