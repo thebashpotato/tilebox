@@ -8,6 +8,8 @@
 namespace Tilebox::Twm
 {
 
+// NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
+
 /// @brief Global pointer for the original error handler
 inline int (*g_error_handler_callback)(Display *, XErrorEvent *) = nullptr;
 
@@ -15,6 +17,8 @@ inline int (*g_error_handler_callback)(Display *, XErrorEvent *) = nullptr;
 ///
 /// @details Only used in the beginning of the program, not that big of a deal.
 inline bool g_another_window_manager_is_running = false;
+
+// NOLINTEND(cppcoreguidelines-avoid-non-const-global-variables)
 
 /// @brief This function calls std::exit, any heap allocated memory will be left to the OS
 /// to clean up, the good news is it won't be much.
