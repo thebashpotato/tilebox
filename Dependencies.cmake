@@ -30,7 +30,7 @@ function(tilebox_setup_dependencies)
   endif ()
 
   if (NOT TARGET etl::etl)
-    cpmaddpackage("gh:thebashpotato/etl#v0.8.3")
+    cpmaddpackage("gh:thebashpotato/etl#v0.8.4")
   endif ()
 
   if (NOT TARGET utf8cpp)
