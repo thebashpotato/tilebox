@@ -22,7 +22,8 @@ set(SOURCE_FILES
   "${PACKAGE_SOURCE_DIR}/wm.hpp"
   "${PACKAGE_SOURCE_DIR}/wm.cpp"
   "${PACKAGE_SOURCE_DIR}/xerror_handler.hpp"
-  "${PACKAGE_SOURCE_DIR}/xerror_handler.cpp")
+  "${PACKAGE_SOURCE_DIR}/xerror_handler.cpp"
+  "${PACKAGE_SOURCE_DIR}/atom_manager.cpp")
 
 #
 # Output build information

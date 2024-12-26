@@ -31,7 +31,6 @@ embed:
 	# Embeds twm in a Xephyr instance for testing
 	$(EMBED_SCRIPT)
 
-
 tests:
 	ctest --test-dir $(BUILD_DIR)
 
