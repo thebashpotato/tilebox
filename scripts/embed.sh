@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/env sh
 
-BUILD_DIR=$(pwd)/out/build/unixlike-gcc-debug/twm
+BUILD_DIR=$(pwd)/build/twm
 BINARY=twm
 
 echo "Embedding ${BUILD_DIR}/${BINARY}"
@@ -23,3 +23,5 @@ XEPHYR_PID=$!
 sleep 1
 DISPLAY=:1 "${BUILD_DIR}"/${BINARY} &
 wait $XEPHYR_PID
+
+exit 0
