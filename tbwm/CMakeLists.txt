@@ -4,7 +4,7 @@ project(
   DESCRIPTION "Tilebox powered Tiling Window Manager (Non-Reparenting)"
   LANGUAGES CXX)
 
-set(TARGET_NAME twm)
+set(TARGET_NAME tbwm)
 
 #
 # Set our source and include directory variables for use through the build

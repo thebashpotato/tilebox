@@ -1,7 +1,7 @@
 #!/bin/env sh
 
-BUILD_DIR=$(pwd)/build/twm
-BINARY=twm
+BUILD_DIR=$(pwd)/build/tbwm
+BINARY=tbwm
 
 echo "Embedding ${BUILD_DIR}/${BINARY}"
 

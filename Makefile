@@ -28,7 +28,7 @@ configure_gnu_rel:
 	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -B $(BUILD_DIR) -G $(GENERATOR)
 
 embed:
-	# Embeds twm in a Xephyr instance for testing
+	# Embeds tbwm in a Xephyr instance for testing
 	$(EMBED_SCRIPT)
 
 tests:

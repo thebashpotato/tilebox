@@ -38,4 +38,4 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 add_subdirectory(tilebox)
-add_subdirectory(twm)
+add_subdirectory(tbwm)

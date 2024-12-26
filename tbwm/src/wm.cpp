@@ -50,7 +50,7 @@ auto WindowManager::Start() noexcept -> etl::Result<etl::Void, etl::DynError>
     }
     ProcessCleanup();
     Log::Debug("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
-    Log::Info("Starting twm");
+    Log::Info("Starting tbwm");
 
     Initialize();
 
