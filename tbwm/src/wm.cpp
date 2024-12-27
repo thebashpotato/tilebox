@@ -6,6 +6,7 @@
 #include <X11/Xlib.h>
 #include <etl.hpp>
 #include <tilebox/config.hpp>
+#include <tilebox/draw/colorscheme_config.hpp>
 #include <tilebox/draw/draw.hpp>
 #include <tilebox/draw/font.hpp>
 #include <tilebox/error.hpp>
@@ -131,6 +132,28 @@ auto WindowManager::Initialize() noexcept -> Result<Void, DynError>
         return Result<Void, DynError>(std::make_shared<X11FontError>(std::move(res.err().value())));
     }
 
+    // Initialize colorschemes
+
+    // TODO: Colorscheme config code will be moved into the user config code
+    const ColorSchemeConfig primary = ColorSchemeConfig::Build(ColorSchemeKind::Primary)
+                                          .foreground("#dde1e6")
+                                          .background("#1a1b26")
+                                          .border("#393939");
+
+    const ColorSchemeConfig secondary = ColorSchemeConfig::Build(ColorSchemeKind::Secondary)
+                                            .foreground("#24283b")
+                                            .background("#7aa2f7")
+                                            .border("#7aa2f7");
+
+    if (auto res = m_draw.InitColorScheme(primary); res.is_err())
+    {
+        return Result<Void, DynError>(std::make_shared<X11ColorError>(std::move(res.err().value())));
+    }
+
+    if (auto res = m_draw.InitColorScheme(secondary); res.is_err())
+    {
+        return Result<Void, DynError>(std::make_shared<X11ColorError>(std::move(res.err().value())));
+    }
 
     return Result<Void, DynError>(Void());
 }

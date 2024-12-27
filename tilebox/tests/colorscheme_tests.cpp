@@ -29,7 +29,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorCreation)
 
 TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeSizeFunction)
 {
-    ASSERT_EQ(ColorSchemeKindSize(), 3);
+    ASSERT_EQ(ColorSchemeKindIterator::size(), 3);
 }
 
 TEST(TileboxCoreColorschemeTestSuite, VerifyColorMoveContructor)
@@ -130,9 +130,9 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorAccessors)
     {
         const X11ColorScheme scheme = *scheme_res.ok();
 
-        const X11Color &fg = scheme.GetColor(X11ColorScheme::Foreground);
-        const X11Color &bg = scheme.GetColor(X11ColorScheme::Background);
-        const X11Color &border = scheme.GetColor(X11ColorScheme::Border);
+        const X11Color &fg = scheme.GetColor(X11ColorScheme::Type::Foreground);
+        const X11Color &bg = scheme.GetColor(X11ColorScheme::Type::Background);
+        const X11Color &border = scheme.GetColor(X11ColorScheme::Type::Border);
 
         ASSERT_NE(fg.Raw(), nullptr);
         ASSERT_NE(bg.Raw(), nullptr);

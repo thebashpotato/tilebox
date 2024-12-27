@@ -10,6 +10,7 @@
 
 #include <array>
 #include <cstdint>
+#include <type_traits>
 
 namespace Tilebox
 {
@@ -19,12 +20,20 @@ class TILEBOX_EXPORT X11ColorScheme
 {
   public:
     // Each color scheme will support 3 different colors
-    enum Index : std::uint8_t
+    enum class Type : std::uint8_t
     {
         Foreground,
         Background,
         Border, // Must remain the last element in the enum
     };
+
+    using TypeIterator = etl::EnumerationIterator<Type, Type::Foreground, Type::Border>;
+
+    /// @brief Converts the underlying Type enum class to its integer equivalent
+    [[nodiscard]] constexpr static auto ToUnderlying(const Type type) noexcept -> std::uint8_t
+    {
+        return std::underlying_type_t<Type>(type);
+    }
 
   public:
     /// @brief Allocates all supported colors for this scheme. All strings must be valid hex codes.
@@ -42,10 +51,10 @@ class TILEBOX_EXPORT X11ColorScheme
     /// @details The underlying array is indexed into directly, which is technically undefined behaviour if the index
     /// was to be out of range. But since an enum is being used as the index this is not possible. Any other type being
     /// passed through will cause a compile time error.
-    [[nodiscard]] auto GetColor(Index color_index) const noexcept -> const X11Color &;
+    [[nodiscard]] auto GetColor(Type color_index) const noexcept -> const X11Color &;
 
   private:
-    using ColorSchemeArray = std::array<X11Color, Border + 1>;
+    using ColorSchemeArray = std::array<X11Color, TypeIterator::size() + 1>;
 
   private:
     explicit X11ColorScheme(ColorSchemeArray &&colors, ColorSchemeKind kind) noexcept;

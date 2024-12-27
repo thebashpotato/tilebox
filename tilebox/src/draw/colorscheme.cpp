@@ -30,7 +30,7 @@ auto X11ColorScheme::Create(const X11DisplaySharedResource &dpy,
         // create the foreground color
         if (const auto fg_res = X11Color::Create(dpy, config.foreground()); fg_res.is_ok())
         {
-            colors.at(Index::Foreground) = std::move(fg_res.ok().value());
+            colors.at(ToUnderlying(Type::Foreground)) = std::move(fg_res.ok().value());
         }
         else
         {
@@ -40,7 +40,7 @@ auto X11ColorScheme::Create(const X11DisplaySharedResource &dpy,
         // create the background color
         if (const auto bg_res = X11Color::Create(dpy, config.background()); bg_res.is_ok())
         {
-            colors.at(Index::Background) = std::move(bg_res.ok().value());
+            colors.at(ToUnderlying(Type::Background)) = std::move(bg_res.ok().value());
         }
         else
         {
@@ -50,7 +50,7 @@ auto X11ColorScheme::Create(const X11DisplaySharedResource &dpy,
         // create the border color
         if (const auto border_res = X11Color::Create(dpy, config.border()); border_res.is_ok())
         {
-            colors.at(Index::Border) = std::move(border_res.ok().value());
+            colors.at(ToUnderlying(Type::Border)) = std::move(border_res.ok().value());
         }
         else
         {
@@ -70,9 +70,9 @@ auto X11ColorScheme::Kind() const noexcept -> ColorSchemeKind
     return m_kind;
 }
 
-auto X11ColorScheme::GetColor(const Index color_index) const noexcept -> const X11Color &
+auto X11ColorScheme::GetColor(const Type color_index) const noexcept -> const X11Color &
 {
-    return this->m_colors[color_index];
+    return this->m_colors[ToUnderlying(color_index)];
 }
 
 } // namespace Tilebox

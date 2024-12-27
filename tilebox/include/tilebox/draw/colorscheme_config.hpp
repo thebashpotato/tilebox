@@ -1,8 +1,8 @@
 #pragma once
 
 #include "tilebox/utils/attributes.hpp"
+#include <etl.hpp>
 
-#include <cstddef>
 #include <cstdint>
 #include <string>
 
@@ -16,10 +16,8 @@ enum class ColorSchemeKind : std::uint8_t
     Tertiary,
 };
 
-constexpr auto ColorSchemeKindSize() -> std::size_t
-{
-    return static_cast<std::size_t>(ColorSchemeKind::Tertiary) + 1;
-}
+using ColorSchemeKindIterator =
+    etl::EnumerationIterator<ColorSchemeKind, ColorSchemeKind::Primary, ColorSchemeKind::Tertiary>;
 
 class ColorSchemeConfigBuilder;
 

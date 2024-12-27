@@ -43,7 +43,7 @@ auto X11Color::Create(const X11DisplaySharedResource &dpy,
     if (hex_code.empty())
     {
         return Result<X11Color, X11ColorError>(
-            X11ColorError(std::string("Error, empty or invalid hex code ").append(hex_code), etl::RUNTIME_INFO));
+            X11ColorError(std::string("Error, empty or invalid hex code ").append(hex_code), RUNTIME_INFO));
     }
 
     auto color = std::shared_ptr<XftColor>(new XftColor, XftColorDeleter(dpy));
