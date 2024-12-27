@@ -47,7 +47,7 @@ class TILEBOX_INTERNAL X11Font
     /// @brief Converts the underlying Type enum class to its integer equivalent
     [[nodiscard]] constexpr static auto ToUnderlying(const Type type) noexcept -> std::uint8_t
     {
-        return static_cast<std::underlying_type_t<Type>>(type);
+        return std::underlying_type_t<Type>(type);
     }
 
   public:

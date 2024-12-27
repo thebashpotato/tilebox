@@ -44,9 +44,9 @@ class TILEBOX_EXPORT X11Cursor
     X11Cursor() = default;
 
     /// @brief Converts the underlying Type enum class to its integer equivalent
-    [[nodiscard]] constexpr static auto ToUnderlying(const Type type) noexcept -> std::uint32_t
+    [[nodiscard]] constexpr static auto ToUnderlying(const Type type) noexcept -> std::uint8_t
     {
-        return static_cast<std::underlying_type_t<Type>>(type);
+        return std::underlying_type_t<Type>(type);
     }
 
     /// @brief Translates an X11Cursor::Type to a valid Xlib font cursor value
@@ -105,7 +105,7 @@ class TILEBOX_EXPORT X11Cursor
     }
 
     /// @brief Gets the underlying Cursor XID
-    [[nodiscard]] auto CursorId() const noexcept -> Cursor;
+    [[nodiscard]] auto cursor() const noexcept -> Cursor;
 
     /// @brief Gets the underlying type this cursor was initialized with.
     [[nodiscard]] auto type() const noexcept -> std::optional<Type>;

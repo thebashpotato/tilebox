@@ -32,7 +32,7 @@ X11Draw::X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, const Drawable d
     : m_dpy(std::move(dpy)), m_graphics_ctx(graphics_ctx), m_drawable(drawable), m_width(std::move(width)),
       m_height(std::move(height))
 {
-    m_colorschemes.reserve(ColorSchemeKindSize());
+    m_colorschemes.reserve(ColorSchemeKindIterator::size() + 1);
 }
 
 X11Draw::~X11Draw() noexcept
@@ -236,7 +236,7 @@ auto X11Draw::GetCursor(const X11Cursor::Type type) const noexcept -> std::optio
     std::optional<Cursor> ret;
     if (m_cursors[X11Cursor::ToUnderlying(type)].type().has_value())
     {
-        ret.emplace(m_cursors[X11Cursor::ToUnderlying(type)].CursorId());
+        ret.emplace(m_cursors[X11Cursor::ToUnderlying(type)].cursor());
     }
 
     return ret;
