@@ -55,9 +55,9 @@ auto WindowManager::Start() noexcept -> Result<Void, DynError>
     Log::Debug("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
     Log::Info("Starting tbwm");
 
-    if (const auto res = Initialize(); res.is_err())
+    if (auto res = Initialize(); res.is_err())
     {
-        return Result<Void, DynError>(std::move(res.err().value()));
+        return res;
     }
 
     return Result<Void, DynError>(Void());
