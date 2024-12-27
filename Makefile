@@ -32,10 +32,10 @@ embed:
 	$(EMBED_SCRIPT)
 
 tests:
-	ctest --test-dir $(BUILD_DIR)
+	ctest --output-on-failure --test-dir $(BUILD_DIR)
 
 clean:
-	# Scorthed Earth, deletes all build artifact folders
+	# Scorthed Earth, deletes all build artifact folders and clangd cache
 	rm -rf $(BUILD_DIR) && rm -rf .cache
 
 .ONESHEL:
