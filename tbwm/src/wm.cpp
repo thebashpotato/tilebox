@@ -16,17 +16,19 @@
 #include <sys/wait.h>
 #include <utility>
 
+using namespace etl;
+
 namespace Tilebox::Twm
 {
 
-auto WindowManager::Create() noexcept -> etl::Result<WindowManager, Error>
+auto WindowManager::Create() noexcept -> Result<WindowManager, Error>
 {
     Logging::Init();
 
     auto x11_display_opt = X11Display::Create();
     if (!x11_display_opt.has_value())
     {
-        return etl::Result<WindowManager, Error>({"Failed to create X11 Display", etl::RUNTIME_INFO});
+        return Result<WindowManager, Error>({"Failed to create X11 Display", RUNTIME_INFO});
     }
 
     X11DisplaySharedResource shared_display = std::move(x11_display_opt.value());
@@ -34,27 +36,29 @@ auto WindowManager::Create() noexcept -> etl::Result<WindowManager, Error>
     auto draw_res = X11Draw::Create(shared_display, shared_display->ScreenWidth(), shared_display->ScreenHeight());
     if (draw_res.is_err())
     {
-        return etl::Result<WindowManager, Error>(std::move(draw_res.err().value()));
+        return Result<WindowManager, Error>(std::move(draw_res.err().value()));
     }
 
     X11Draw draw = std::move(draw_res.ok().value());
-    return etl::Result<WindowManager, Error>(WindowManager(std::move(shared_display), std::move(draw)));
+    return Result<WindowManager, Error>(WindowManager(std::move(shared_display), std::move(draw)));
 }
 
-auto WindowManager::Start() noexcept -> etl::Result<etl::Void, etl::DynError>
+auto WindowManager::Start() noexcept -> Result<Void, DynError>
 {
     if (IsOtherWmRunning())
     {
-        return etl::Result<etl::Void, etl::DynError>(
-            std::make_shared<Error>("Another Window Manager is already running"));
+        return Result<Void, DynError>(std::make_shared<Error>("Another Window Manager is already running"));
     }
     ProcessCleanup();
     Log::Debug("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
     Log::Info("Starting tbwm");
 
-    Initialize();
+    if (const auto res = Initialize(); res.is_err())
+    {
+        return Result<Void, DynError>(std::move(res.err().value()));
+    }
 
-    return etl::Result<etl::Void, etl::DynError>(etl::Void());
+    return Result<Void, DynError>(Void());
 }
 
 //////////////////////////////////////////
@@ -107,9 +111,18 @@ void WindowManager::ProcessCleanup() noexcept
     }
 }
 
-void WindowManager::Initialize() noexcept
+auto WindowManager::Initialize() noexcept -> Result<Void, DynError>
 {
+    // Initialize all supported atoms
     m_atom_manager.Init(m_dpy);
+
+    // Initialize all cursors
+    if (auto res = m_draw.InitCursorAll(); res.is_err())
+    {
+        return Result<Void, DynError>(std::make_shared<X11CursorError>(std::move(res.err().value())));
+    }
+
+    return Result<Void, DynError>(Void());
 }
 
 } // namespace Tilebox::Twm

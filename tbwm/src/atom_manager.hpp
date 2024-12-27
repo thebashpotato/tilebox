@@ -17,21 +17,47 @@ class AtomManager
   public:
     enum class Type : std::uint8_t
     {
-        WmProtocols, // Always first entry
+        // Lists which protocols (like close/focus) the client can handle.
+        WmProtocols,
+
+        // Lets the client handle “close window” requests from the WM.
         WmDeleteWindow,
+
+        // Describes a window’s current state (e.g., minimized).
         WmState,
+
+        // Informs the WM that the client can handle focus changes.
         WmTakeFocus,
+
+        // Extended property naming a window (replaces WM_NAME).
         NetWmName,
+
+        // Manages additional window states (maximized, etc.).
         NetWmState,
+
+        // Indicates a full-screen state for the window.
         NetWmStateFullScreen,
+
+        // Declares the window’s type (dialog, normal, etc.).
         NetWmWindowType,
+
+        // Specifies a dialog window type.
         NetWmWindowTypeDialog,
+
+        // Identifies the currently active window.
         NetActiveWindow,
+
+        // Lists the extended window properties the WM supports.
         NetSupported,
+
+        // Used to confirm the WM supports EWMH standards.
         NetSupportingWmCheck,
+
+        // Holds the list of all client windows.
         NetClientList,
-        Utf8String,
-        End, // Specifies end of atom entries, not an atom itself.
+
+        // Defines UTF-8 encoding for text properties.
+        Utf8String, // should remain the last entry in the enum
     };
 
   public:
@@ -41,13 +67,13 @@ class AtomManager
     /// @brief Initilizes all atoms
     void Init(const X11DisplaySharedResource &dpy) noexcept;
 
-    [[nodiscard]] auto GetAtom(Type type) const noexcept -> Atom;
+    [[nodiscard]] auto GetAtom(const Type type) const noexcept -> Atom;
 
   private:
-    using AtomTypeIterator = etl::EnumerationIterator<Type, Type::WmProtocols, Type::End>;
+    using AtomTypeIterator = etl::EnumerationIterator<Type, Type::WmProtocols, Type::Utf8String>;
 
   private:
-    std::array<Atom, AtomTypeIterator::size()> m_atoms{};
+    std::array<Atom, AtomTypeIterator::size() + 1> m_atoms{};
 };
 
 } // namespace Tilebox::Twm

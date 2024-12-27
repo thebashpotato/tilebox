@@ -36,7 +36,7 @@ class WindowManager
     static void ProcessCleanup() noexcept;
 
     /// @brief Initialize supported WM Atoms and EWMH Atoms, Fonts, Cursors and Color Schemes
-    void Initialize() noexcept;
+    [[nodiscard]] auto Initialize() noexcept -> etl::Result<etl::Void, etl::DynError>;
 
   private:
     explicit WindowManager(X11DisplaySharedResource &&dpy, X11Draw &&draw) noexcept;
