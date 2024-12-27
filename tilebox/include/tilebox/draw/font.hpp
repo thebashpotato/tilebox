@@ -6,7 +6,6 @@
 #include "tilebox/x11/display.hpp"
 
 #include <X11/Xft/Xft.h>
-#include <cstddef>
 #include <etl.hpp>
 #include <fontconfig/fontconfig.h>
 #include <ft2build.h>
@@ -43,12 +42,7 @@ class TILEBOX_INTERNAL X11Font
         Tertiary, // Should remain the last font type in the enum at all times.
     };
 
-    /// @brief Returns the size of the X11Font::Type enum for the purposes of statically
-    /// defining stack allocated containers.
-    [[nodiscard]] constexpr static auto GetUnderlyingSize() noexcept -> std::size_t
-    {
-        return static_cast<std::size_t>(Type::Tertiary) + 1;
-    }
+    using TypeIterator = etl::EnumerationIterator<Type, Type::Primary, Type::Tertiary>;
 
     /// @brief Converts the underlying Type enum class to its integer equivalent
     [[nodiscard]] constexpr static auto ToUnderlying(const Type type) noexcept -> std::uint8_t

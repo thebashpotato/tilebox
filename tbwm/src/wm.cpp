@@ -7,6 +7,7 @@
 #include <etl.hpp>
 #include <tilebox/config.hpp>
 #include <tilebox/draw/draw.hpp>
+#include <tilebox/draw/font.hpp>
 #include <tilebox/error.hpp>
 #include <tilebox/x11/display.hpp>
 
@@ -75,9 +76,11 @@ auto WindowManager::IsOtherWmRunning() const noexcept -> bool
     // Register startup error handler callback with the X server
     g_error_handler_callback = XSetErrorHandler(WmStartupErrorHandler);
 
-    // This causes an error if some other window manager is currently running,
-    // which will trigger the WmStartupErrorHandler callback, which will set
-    // g_another_window_manager_is_running to true
+    // This causes an error if some other window manager is currently running.
+    // This works because only one client at a time can select SubstructureRedirectMask on the Root window.
+    //
+    // If another which will trigger the WmStartupErrorHandler callback, which will set
+    // g_another_window_manager_is_running to true.
     XSelectInput(m_dpy->Raw(), m_dpy->GetDefaultRootWindow(), SubstructureRedirectMask);
     m_dpy->Sync();
 
@@ -121,6 +124,13 @@ auto WindowManager::Initialize() noexcept -> Result<Void, DynError>
     {
         return Result<Void, DynError>(std::make_shared<X11CursorError>(std::move(res.err().value())));
     }
+
+    // Initialize a font
+    if (auto res = m_draw.InitFont("monospace:size=14", X11Font::Type::Primary); res.is_err())
+    {
+        return Result<Void, DynError>(std::make_shared<X11FontError>(std::move(res.err().value())));
+    }
+
 
     return Result<Void, DynError>(Void());
 }

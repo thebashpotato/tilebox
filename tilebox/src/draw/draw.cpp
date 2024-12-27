@@ -7,12 +7,12 @@
 #include "tilebox/geometry.hpp"
 #include "tilebox/x11/display.hpp"
 
-#include <etl.hpp>
 #include <X11/X.h>
 #include <X11/Xft/Xft.h>
 #include <X11/Xft/XftCompat.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrender.h>
+#include <etl.hpp>
 
 #include <algorithm>
 #include <cstdint>
