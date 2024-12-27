@@ -8,7 +8,6 @@
 #include "tilebox/x11/display.hpp"
 
 #include <etl.hpp>
-
 #include <X11/X.h>
 #include <X11/Xft/Xft.h>
 #include <X11/Xft/XftCompat.h>
@@ -28,7 +27,6 @@ using namespace etl;
 namespace Tilebox
 {
 
-// ReSharper disable once CppParameterMayBeConst
 X11Draw::X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, const Drawable drawable, Width width,
                  Height height) noexcept
     : m_dpy(std::move(dpy)), m_graphics_ctx(graphics_ctx), m_drawable(drawable), m_width(std::move(width)),
@@ -203,7 +201,7 @@ auto X11Draw::GetColorScheme(const ColorSchemeKind kind) const noexcept -> std::
     return ret;
 }
 
-auto X11Draw::InitCursor(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>
+auto X11Draw::InitCursor(const X11Cursor::Type type) noexcept -> Result<Void, X11CursorError>
 {
     // if the underlying type is std::nullopt, we can initialize this font.
     if (!m_cursors[X11Cursor::ToUnderlying(type)].type().has_value())
@@ -217,6 +215,19 @@ auto X11Draw::InitCursor(const X11Cursor::Type type) noexcept -> etl::Result<etl
             return Result<Void, X11CursorError>(std::move(*result.err()));
         }
     }
+    return Result<Void, X11CursorError>(Void());
+}
+
+auto X11Draw::InitCursorAll() noexcept -> Result<Void, X11CursorError>
+{
+    for (const auto &cursor_type : X11Cursor::TypeIterator())
+    {
+        if (auto res = InitCursor(cursor_type); res.is_err())
+        {
+            return Result<Void, X11CursorError>(std::move(res.err().value()));
+        }
+    }
+
     return Result<Void, X11CursorError>(Void());
 }
 

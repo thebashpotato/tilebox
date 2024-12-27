@@ -8,7 +8,6 @@
 #include <X11/cursorfont.h>
 #include <etl.hpp>
 
-#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -36,18 +35,13 @@ class TILEBOX_EXPORT X11Cursor
     {
         Normal,
         Resize,
-        Move // Should remain the last item in this enum at all times.
+        Move, // Should remain the last value
     };
+
+    using TypeIterator = etl::EnumerationIterator<Type, Type::Normal, Type::Move>;
 
   public:
     X11Cursor() = default;
-
-    /// @brief Returns the size of the X11Cursor::Type enum for the purposes of statically
-    /// defining stack allocated containers.
-    [[nodiscard]] constexpr static auto GetUnderlyingSize() noexcept -> std::size_t
-    {
-        return static_cast<std::size_t>(Type::Move) + 1;
-    }
 
     /// @brief Converts the underlying Type enum class to its integer equivalent
     [[nodiscard]] constexpr static auto ToUnderlying(const Type type) noexcept -> std::uint32_t

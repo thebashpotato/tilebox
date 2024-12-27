@@ -7,9 +7,9 @@
 
 using namespace Tilebox;
 
-TEST(TileboxCoreX11CursorTestSuite, VerifyCursorStateSize)
+TEST(TileboxCoreX11CursorTestSuite, VerifyCursorTypeSize)
 {
-    ASSERT_EQ(X11Cursor::GetUnderlyingSize(), 3);
+    ASSERT_EQ(X11Cursor::TypeIterator::size(), 3);
 }
 
 TEST(TileboxCoreX11CursorTestSuite, VerifyCreation)

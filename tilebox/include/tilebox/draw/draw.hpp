@@ -118,6 +118,15 @@ class TILEBOX_EXPORT X11Draw
     /// @returns Void is an empty type denoting success, otherwise X11CursorError
     [[nodiscard]] auto InitCursor(X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>;
 
+
+    /// @brief Initializes all supported cursor types (convenience method)
+    ///
+    /// @details If the specified type is already found to be initialized success will still be returned
+    /// but a reinitialization will not happen.
+    ///
+    /// @returns Void is an empty type denoting success, otherwise X11CursorError for the particular cursor that failed to init
+    [[nodiscard]] auto InitCursorAll() noexcept -> etl::Result<etl::Void, X11CursorError>;
+
     /// @brief Gets the underlying X Cursor id
     ///
     /// @details Runtime complexity is constant time and stack allocated.
@@ -143,7 +152,7 @@ class TILEBOX_EXPORT X11Draw
   private:
     X11DisplaySharedResource m_dpy;
     std::array<X11Font, X11Font::GetUnderlyingSize()> m_fonts;
-    std::array<X11Cursor, X11Cursor::GetUnderlyingSize()> m_cursors;
+    std::array<X11Cursor, X11Cursor::TypeIterator::size() + 1> m_cursors;
     std::vector<X11ColorScheme> m_colorschemes;
     GC m_graphics_ctx;
     Drawable m_drawable;
