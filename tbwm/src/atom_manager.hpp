@@ -6,7 +6,9 @@
 #include <X11/X.h>
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
+#include <tuple>
 
 namespace Tilebox::Twm
 {
@@ -15,65 +17,76 @@ namespace Tilebox::Twm
 class AtomManager
 {
   public:
-    enum class Type : std::uint8_t
+    /// @brief Supported WM Atoms
+    enum class Wm : std::uint8_t
     {
         // Lists which protocols (like close/focus) the client can handle.
-        WmProtocols,
+        Protocols,
 
         // Lets the client handle “close window” requests from the WM.
-        WmDeleteWindow,
+        DeleteWindow,
 
         // Describes a window’s current state (e.g., minimized).
-        WmState,
+        State,
 
         // Informs the WM that the client can handle focus changes.
-        WmTakeFocus,
-
-        // Extended property naming a window (replaces WM_NAME).
-        NetWmName,
-
-        // Manages additional window states (maximized, etc.).
-        NetWmState,
-
-        // Indicates a full-screen state for the window.
-        NetWmStateFullScreen,
-
-        // Declares the window’s type (dialog, normal, etc.).
-        NetWmWindowType,
-
-        // Specifies a dialog window type.
-        NetWmWindowTypeDialog,
-
-        // Identifies the currently active window.
-        NetActiveWindow,
-
-        // Lists the extended window properties the WM supports.
-        NetSupported,
-
-        // Used to confirm the WM supports EWMH standards.
-        NetSupportingWmCheck,
-
-        // Holds the list of all client windows.
-        NetClientList,
-
-        // Defines UTF-8 encoding for text properties.
-        Utf8String, // should remain the last entry in the enum
+        TakeFocus, // Needs to remain the last atom in this enum
     };
 
+    /// @brief Supported Net Atoms
+    enum class Net : std::uint8_t
+    {
+        // Extended property naming a window (replaces WM_NAME).
+        WmName,
+
+        // Manages additional window states (maximized, etc.).
+        WmState,
+
+        // Indicates a full-screen state for the window.
+        WmStateFullScreen,
+
+        // Declares the window’s type (dialog, normal, etc.).
+        WmWindowType,
+
+        // Specifies a dialog window type.
+        WmWindowTypeDialog,
+
+        // Identifies the currently active window.
+        ActiveWindow,
+
+        // Lists the extended window properties the WM supports.
+        Supported,
+
+        // Used to confirm the WM supports EWMH standards.
+        SupportingWmCheck,
+
+        // Holds the list of all client windows.
+        ClientList, // Should remain the last entry in this enum
+    };
+
+    using WmAtomIterator = etl::EnumerationIterator<Wm, Wm::Protocols, Wm::TakeFocus>;
+    using NetAtomIterator = etl::EnumerationIterator<Net, Net::WmName, Net::ClientList>;
+
   public:
-    AtomManager() noexcept = default;
+    explicit AtomManager(const X11DisplaySharedResource &dpy) noexcept;
 
   public:
     /// @brief Initilizes all atoms
+    [[nodiscard]] auto GetWwAtom(const Wm wm_atom) const noexcept -> Atom;
+
+    [[nodiscard]] auto GetNetAtom(const Net net_atom) const noexcept -> Atom;
+
+    [[nodiscard]] auto GetNetAtomArrayInfo() noexcept -> std::tuple<std::uint64_t *, std::size_t>;
+
+    [[nodiscard]] auto GetUtf8Atom() const noexcept -> Atom;
+
+  private:
     void Init(const X11DisplaySharedResource &dpy) noexcept;
 
-    [[nodiscard]] auto GetAtom(const Type type) const noexcept -> Atom;
-
   private:
-    using AtomTypeIterator = etl::EnumerationIterator<Type, Type::WmProtocols, Type::Utf8String>;
-
-  private:
-    std::array<Atom, AtomTypeIterator::size() + 1> m_atoms{};
+    std::array<Atom, WmAtomIterator::size()> m_wm_atoms{};
+    std::array<Atom, NetAtomIterator::size()> m_net_atoms{};
+    Atom m_utf8_string_atom{};
 };
 
 } // namespace Tilebox::Twm

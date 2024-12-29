@@ -3,6 +3,7 @@
 #include "xerror_handler.hpp"
 
 #include <X11/X.h>
+#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <etl.hpp>
 #include <tilebox/config.hpp>
@@ -12,6 +13,7 @@
 #include <tilebox/error.hpp>
 #include <tilebox/x11/display.hpp>
 
+#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <signal.h> // NOLINT
@@ -53,7 +55,7 @@ auto WindowManager::Start() noexcept -> Result<Void, DynError>
     }
     ProcessCleanup();
     Log::Debug("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
-    Log::Info("Starting tbwm");
+    Log::Info("Initializing {}", m_name);
 
     if (auto res = Initialize(); res.is_err())
     {
@@ -68,7 +70,7 @@ auto WindowManager::Start() noexcept -> Result<Void, DynError>
 //////////////////////////////////////////
 
 WindowManager::WindowManager(X11DisplaySharedResource &&dpy, X11Draw &&draw) noexcept
-    : m_dpy(std::move(dpy)), m_draw(std::move(draw)), m_event_loop(m_dpy)
+    : m_dpy(std::move(dpy)), m_draw(std::move(draw)), m_event_loop(m_dpy), m_atom_manager(m_dpy)
 {
 }
 
@@ -115,11 +117,50 @@ void WindowManager::ProcessCleanup() noexcept
     }
 }
 
+void WindowManager::AdvertiseAsEWMHCapable() noexcept
+{
+    const Atom utf8_string = m_atom_manager.GetUtf8Atom();
+    const Atom net_supporting_wm_check = m_atom_manager.GetNetAtom(AtomManager::Net::SupportingWmCheck);
+    const Atom net_wm_name = m_atom_manager.GetNetAtom(AtomManager::Net::WmName);
+    const Atom net_supported = m_atom_manager.GetNetAtom(AtomManager::Net::Supported);
+    const Atom net_client_list = m_atom_manager.GetNetAtom(AtomManager::Net::ClientList);
+    const auto [net_atom_array_data, net_atom_array_size] = m_atom_manager.GetNetAtomArrayInfo();
+
+    // Create a small, hidden window (1×1 pixels).
+    // EWMH requires the window manager to have a special “check”
+    // window to advertise itself. It is usually off-screen or of zero
+    // size so the user never sees it.
+    m_ewmh_check_win = XCreateSimpleWindow(m_dpy->Raw(), m_dpy->GetRootWindow(), 0, 0, 1, 1, 0, 0, 0);
+
+    // One part of the EWMH spec says the “check” window should have a property pointing to itself
+    // (_NET_SUPPORTING_WM_CHECK), which some applications use to confirm which window manager is running.
+    XChangeProperty(m_dpy->Raw(), m_ewmh_check_win, net_supporting_wm_check, XA_WINDOW, 32, PropModeReplace,
+                    reinterpret_cast<const unsigned char *>(&m_ewmh_check_win), 1);
+
+    // Set the _NET_WM_NAME property of "check" window to "tbwm".
+    // This is simply the human-readable name of the window manager, stored as UTF-8 text.
+    XChangeProperty(m_dpy->Raw(), m_ewmh_check_win, net_wm_name, utf8_string, 8, PropModeReplace,
+                    reinterpret_cast<const unsigned char *>(m_name.data()), m_name.size());
+
+    // Set the _NET_SUPPORTING_WM_CHECK property on the root window to the same m_ewmh_check_win.
+    // This tells other clients on the system that _NET_SUPPORTING_WM_CHECK (on the root window) points to tbwm’s hidden
+    // check window, completing the link required by EWMH.
+    XChangeProperty(m_dpy->Raw(), m_dpy->GetRootWindow(), net_supporting_wm_check, XA_WINDOW, 32, PropModeReplace,
+                    reinterpret_cast<const unsigned char *>(&m_ewmh_check_win), 1);
+
+    // Advertise which EWMH features tbwm supports
+    XChangeProperty(m_dpy->Raw(), m_dpy->GetRootWindow(), net_supported, XA_ATOM, 32, PropModeReplace,
+                    reinterpret_cast<const unsigned char *>(net_atom_array_data),
+                    static_cast<std::int32_t>(net_atom_array_size));
+
+    // Clear out the _NET_CLIENT_LIST property on the root window.
+    // If there’s any leftover data from a previous window manager session, tbwm removes it. This property is later
+    // updated dynamically as windows open or close.
+    XDeleteProperty(m_dpy->Raw(), m_dpy->GetRootWindow(), net_client_list);
+}
+
 auto WindowManager::Initialize() noexcept -> Result<Void, DynError>
 {
-    // Initialize all supported atoms
-    m_atom_manager.Init(m_dpy);
-
     // Initialize all cursors
     if (auto res = m_draw.InitCursorAll(); res.is_err())
     {
@@ -154,6 +195,8 @@ auto WindowManager::Initialize() noexcept -> Result<Void, DynError>
     {
         return Result<Void, DynError>(std::make_shared<X11ColorError>(std::move(res.err().value())));
     }
+
+    AdvertiseAsEWMHCapable();
 
     return Result<Void, DynError>(Void());
 }

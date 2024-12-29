@@ -8,6 +8,8 @@
 #include <tilebox/x11/display.hpp>
 #include <tilebox/x11/event_loop.hpp>
 
+#include <string_view>
+
 namespace Tilebox::Twm
 {
 
@@ -35,6 +37,16 @@ class WindowManager
     /// @brief Clean up all zombie processes inherited from xinitrc, allows the kernel to reap all child processes
     static void ProcessCleanup() noexcept;
 
+    /// @brief Announces "I'm an EWMH compatible window manager" to the X11 ecosystem
+    ///
+    /// @details Responsible for advertising tbwm’s presence and capabilities in accordance
+    /// with the Extended Window Manager Hints (EWMH) specification. In other words,
+    /// tbwm is declaring itself as the window manager and telling other clients
+    /// which EWMH features it supports.
+    ///
+    /// @link https://specifications.freedesktop.org/wm-spec/latest/
+    void AdvertiseAsEWMHCapable() noexcept;
+
     /// @brief Initialize supported WM Atoms and EWMH Atoms, Fonts, Cursors and Color Schemes
     [[nodiscard]] auto Initialize() noexcept -> etl::Result<etl::Void, etl::DynError>;
 
@@ -46,7 +58,9 @@ class WindowManager
     X11Draw m_draw;
     X11EventLoop m_event_loop;
     AtomManager m_atom_manager;
+    Window m_ewmh_check_win{};
     bool m_run{true};
+    static constexpr std::string_view m_name{"tbwm"};
 };
 
 } // namespace Tilebox::Twm
