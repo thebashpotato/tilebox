@@ -8,7 +8,7 @@ using namespace Tilebox;
 
 auto main() -> int
 {
-    auto twm_create_result = Twm::WindowManager::Create();
+    auto twm_create_result = Twm::WindowManager::Create("tbwm");
     if (twm_create_result.is_err())
     {
         Twm::Log::Error("{}", twm_create_result.err().value().info());

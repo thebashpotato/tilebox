@@ -3,6 +3,7 @@
 #include <fmt/base.h>
 #include <memory>
 #include <spdlog/logger.h>
+#include <string_view>
 #include <utility>
 
 namespace Tilebox::Twm
@@ -11,7 +12,7 @@ namespace Tilebox::Twm
 class Logging
 {
   public:
-    static void Init() noexcept;
+    static void Init(const std::string_view &name) noexcept;
 
     static inline auto logger() noexcept -> std::shared_ptr<spdlog::logger> &
     {

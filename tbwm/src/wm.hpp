@@ -17,15 +17,15 @@ class WindowManager
 {
   public:
     ~WindowManager() = default;
-    WindowManager(const WindowManager &rhs) = delete;
     WindowManager(WindowManager &&rhs) = default;
+    WindowManager(const WindowManager &rhs) = delete;
 
   public:
     auto operator=(const WindowManager &rhs) -> WindowManager & = delete;
     auto operator=(WindowManager &&rhs) -> WindowManager & = default;
 
   public:
-    [[nodiscard]] static auto Create() noexcept -> etl::Result<WindowManager, Error>;
+    [[nodiscard]] static auto Create(std::string_view wm_name) noexcept -> etl::Result<WindowManager, Error>;
     [[nodiscard]] auto Start() noexcept -> etl::Result<etl::Void, etl::DynError>;
 
   private:
@@ -51,7 +51,7 @@ class WindowManager
     [[nodiscard]] auto Initialize() noexcept -> etl::Result<etl::Void, etl::DynError>;
 
   private:
-    explicit WindowManager(X11DisplaySharedResource &&dpy, X11Draw &&draw) noexcept;
+    explicit WindowManager(X11DisplaySharedResource &&dpy, X11Draw &&draw, std::string_view name) noexcept;
 
   private:
     X11DisplaySharedResource m_dpy;
@@ -59,8 +59,8 @@ class WindowManager
     X11EventLoop m_event_loop;
     AtomManager m_atom_manager;
     Window m_ewmh_check_win{};
-    bool m_run{true};
-    static constexpr std::string_view m_name{"tbwm"};
+    bool m_running{};
+    std::string_view m_name;
 };
 
 } // namespace Tilebox::Twm

@@ -30,7 +30,7 @@ auto WmRuntimeErrorHandler(Display *dpy, XErrorEvent *ee) -> std::int32_t
     {
         return EXIT_SUCCESS;
     }
-    Log::Error("twm: fatal error: request code={}, error code={}", ee->request_code, ee->error_code);
+    Log::Error("fatal error: request code={}, error code={}", ee->request_code, ee->error_code);
     return g_error_handler_callback(dpy, ee); // may call exit
 }
 

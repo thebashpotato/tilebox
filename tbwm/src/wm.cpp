@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <memory>
 #include <signal.h> // NOLINT
+#include <string_view>
 #include <sys/wait.h>
 #include <utility>
 
@@ -25,9 +26,9 @@ using namespace etl;
 namespace Tilebox::Twm
 {
 
-auto WindowManager::Create() noexcept -> Result<WindowManager, Error>
+auto WindowManager::Create(std::string_view wm_name) noexcept -> Result<WindowManager, Error>
 {
-    Logging::Init();
+    Logging::Init(wm_name);
 
     auto x11_display_opt = X11Display::Create();
     if (!x11_display_opt.has_value())
@@ -44,24 +45,26 @@ auto WindowManager::Create() noexcept -> Result<WindowManager, Error>
     }
 
     X11Draw draw = std::move(draw_res.ok().value());
-    return Result<WindowManager, Error>(WindowManager(std::move(shared_display), std::move(draw)));
+    return Result<WindowManager, Error>(WindowManager(std::move(shared_display), std::move(draw), wm_name));
 }
 
 auto WindowManager::Start() noexcept -> Result<Void, DynError>
 {
-    if (IsOtherWmRunning())
+    if (!m_running)
     {
-        return Result<Void, DynError>(std::make_shared<Error>("Another Window Manager is already running"));
-    }
-    ProcessCleanup();
-    Log::Debug("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
-    Log::Info("Initializing {}", m_name);
+        if (IsOtherWmRunning())
+        {
+            return Result<Void, DynError>(std::make_shared<Error>("Another Window Manager is already running"));
+        }
+        ProcessCleanup();
 
-    if (auto res = Initialize(); res.is_err())
-    {
-        return res;
+        if (auto res = Initialize(); res.is_err())
+        {
+            return res;
+        }
+        Log::Debug("Running lib{} version {}", Tilebox::kTileboxName, Tilebox::kTileboxVersion);
+        m_running = true;
     }
-
     return Result<Void, DynError>(Void());
 }
 
@@ -69,8 +72,8 @@ auto WindowManager::Start() noexcept -> Result<Void, DynError>
 /// Private
 //////////////////////////////////////////
 
-WindowManager::WindowManager(X11DisplaySharedResource &&dpy, X11Draw &&draw) noexcept
-    : m_dpy(std::move(dpy)), m_draw(std::move(draw)), m_event_loop(m_dpy), m_atom_manager(m_dpy)
+WindowManager::WindowManager(X11DisplaySharedResource &&dpy, X11Draw &&draw, std::string_view name) noexcept
+    : m_dpy(std::move(dpy)), m_draw(std::move(draw)), m_event_loop(m_dpy), m_atom_manager(m_dpy), m_name(name)
 {
 }
 
@@ -140,7 +143,7 @@ void WindowManager::AdvertiseAsEWMHCapable() noexcept
     // Set the _NET_WM_NAME property of "check" window to "tbwm".
     // This is simply the human-readable name of the window manager, stored as UTF-8 text.
     XChangeProperty(m_dpy->Raw(), m_ewmh_check_win, net_wm_name, utf8_string, 8, PropModeReplace,
-                    reinterpret_cast<const unsigned char *>(m_name.data()), m_name.size());
+                    reinterpret_cast<const unsigned char *>(m_name.data()), static_cast<std::int32_t>(m_name.size()));
 
     // Set the _NET_SUPPORTING_WM_CHECK property on the root window to the same m_ewmh_check_win.
     // This tells other clients on the system that _NET_SUPPORTING_WM_CHECK (on the root window) points to tbwm’s hidden
@@ -161,6 +164,8 @@ void WindowManager::AdvertiseAsEWMHCapable() noexcept
 
 auto WindowManager::Initialize() noexcept -> Result<Void, DynError>
 {
+    Log::Info("Initializing {}", m_name);
+
     // Initialize all cursors
     if (auto res = m_draw.InitCursorAll(); res.is_err())
     {
