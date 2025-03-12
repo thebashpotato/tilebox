@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-namespace Tilebox::Twm
+namespace Tbwm
 {
 
 auto WmStartupErrorHandler([[maybe_unused]] Display *dpy, [[maybe_unused]] XErrorEvent *ee) -> std::int32_t
@@ -34,4 +34,4 @@ auto WmRuntimeErrorHandler(Display *dpy, XErrorEvent *ee) -> std::int32_t
     return g_error_handler_callback(dpy, ee); // may call exit
 }
 
-} // namespace Tilebox::Twm
+} // namespace Tbwm

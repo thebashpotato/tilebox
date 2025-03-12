@@ -8,10 +8,10 @@
 #include <cstdint>
 #include <tuple>
 
-namespace Tilebox::Twm
+namespace Tbwm
 {
 
-AtomManager::AtomManager(const X11DisplaySharedResource &dpy) noexcept
+AtomManager::AtomManager(const Tilebox::X11DisplaySharedResource &dpy) noexcept
 {
     Init(dpy);
 }
@@ -37,7 +37,7 @@ auto AtomManager::GetUtf8Atom() const noexcept -> Atom
 }
 
 /// Private
-void AtomManager::Init(const X11DisplaySharedResource &dpy) noexcept
+void AtomManager::Init(const Tilebox::X11DisplaySharedResource &dpy) noexcept
 {
     // clang-format off
     m_wm_atoms[ToUnderlying(Wm::Protocols)] = XInternAtom(dpy->Raw(), "WM_PROTOCOLS", False);
@@ -59,4 +59,4 @@ void AtomManager::Init(const X11DisplaySharedResource &dpy) noexcept
     // clang-format on
 }
 
-} // namespace Tilebox::Twm
+} // namespace Tbwm

@@ -8,7 +8,7 @@
 
 #include <memory>
 
-namespace Tilebox::Twm
+namespace Tbwm
 {
 
 std::shared_ptr<spdlog::logger> Logging::s_logger{};
@@ -20,4 +20,4 @@ void Logging::Init(const std::string_view &name) noexcept
     s_logger->set_level(spdlog::level::trace);
 }
 
-} // namespace Tilebox::Twm
+} // namespace Tbwm

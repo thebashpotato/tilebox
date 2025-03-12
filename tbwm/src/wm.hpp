@@ -10,7 +10,7 @@
 
 #include <string_view>
 
-namespace Tilebox::Twm
+namespace Tbwm
 {
 
 class WindowManager
@@ -25,7 +25,7 @@ class WindowManager
     auto operator=(WindowManager &&rhs) -> WindowManager & = default;
 
   public:
-    [[nodiscard]] static auto Create(std::string_view wm_name) noexcept -> etl::Result<WindowManager, Error>;
+    [[nodiscard]] static auto Create(std::string_view wm_name) noexcept -> etl::Result<WindowManager, Tilebox::Error>;
     [[nodiscard]] auto Start() noexcept -> etl::Result<etl::Void, etl::DynError>;
 
   private:
@@ -51,27 +51,28 @@ class WindowManager
     [[nodiscard]] auto Initialize() noexcept -> etl::Result<etl::Void, etl::DynError>;
 
   private:
-    explicit WindowManager(X11DisplaySharedResource &&dpy, X11Draw &&draw, std::string_view name) noexcept;
+    explicit WindowManager(Tilebox::X11DisplaySharedResource &&dpy, Tilebox::X11Draw &&draw,
+                           std::string_view name) noexcept;
 
   private:
-    X11DisplaySharedResource m_dpy;
-    X11Draw m_draw;
-    X11EventLoop m_event_loop;
+    Tilebox::X11DisplaySharedResource m_dpy;
+    Tilebox::X11Draw m_draw;
+    Tilebox::X11EventLoop m_event_loop;
     AtomManager m_atom_manager;
     Window m_ewmh_check_win{};
     bool m_running{};
     std::string_view m_name;
 };
 
-} // namespace Tilebox::Twm
+} // namespace Tbwm
 
-/// @brief Hi-jack the etl namespace to add a custom template specialization for Tilebox::Twm::WindowManager
-template <typename ErrType> class etl::Result<Tilebox::Twm::WindowManager, ErrType>
+/// @brief Hi-jack the etl namespace to add a custom template specialization for Tilebox::Tbwm::WindowManager
+template <typename ErrType> class etl::Result<Tbwm::WindowManager, ErrType>
 {
   public:
     Result() noexcept = default;
 
-    explicit Result(Tilebox::Twm::WindowManager &&value) noexcept : m_result(std::move(value)), m_is_ok(true)
+    explicit Result(Tbwm::WindowManager &&value) noexcept : m_result(std::move(value)), m_is_ok(true)
     {
     }
 
@@ -100,14 +101,14 @@ template <typename ErrType> class etl::Result<Tilebox::Twm::WindowManager, ErrTy
     ///
     /// @details The use should always use is_ok() before using ok()
     ///
-    /// @return std::optional<Tilebox::Twm::WindowManager> for safety, incase the user did not call
+    /// @return std::optional<Tilebox::Tbwm::WindowManager> for safety, incase the user did not call
     /// is_ok() before using this method.
-    [[nodiscard]] auto ok() noexcept -> std::optional<Tilebox::Twm::WindowManager>
+    [[nodiscard]] auto ok() noexcept -> std::optional<Tbwm::WindowManager>
     {
-        std::optional<Tilebox::Twm::WindowManager> ret;
+        std::optional<Tbwm::WindowManager> ret;
         if (m_is_ok)
         {
-            if (auto *value = std::get_if<Tilebox::Twm::WindowManager>(&m_result))
+            if (auto *value = std::get_if<Tbwm::WindowManager>(&m_result))
             {
                 ret.emplace(std::move(*value));
             }
@@ -135,6 +136,6 @@ template <typename ErrType> class etl::Result<Tilebox::Twm::WindowManager, ErrTy
     }
 
   private:
-    std::variant<Tilebox::Twm::WindowManager, ErrType> m_result;
+    std::variant<Tbwm::WindowManager, ErrType> m_result;
     bool m_is_ok{};
 }; // namespace etl

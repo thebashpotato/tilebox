@@ -6,7 +6,7 @@
 #include <string_view>
 #include <utility>
 
-namespace Tilebox::Twm
+namespace Tbwm
 {
 
 class Logging
@@ -14,7 +14,7 @@ class Logging
   public:
     static void Init(const std::string_view &name) noexcept;
 
-    static inline auto logger() noexcept -> std::shared_ptr<spdlog::logger> &
+    static auto logger() noexcept -> std::shared_ptr<spdlog::logger> &
     {
         return s_logger;
     }
@@ -60,4 +60,4 @@ template <typename... Args> void Error(fmt::format_string<Args...> fmt, Args &&.
 
 } // namespace Log
 
-} // namespace Tilebox::Twm
+} // namespace Tbwm

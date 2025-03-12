@@ -23,29 +23,30 @@
 
 using namespace etl;
 
-namespace Tilebox::Twm
+namespace Tbwm
 {
 
-auto WindowManager::Create(std::string_view wm_name) noexcept -> Result<WindowManager, Error>
+auto WindowManager::Create(std::string_view wm_name) noexcept -> Result<WindowManager, Tilebox::Error>
 {
     Logging::Init(wm_name);
 
-    auto x11_display_opt = X11Display::Create();
+    auto x11_display_opt = Tilebox::X11Display::Create();
     if (!x11_display_opt.has_value())
     {
-        return Result<WindowManager, Error>({"Failed to create X11 Display", RUNTIME_INFO});
+        return Result<WindowManager, Tilebox::Error>({"Failed to create X11 Display", RUNTIME_INFO});
     }
 
-    X11DisplaySharedResource shared_display = std::move(x11_display_opt.value());
+    Tilebox::X11DisplaySharedResource shared_display = std::move(*x11_display_opt);
 
-    auto draw_res = X11Draw::Create(shared_display, shared_display->ScreenWidth(), shared_display->ScreenHeight());
+    auto draw_res =
+        Tilebox::X11Draw::Create(shared_display, shared_display->ScreenWidth(), shared_display->ScreenHeight());
     if (draw_res.is_err())
     {
-        return Result<WindowManager, Error>(std::move(draw_res.err().value()));
+        return Result<WindowManager, Tilebox::Error>(std::move(*draw_res.err()));
     }
 
-    X11Draw draw = std::move(draw_res.ok().value());
-    return Result<WindowManager, Error>(WindowManager(std::move(shared_display), std::move(draw), wm_name));
+    return Result<WindowManager, Tilebox::Error>(
+        WindowManager(std::move(shared_display), std::move(*draw_res.ok()), wm_name));
 }
 
 auto WindowManager::Start() noexcept -> Result<Void, DynError>
@@ -54,7 +55,8 @@ auto WindowManager::Start() noexcept -> Result<Void, DynError>
     {
         if (IsOtherWmRunning())
         {
-            return Result<Void, DynError>(std::make_shared<Error>("Another Window Manager is already running"));
+            return Result<Void, DynError>(
+                std::make_shared<Tilebox::Error>("Another Window Manager is already running"));
         }
         ProcessCleanup();
 
@@ -72,7 +74,8 @@ auto WindowManager::Start() noexcept -> Result<Void, DynError>
 /// Private
 //////////////////////////////////////////
 
-WindowManager::WindowManager(X11DisplaySharedResource &&dpy, X11Draw &&draw, std::string_view name) noexcept
+WindowManager::WindowManager(Tilebox::X11DisplaySharedResource &&dpy, Tilebox::X11Draw &&draw,
+                             std::string_view name) noexcept
     : m_dpy(std::move(dpy)), m_draw(std::move(draw)), m_event_loop(m_dpy), m_atom_manager(m_dpy), m_name(name)
 {
 }
@@ -167,36 +170,36 @@ auto WindowManager::Initialize() noexcept -> Result<Void, DynError>
     // Initialize all cursors
     if (auto res = m_draw.InitCursorAll(); res.is_err())
     {
-        return Result<Void, DynError>(std::make_shared<X11CursorError>(std::move(res.err().value())));
+        return Result<Void, DynError>(std::make_shared<Tilebox::X11CursorError>(std::move(*res.err())));
     }
 
     // Initialize a font
-    if (auto res = m_draw.InitFont("monospace:size=14", X11Font::Type::Primary); res.is_err())
+    if (auto res = m_draw.InitFont("monospace:size=14", Tilebox::X11Font::Type::Primary); res.is_err())
     {
-        return Result<Void, DynError>(std::make_shared<X11FontError>(std::move(res.err().value())));
+        return Result<Void, DynError>(std::make_shared<Tilebox::X11FontError>(std::move(*res.err())));
     }
 
     // Initialize colorschemes
 
     // TODO: Colorscheme config code will be moved into the user config code
-    const ColorSchemeConfig primary = ColorSchemeConfig::Build(ColorSchemeKind::Primary)
-                                          .foreground("#dde1e6")
-                                          .background("#1a1b26")
-                                          .border("#393939");
+    const Tilebox::ColorSchemeConfig primary = Tilebox::ColorSchemeConfig::Build(Tilebox::ColorSchemeKind::Primary)
+                                                   .foreground("#dde1e6")
+                                                   .background("#1a1b26")
+                                                   .border("#393939");
 
-    const ColorSchemeConfig secondary = ColorSchemeConfig::Build(ColorSchemeKind::Secondary)
-                                            .foreground("#24283b")
-                                            .background("#7aa2f7")
-                                            .border("#7aa2f7");
+    const Tilebox::ColorSchemeConfig secondary = Tilebox::ColorSchemeConfig::Build(Tilebox::ColorSchemeKind::Secondary)
+                                                     .foreground("#24283b")
+                                                     .background("#7aa2f7")
+                                                     .border("#7aa2f7");
 
     if (auto res = m_draw.InitColorScheme(primary); res.is_err())
     {
-        return Result<Void, DynError>(std::make_shared<X11ColorError>(std::move(res.err().value())));
+        return Result<Void, DynError>(std::make_shared<Tilebox::X11ColorError>(std::move(*res.err())));
     }
 
     if (auto res = m_draw.InitColorScheme(secondary); res.is_err())
     {
-        return Result<Void, DynError>(std::make_shared<X11ColorError>(std::move(res.err().value())));
+        return Result<Void, DynError>(std::make_shared<Tilebox::X11ColorError>(std::move(*res.err())));
     }
 
     AdvertiseAsEWMHCapable();
@@ -204,4 +207,4 @@ auto WindowManager::Initialize() noexcept -> Result<Void, DynError>
     return Result<Void, DynError>(Void());
 }
 
-} // namespace Tilebox::Twm
+} // namespace Tbwm

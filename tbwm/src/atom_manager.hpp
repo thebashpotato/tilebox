@@ -11,7 +11,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace Tilebox::Twm
+namespace Tbwm
 {
 
 /// @brief Provides an API to initialize and fetch all atoms that twm supports.
@@ -79,7 +79,7 @@ class AtomManager
     }
 
   public:
-    explicit AtomManager(const X11DisplaySharedResource &dpy) noexcept;
+    explicit AtomManager(const Tilebox::X11DisplaySharedResource &dpy) noexcept;
 
   public:
     [[nodiscard]] auto GetWwAtom(const Wm wm_atom) const noexcept -> Atom;
@@ -91,7 +91,7 @@ class AtomManager
     [[nodiscard]] auto GetUtf8Atom() const noexcept -> Atom;
 
   private:
-    void Init(const X11DisplaySharedResource &dpy) noexcept;
+    void Init(const Tilebox::X11DisplaySharedResource &dpy) noexcept;
 
   private:
     std::array<Atom, WmAtomIterator::size()> m_wm_atoms{};
@@ -99,4 +99,4 @@ class AtomManager
     Atom m_utf8_string_atom{};
 };
 
-} // namespace Tilebox::Twm
+} // namespace Tbwm

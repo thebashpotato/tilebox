@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-namespace Tilebox::Twm
+namespace Tbwm
 {
 
 // NOLINTBEGIN(cppcoreguidelines-avoid-non-const-global-variables)
@@ -31,4 +31,4 @@ inline bool g_another_window_manager_is_running = false;
 /// which may call exit
 [[nodiscard]] auto WmRuntimeErrorHandler(Display *dpy, XErrorEvent *ee) -> std::int32_t;
 
-} // namespace Tilebox::Twm
+} // namespace Tbwm

@@ -4,24 +4,22 @@
 #include <cstdlib>
 #include <utility>
 
-using namespace Tilebox;
-
 auto main() -> int
 {
-    auto twm_create_result = Twm::WindowManager::Create("tbwm");
-    if (twm_create_result.is_err())
+    auto tbwm_create_result = Tbwm::WindowManager::Create("tbwm");
+    if (tbwm_create_result.is_err())
     {
-        Twm::Log::Error("{}", twm_create_result.err().value().info());
+        Tbwm::Log::Error("{}", (*tbwm_create_result.err()).info());
         return EXIT_FAILURE;
     }
 
-    Twm::WindowManager wm = std::move(*twm_create_result.ok());
-    if (auto twm_start_result = wm.Start(); twm_start_result.is_err())
+    Tbwm::WindowManager wm = std::move(*tbwm_create_result.ok());
+    if (auto tbwm_start_result = wm.Start(); tbwm_start_result.is_err())
     {
-        Twm::Log::Error("{}", twm_start_result.err().value()->info());
+        Tbwm::Log::Error("{}", (*tbwm_start_result.err())->info());
         return EXIT_FAILURE;
     }
-    Twm::Log::Info("Shutting down");
+    Tbwm::Log::Info("Shutting down");
 
     return EXIT_SUCCESS;
 }
