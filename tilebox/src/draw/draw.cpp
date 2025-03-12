@@ -32,7 +32,7 @@ X11Draw::X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, const Drawable d
     : m_dpy(std::move(dpy)), m_graphics_ctx(graphics_ctx), m_drawable(drawable), m_width(std::move(width)),
       m_height(std::move(height))
 {
-    m_colorschemes.reserve(ColorSchemeKindIterator::size() + 1);
+    m_colorschemes.reserve(ColorSchemeKindIterator::size());
 }
 
 X11Draw::~X11Draw() noexcept
@@ -96,8 +96,8 @@ auto X11Draw::operator=(X11Draw &&rhs) noexcept -> X11Draw &
     return *this;
 }
 
-auto X11Draw::Create(const X11DisplaySharedResource &dpy, const Width &width,
-                     const Height &height) noexcept -> Result<X11Draw, Error>
+auto X11Draw::Create(const X11DisplaySharedResource &dpy, const Width &width, const Height &height) noexcept
+    -> Result<X11Draw, Error>
 {
     GC gc = XCreateGC(dpy->Raw(), dpy->GetRootWindow(), 0, nullptr);
 
@@ -233,6 +233,7 @@ auto X11Draw::InitCursorAll() noexcept -> Result<Void, X11CursorError>
 
 auto X11Draw::GetCursor(const X11Cursor::Type type) const noexcept -> std::optional<Cursor>
 {
+
     std::optional<Cursor> ret;
     if (m_cursors[X11Cursor::ToUnderlying(type)].type().has_value())
     {
@@ -264,8 +265,8 @@ auto X11Draw::height() const noexcept -> const Height &
     return m_height;
 }
 
-auto X11Draw::GetTextExtents(const X11Font &font, const std::string_view &text,
-                             const uint32_t len) const noexcept -> Result<Vec2D, X11FontError>
+auto X11Draw::GetTextExtents(const X11Font &font, const std::string_view &text, const uint32_t len) const noexcept
+    -> Result<Vec2D, X11FontError>
 {
     XGlyphInfo ext;
 

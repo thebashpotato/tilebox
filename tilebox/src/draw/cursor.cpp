@@ -15,8 +15,8 @@ using namespace etl;
 namespace Tilebox
 {
 
-auto X11Cursor::Create(const X11DisplaySharedResource &dpy,
-                       const Type type) noexcept -> Result<X11Cursor, X11CursorError>
+auto X11Cursor::Create(const X11DisplaySharedResource &dpy, const Type type) noexcept
+    -> Result<X11Cursor, X11CursorError>
 {
     // Cursor is a typedef of XID, which is just an uint64_t. In general, it should never be 0 or False.
     // Although this is not how the X server actually handles errors, it does let us know that something non-ideal

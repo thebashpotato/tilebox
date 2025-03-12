@@ -54,7 +54,7 @@ class TILEBOX_EXPORT X11ColorScheme
     [[nodiscard]] auto GetColor(Type color_index) const noexcept -> const X11Color &;
 
   private:
-    using ColorSchemeArray = std::array<X11Color, TypeIterator::size() + 1>;
+    using ColorSchemeArray = std::array<X11Color, TypeIterator::size()>;
 
   private:
     explicit X11ColorScheme(ColorSchemeArray &&colors, ColorSchemeKind kind) noexcept;

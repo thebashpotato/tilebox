@@ -1,5 +1,6 @@
 local dap = require("dap")
 
+-- sudo pacman -S lldb
 dap.adapters.lldb = {
 	type = "executable",
 	command = "/usr/bin/lldb-dap",
@@ -18,21 +19,11 @@ dap.configurations.cpp = {
 		stopOnEntry = false,
 	},
 	{
-		name = "Launch tilebox core scratch",
-		type = "lldb",
-		request = "launch",
-		program = function()
-			return vim.fn.getcwd() .. "/build/tilebox/examples/tilebox-scratch-example"
-		end,
-		cwd = "${workspaceFolder}",
-		stopOnEntry = false,
-	},
-	{
 		name = "Launch tilebox unit tests",
 		type = "lldb",
 		request = "launch",
 		program = function()
-			return vim.fn.getcwd() .. "/build/tilebox/tests/tilebox-tests"
+			return vim.fn.getcwd() .. "/build/tilebox/tests/tilebox_tests"
 		end,
 		cwd = "${workspaceFolder}",
 		stopOnEntry = false,

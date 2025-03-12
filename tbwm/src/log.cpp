@@ -16,7 +16,7 @@ std::shared_ptr<spdlog::logger> Logging::s_logger{};
 void Logging::Init(const std::string_view &name) noexcept
 {
     spdlog::set_pattern("%^[%T]::[%n]: %v%$");
-    s_logger = spdlog::stdout_color_mt(name.data());
+    s_logger = spdlog::stdout_color_mt(std::string(name));
     s_logger->set_level(spdlog::level::trace);
 }
 

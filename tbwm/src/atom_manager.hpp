@@ -9,11 +9,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <tuple>
+#include <type_traits>
 
 namespace Tilebox::Twm
 {
 
-/// @brief Provides an API to initializae and fetch all atoms that twm supports.
+/// @brief Provides an API to initialize and fetch all atoms that twm supports.
 class AtomManager
 {
   public:
@@ -30,7 +31,7 @@ class AtomManager
         State,
 
         // Informs the WM that the client can handle focus changes.
-        TakeFocus, // Needs to remain the last atom in this enum
+        TakeFocus,
     };
 
     /// @brief Supported Net Atoms
@@ -61,17 +62,26 @@ class AtomManager
         SupportingWmCheck,
 
         // Holds the list of all client windows.
-        ClientList, // Should remain the last entry in this enum
+        ClientList,
     };
 
     using WmAtomIterator = etl::EnumerationIterator<Wm, Wm::Protocols, Wm::TakeFocus>;
     using NetAtomIterator = etl::EnumerationIterator<Net, Net::WmName, Net::ClientList>;
 
+    [[nodiscard]] static auto ToUnderlying(const Wm atom) noexcept -> std::uint8_t
+    {
+        return std::underlying_type_t<Wm>(atom);
+    }
+
+    [[nodiscard]] static auto ToUnderlying(const Net atom) noexcept -> std::uint8_t
+    {
+        return std::underlying_type_t<Net>(atom);
+    }
+
   public:
     explicit AtomManager(const X11DisplaySharedResource &dpy) noexcept;
 
   public:
-    /// @brief Initilizes all atoms
     [[nodiscard]] auto GetWwAtom(const Wm wm_atom) const noexcept -> Atom;
 
     [[nodiscard]] auto GetNetAtom(const Net net_atom) const noexcept -> Atom;

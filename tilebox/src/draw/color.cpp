@@ -34,8 +34,8 @@ X11Color::X11Color(std::shared_ptr<XftColor> &&color) noexcept : m_color(std::mo
 {
 }
 
-auto X11Color::Create(const X11DisplaySharedResource &dpy,
-                      const std::string &hex_code) -> Result<X11Color, X11ColorError>
+auto X11Color::Create(const X11DisplaySharedResource &dpy, const std::string &hex_code)
+    -> Result<X11Color, X11ColorError>
 {
     // Basic fail case handling.
     //

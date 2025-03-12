@@ -20,8 +20,8 @@ X11ColorScheme::X11ColorScheme(ColorSchemeArray &&colors, const ColorSchemeKind 
 {
 }
 
-auto X11ColorScheme::Create(const X11DisplaySharedResource &dpy,
-                            const ColorSchemeConfig &config) noexcept -> Result<X11ColorScheme, X11ColorError>
+auto X11ColorScheme::Create(const X11DisplaySharedResource &dpy, const ColorSchemeConfig &config) noexcept
+    -> Result<X11ColorScheme, X11ColorError>
 {
     ColorSchemeArray colors;
 

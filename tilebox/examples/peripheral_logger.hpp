@@ -15,8 +15,8 @@
 class PeripheralLogger
 {
   public:
-    [[nodiscard]] static auto Create(Tilebox::Width app_width,
-                                     Tilebox::Height app_height) noexcept -> std::optional<PeripheralLogger>;
+    [[nodiscard]] static auto Create(Tilebox::Width app_width, Tilebox::Height app_height) noexcept
+        -> std::optional<PeripheralLogger>;
 
     [[nodiscard]] auto Run() noexcept -> etl::Result<etl::Void, Tilebox::Error>;
 

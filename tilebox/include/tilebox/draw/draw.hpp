@@ -59,8 +59,8 @@ class TILEBOX_EXPORT X11Draw
     ///
     /// @returns A result type containing Void if success, or an error if the underlying XftFont or FcPattern could not
     /// be allocated.
-    [[nodiscard]] auto InitFont(const std::string &font_name,
-                                X11Font::Type type) noexcept -> etl::Result<etl::Void, X11FontError>;
+    [[nodiscard]] auto InitFont(const std::string &font_name, X11Font::Type type) noexcept
+        -> etl::Result<etl::Void, X11FontError>;
 
     /// @brief Gets a font by enum type
     ///
@@ -70,7 +70,7 @@ class TILEBOX_EXPORT X11Draw
     ///
     /// @returns optional containing the X11Font implementation for the specified type iff the type was
     /// initialized.
-    [[nodiscard]] auto GetFont(X11Font::Type type) const noexcept -> std::optional<X11Font>;
+    [[nodiscard]] auto GetFont(const X11Font::Type type) const noexcept -> std::optional<X11Font>;
 
     ///////////////////////////////////////
     /// Colorscheme Management
@@ -92,7 +92,7 @@ class TILEBOX_EXPORT X11Draw
     /// @param kind Specified scheme kind
     ///
     /// @returns true if the scheme kind was removed successfully, false if not.
-    [[nodiscard]] auto RemoveColorScheme(ColorSchemeKind kind) noexcept -> bool;
+    [[nodiscard]] auto RemoveColorScheme(const ColorSchemeKind kind) noexcept -> bool;
 
     /// @brief Gets a colorscheme by enum type
     ///
@@ -102,7 +102,7 @@ class TILEBOX_EXPORT X11Draw
     ///
     /// @returns optional containing the X11ColorScheme implementation for the specified type iff the type was
     /// initialized.
-    [[nodiscard]] auto GetColorScheme(ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>;
+    [[nodiscard]] auto GetColorScheme(const ColorSchemeKind kind) const noexcept -> std::optional<X11ColorScheme>;
 
     ///////////////////////////////////////
     /// Cursor Management
@@ -116,7 +116,7 @@ class TILEBOX_EXPORT X11Draw
     /// @param type enum
     ///
     /// @returns Void is an empty type denoting success, otherwise X11CursorError
-    [[nodiscard]] auto InitCursor(X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>;
+    [[nodiscard]] auto InitCursor(const X11Cursor::Type type) noexcept -> etl::Result<etl::Void, X11CursorError>;
 
     /// @brief Initializes all supported cursor types (convenience method)
     ///
@@ -134,7 +134,7 @@ class TILEBOX_EXPORT X11Draw
     /// @param type enum
     ///
     /// @returns optional containing the X11Cursor implementation for the specified type iff the type was initialized.
-    [[nodiscard]] auto GetCursor(X11Cursor::Type type) const noexcept -> std::optional<Cursor>;
+    [[nodiscard]] auto GetCursor(const X11Cursor::Type type) const noexcept -> std::optional<Cursor>;
 
     void Resize(const Width &width, const Height &height) noexcept;
 
@@ -144,15 +144,15 @@ class TILEBOX_EXPORT X11Draw
 
   private:
     [[nodiscard]] auto GetTextExtents(const X11Font &font, const std::string_view &text,
-                                      std::uint32_t len) const noexcept -> etl::Result<Vec2D, X11FontError>;
+                                      const std::uint32_t len) const noexcept -> etl::Result<Vec2D, X11FontError>;
 
   private:
     X11Draw(X11DisplaySharedResource dpy, GC graphics_ctx, Drawable drawable, Width width, Height height) noexcept;
 
   private:
     X11DisplaySharedResource m_dpy;
-    std::array<X11Font, X11Font::TypeIterator::size() + 1> m_fonts;
-    std::array<X11Cursor, X11Cursor::TypeIterator::size() + 1> m_cursors;
+    std::array<X11Font, X11Font::TypeIterator::size()> m_fonts;
+    std::array<X11Cursor, X11Cursor::TypeIterator::size()> m_cursors;
     std::vector<X11ColorScheme> m_colorschemes;
     GC m_graphics_ctx;
     Drawable m_drawable;
@@ -197,7 +197,7 @@ template <typename ErrType> class etl::Result<Tilebox::X11Draw, ErrType>
     ///
     /// @details The use should always use is_ok() before using ok()
     ///
-    /// @return std::optional<Tilebox::X11Draw> for safety, incase the user did not call
+    /// @return std::optional<Tilebox::X11Draw> for safety, in case the user did not call
     /// is_ok() before using this method.
     [[nodiscard]] auto ok() noexcept -> std::optional<Tilebox::X11Draw>
     {
@@ -216,7 +216,7 @@ template <typename ErrType> class etl::Result<Tilebox::X11Draw, ErrType>
     ///
     /// @details The use should always use is_err() before using err()
     ///
-    /// @return std::optional<ErrType> for safety, incase the user did not call
+    /// @return std::optional<ErrType> for safety, in case the user did not call
     /// is_err() before using this method.
     [[nodiscard]] auto err() const noexcept -> std::optional<ErrType>
     {

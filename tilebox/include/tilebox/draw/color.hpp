@@ -30,8 +30,8 @@ class TILEBOX_INTERNAL X11Color
   public:
     X11Color() noexcept = default;
 
-    [[nodiscard]] static auto Create(const X11DisplaySharedResource &dpy,
-                                     const std::string &hex_code) -> etl::Result<X11Color, X11ColorError>;
+    [[nodiscard]] static auto Create(const X11DisplaySharedResource &dpy, const std::string &hex_code)
+        -> etl::Result<X11Color, X11ColorError>;
 
     [[nodiscard]] auto Raw() const noexcept -> XftColor *;
 

@@ -103,9 +103,7 @@ auto WindowManager::IsOtherWmRunning() const noexcept -> bool
 
 void WindowManager::ProcessCleanup() noexcept
 {
-    struct sigaction sa
-    {
-    };
+    struct sigaction sa{};
 
     // Do not transform children into zombies when they terminate,
     // this way child processes disappear automatically and no zombie is left behind for

@@ -66,8 +66,8 @@ class TILEBOX_INTERNAL X11Font
                                      Type type) noexcept -> etl::Result<X11Font, X11FontError>;
 
     /// @brief Creates a font based on the pattern of the font.
-    [[nodiscard]] static auto Create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern,
-                                     Type type) noexcept -> etl::Result<X11Font, X11FontError>;
+    [[nodiscard]] static auto Create(const X11DisplaySharedResource &dpy, FcPattern *font_pattern, Type type) noexcept
+        -> etl::Result<X11Font, X11FontError>;
 
     [[nodiscard]] auto type() const noexcept -> std::optional<Type>;
     [[nodiscard]] auto xftfont() const noexcept -> const XftFontSharedResource &;

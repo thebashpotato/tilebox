@@ -78,8 +78,8 @@ class TILEBOX_EXPORT X11Cursor
     /// @details If the underlying XID is False after the XServer attempts its allocation, an X11CursorError
     /// will be returned. Although client side code will need to check their error callback that they registered with
     /// the X Server.
-    [[nodiscard]] static auto Create(const X11DisplaySharedResource &dpy,
-                                     Type type) noexcept -> etl::Result<X11Cursor, X11CursorError>;
+    [[nodiscard]] static auto Create(const X11DisplaySharedResource &dpy, Type type) noexcept
+        -> etl::Result<X11Cursor, X11CursorError>;
 
     /// @brief Translates an X11Cursor::type to a valid Xlib font cursor value
     [[nodiscard]] constexpr static auto ToString(const Type type) noexcept -> std::string
