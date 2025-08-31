@@ -28,4 +28,14 @@ dap.configurations.cpp = {
 		cwd = "${workspaceFolder}",
 		stopOnEntry = false,
 	},
+	{
+		name = "Launch tilebox scratch",
+		type = "lldb",
+		request = "launch",
+		program = function()
+			return vim.fn.getcwd() .. "/build/tilebox/examples/tilebox-scratch"
+		end,
+		cwd = "${workspaceFolder}",
+		stopOnEntry = false,
+	},
 }

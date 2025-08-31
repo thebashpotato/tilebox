@@ -14,17 +14,29 @@ namespace Tilebox
 namespace TILEBOX_INTERNAL detail
 {
 
-class TILEBOX_EXPORT Xtag{};
+class TILEBOX_EXPORT Xtag
+{
+};
 
-class TILEBOX_EXPORT Ytag{};
+class TILEBOX_EXPORT Ytag
+{
+};
 
-class TILEBOX_EXPORT WidthTag{};
+class TILEBOX_EXPORT WidthTag
+{
+};
 
-class TILEBOX_EXPORT HeightTag{};
+class TILEBOX_EXPORT HeightTag
+{
+};
 
-class TILEBOX_EXPORT DeltaOneTag{};
+class TILEBOX_EXPORT DeltaOneTag
+{
+};
 
-class TILEBOX_EXPORT DeltaTwoTag{};
+class TILEBOX_EXPORT DeltaTwoTag
+{
+};
 
 } // namespace TILEBOX_INTERNAL detail
 

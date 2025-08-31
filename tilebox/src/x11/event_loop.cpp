@@ -1,12 +1,12 @@
-#include "tilebox/x11/event_loop.hpp"
+#include <cstdint>
+#include <iostream>
+#include <utility>
+
 #include "tilebox/x11/display.hpp"
+#include "tilebox/x11/event_loop.hpp"
 #include "tilebox/x11/events.hpp"
 
 #include <X11/Xlib.h>
-
-#include <cstdint>
-#include <fmt/base.h>
-#include <utility>
 
 namespace Tilebox
 {
@@ -21,9 +21,9 @@ auto X11EventLoop::RegisterEventHandler(const X11EventType event_type, X11EventC
     {
         if (auto [iter, was_inserted] = _event_handlers.emplace(event_type, std::move(callback)); !was_inserted)
         {
-            // FIXME: Remove call to fmt::println, return Result<Void, SomeError> instead
-            fmt::println("Could not insert event handler for X11 event type: {}",
-                         static_cast<std::int32_t>(event_type));
+            // FIXME: Remove call to std::cout, return Result<Void, SomeError> instead
+            std::cout << "Could not insert event handler for X11 event type: " << static_cast<std::int32_t>(event_type)
+                      << '\n';
         }
     }
 }

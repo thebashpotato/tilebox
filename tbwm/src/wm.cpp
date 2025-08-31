@@ -14,7 +14,6 @@
 #include <tilebox/x11/display.hpp>
 
 #include <cstdint>
-#include <cstdlib>
 #include <memory>
 #include <signal.h> // NOLINT
 #include <string_view>

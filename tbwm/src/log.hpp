@@ -1,6 +1,5 @@
 #pragma once
 
-#include <fmt/base.h>
 #include <memory>
 #include <spdlog/logger.h>
 #include <string_view>

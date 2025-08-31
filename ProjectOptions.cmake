@@ -3,8 +3,7 @@ include(CMakeDependentOption)
 include(CheckCXXCompilerFlag)
 
 macro(tilebox_supports_sanitizers)
-  if((CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*" OR CMAKE_CXX_COMPILER_ID MATCHES
-                                                   ".*GNU.*"))
+  if((CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*" OR CMAKE_CXX_COMPILER_ID MATCHES ".*GNU.*"))
     set(SUPPORTS_UBSAN ON)
   else()
     set(SUPPORTS_UBSAN OFF)
@@ -14,14 +13,13 @@ endmacro()
 macro(tilebox_setup_options)
   option(tilebox_ENABLE_HARDENING "Enable hardening" ON)
   option(tilebox_ENABLE_COVERAGE "Enable coverage reporting" OFF)
-  cmake_dependent_option(
-    tilebox_ENABLE_GLOBAL_HARDENING
-    "Attempt to push hardening options to built dependencies" ON
-    tilebox_ENABLE_HARDENING OFF)
+  cmake_dependent_option(tilebox_ENABLE_GLOBAL_HARDENING "Attempt to push hardening options to built dependencies" ON
+                         tilebox_ENABLE_HARDENING OFF)
 
   tilebox_supports_sanitizers()
 
   if(NOT PROJECT_IS_TOP_LEVEL OR tilebox_PACKAGING_MAINTAINER_MODE)
+    option(tilebox_ENABLE_DEVELOPER_MODE "Enable unit testing, examples, static analyzers formatting and debugging" OFF)
     option(tilebox_ENABLE_IPO "Enable IPO/LTO" OFF)
     option(tilebox_WARNINGS_AS_ERRORS "Treat Warnings As Errors" OFF)
     option(tilebox_ENABLE_USER_LINKER "Enable user-selected linker" OFF)
@@ -36,18 +34,17 @@ macro(tilebox_setup_options)
     option(tilebox_ENABLE_PCH "Enable precompiled headers" OFF)
     option(tilebox_ENABLE_CACHE "Enable ccache" OFF)
   else()
+    option(tilebox_ENABLE_DEVELOPER_MODE "Enable unit testing, examples, static analyzers formatting and debugging" OFF)
     option(tilebox_ENABLE_IPO "Enable IPO/LTO" OFF)
     option(tilebox_WARNINGS_AS_ERRORS "Treat Warnings As Errors" OFF)
     option(tilebox_ENABLE_USER_LINKER "Enable user-selected linker" OFF)
-    option(tilebox_ENABLE_SANITIZER_ADDRESS "Enable address sanitizer"
-           ${SUPPORTS_ASAN})
+    option(tilebox_ENABLE_SANITIZER_ADDRESS "Enable address sanitizer" ${SUPPORTS_ASAN})
     option(tilebox_ENABLE_SANITIZER_LEAK "Enable leak sanitizer" OFF)
-    option(tilebox_ENABLE_SANITIZER_UNDEFINED "Enable undefined sanitizer"
-           ${SUPPORTS_UBSAN})
+    option(tilebox_ENABLE_SANITIZER_UNDEFINED "Enable undefined sanitizer" ${SUPPORTS_UBSAN})
     option(tilebox_ENABLE_SANITIZER_THREAD "Enable thread sanitizer" OFF)
     option(tilebox_ENABLE_SANITIZER_MEMORY "Enable memory sanitizer" OFF)
     option(tilebox_ENABLE_UNITY_BUILD "Enable unity builds" OFF)
-    option(tilebox_ENABLE_CLANG_TIDY "Enable clang-tidy" ON)
+    option(tilebox_ENABLE_CLANG_TIDY "Enable clang-tidy" OFF)
     option(tilebox_ENABLE_CPPCHECK "Enable cpp-check analysis" OFF)
     option(tilebox_ENABLE_PCH "Enable precompiled headers" OFF)
     option(tilebox_ENABLE_CACHE "Enable ccache" ON)
@@ -55,6 +52,7 @@ macro(tilebox_setup_options)
 
   if(NOT PROJECT_IS_TOP_LEVEL)
     mark_as_advanced(
+      tilebox_ENABLE_DEVELOPER_MODE
       tilebox_ENABLE_IPO
       tilebox_WARNINGS_AS_ERRORS
       tilebox_ENABLE_USER_LINKER
@@ -70,6 +68,11 @@ macro(tilebox_setup_options)
       tilebox_ENABLE_PCH
       tilebox_ENABLE_CACHE)
   endif()
+
+  if(tilebox_ENABLE_DEVELOPER_MODE)
+    set(tilebox_ENABLE_CLANG_TIDY ON)
+  endif()
+
 endmacro()
 
 macro(tilebox_global_options)
@@ -91,9 +94,7 @@ macro(tilebox_global_options)
     else()
       set(ENABLE_UBSAN_MINIMAL_RUNTIME TRUE)
     endif()
-    message(
-      "${tilebox_ENABLE_HARDENING} ${ENABLE_UBSAN_MINIMAL_RUNTIME} ${tilebox_ENABLE_SANITIZER_UNDEFINED}"
-    )
+    message("${tilebox_ENABLE_HARDENING} ${ENABLE_UBSAN_MINIMAL_RUNTIME} ${tilebox_ENABLE_SANITIZER_UNDEFINED}")
     tilebox_enable_hardening(tilebox_options ON ${ENABLE_UBSAN_MINIMAL_RUNTIME})
   endif()
 endmacro()
@@ -116,16 +117,13 @@ macro(tilebox_local_options)
 
   include(cmake/Sanitizers.cmake)
   tilebox_enable_sanitizers(
-    tilebox_options ${tilebox_ENABLE_SANITIZER_ADDRESS}
-    ${tilebox_ENABLE_SANITIZER_LEAK} ${tilebox_ENABLE_SANITIZER_UNDEFINED}
-    ${tilebox_ENABLE_SANITIZER_THREAD} ${tilebox_ENABLE_SANITIZER_MEMORY})
+    tilebox_options ${tilebox_ENABLE_SANITIZER_ADDRESS} ${tilebox_ENABLE_SANITIZER_LEAK}
+    ${tilebox_ENABLE_SANITIZER_UNDEFINED} ${tilebox_ENABLE_SANITIZER_THREAD} ${tilebox_ENABLE_SANITIZER_MEMORY})
 
-  set_target_properties(tilebox_options
-                        PROPERTIES UNITY_BUILD ${tilebox_ENABLE_UNITY_BUILD})
+  set_target_properties(tilebox_options PROPERTIES UNITY_BUILD ${tilebox_ENABLE_UNITY_BUILD})
 
   if(tilebox_ENABLE_PCH)
-    target_precompile_headers(tilebox_options INTERFACE <vector> <string>
-                              <utility>)
+    target_precompile_headers(tilebox_options INTERFACE <vector> <string> <utility>)
   endif()
 
   if(tilebox_ENABLE_CACHE)
@@ -139,8 +137,7 @@ macro(tilebox_local_options)
   endif()
 
   if(tilebox_ENABLE_CPPCHECK)
-    tilebox_enable_cppcheck(
-      ${tilebox_WARNINGS_AS_ERRORS} "" # override cppcheck options
+    tilebox_enable_cppcheck(${tilebox_WARNINGS_AS_ERRORS} "" # override cppcheck options
     )
   endif()
 
@@ -152,8 +149,8 @@ macro(tilebox_local_options)
   if(tilebox_WARNINGS_AS_ERRORS)
     check_cxx_compiler_flag("-Wl,--fatal-warnings" LINKER_FATAL_WARNINGS)
     if(LINKER_FATAL_WARNINGS)
-      # This is not working consistently, so disabling for now
-      # target_link_options(tilebox_options INTERFACE -Wl,--fatal-warnings)
+      # This is not working consistently, so disabling for now target_link_options(tilebox_options INTERFACE
+      # -Wl,--fatal-warnings)
     endif()
   endif()
 
@@ -168,7 +165,6 @@ macro(tilebox_local_options)
     else()
       set(ENABLE_UBSAN_MINIMAL_RUNTIME TRUE)
     endif()
-    tilebox_enable_hardening(tilebox_options OFF
-                             ${ENABLE_UBSAN_MINIMAL_RUNTIME})
+    tilebox_enable_hardening(tilebox_options OFF ${ENABLE_UBSAN_MINIMAL_RUNTIME})
   endif()
 endmacro()

@@ -26,7 +26,7 @@ tilebox_setup_options()
 tilebox_global_options()
 
 include(Dependencies.cmake)
-tilebox_setup_dependencies()
+tilebox_setup_dependencies(${tilebox_ENABLE_DEVELOPER_MODE})
 tilebox_local_options()
 
 target_compile_features(tilebox_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})

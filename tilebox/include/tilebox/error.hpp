@@ -19,6 +19,18 @@ class Error final : public etl::BaseError
     }
 };
 
+class FontError final : public etl::BaseError
+{
+  public:
+    explicit FontError(const std::string_view &msg) noexcept : etl::BaseError(msg)
+    {
+    }
+
+    FontError(const std::string_view &msg, const etl::SourceCodeLocation &slc) noexcept : etl::BaseError(msg, slc)
+    {
+    }
+};
+
 class X11FontError final : public etl::BaseError
 {
   public:

@@ -13,7 +13,7 @@ clean_rebuild:
 
 configure_clang_debug:
 	# Configures the project with Clang compiler in Debug mode.
-	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -B $(BUILD_DIR) -G $(GENERATOR)
+	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -Dtilebox_ENABLE_DEVELOPER_MODE=ON -B $(BUILD_DIR) -G $(GENERATOR)
 
 configure_clang_rel:
 	# Configures the project with Clang compiler in Release mode.
@@ -21,7 +21,7 @@ configure_clang_rel:
 
 configure_gnu_debug:
 	# Configures the project with GNU compiler in Debug mode.
-	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -B $(BUILD_DIR) -G $(GENERATOR)
+	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -Dtilebox_ENABLE_DEVELOPER_MODE=ON -B $(BUILD_DIR) -G $(GENERATOR)
 
 configure_gnu_rel:
 	# Configures the project with GNU compiler in Release mode.
@@ -32,7 +32,7 @@ embed:
 	$(EMBED_SCRIPT)
 
 tests:
-	ctest --output-on-failure --test-dir $(BUILD_DIR)
+	ctest -V --output-on-failure --test-dir $(BUILD_DIR)
 
 clean:
 	# Scorthed Earth, deletes all build artifact folders and clangd cache

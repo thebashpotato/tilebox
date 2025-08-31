@@ -9,7 +9,7 @@ auto main() -> int
     auto tbwm_create_result = Tbwm::WindowManager::Create("tbwm");
     if (tbwm_create_result.is_err())
     {
-        Tbwm::Log::Error("{}", (*tbwm_create_result.err()).info());
+        Tbwm::Log::Error("{}", tbwm_create_result.err()->info());
         return EXIT_FAILURE;
     }
 

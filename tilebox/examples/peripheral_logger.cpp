@@ -1,3 +1,9 @@
+#include <cstdlib>
+#include <iostream>
+#include <optional>
+#include <string_view>
+#include <utility>
+
 #include <tilebox/error.hpp>
 #include <tilebox/geometry.hpp>
 #include <tilebox/x11/display.hpp>
@@ -7,12 +13,6 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <etl.hpp>
-#include <fmt/base.h>
-
-#include <cstdlib>
-#include <optional>
-#include <string>
-#include <utility>
 
 #include "peripheral_logger.hpp"
 
@@ -64,48 +64,47 @@ auto PeripheralLogger::Run() noexcept -> Result<Void, Error>
         return res;
     }
 
-    m_event_loop.RegisterEventHandler(X11EventType::X11ButtonPress, [&](XEvent *event) -> void {
+    m_event_loop.RegisterEventHandler(X11EventType::X11ButtonPress, [&](const XEvent *const event) -> void {
         switch (event->xbutton.button)
         {
         case Button1:
-            fmt::println("Left mouse button pressed!");
+            std::cout << "Left mouse button pressed!" << '\n';
             break;
         case Button2:
-            fmt::println("Middle mouse button pressed!");
+            std::cout << "Middle mouse button pressed!" << '\n';
             break;
         case Button3:
-            fmt::println("Right mouse button pressed!");
+            std::cout << "Right mouse button pressed!" << '\n';
             break;
         case Button4:
-            fmt::println("Scrolling up!");
+            std::cout << "Scrolling up!" << '\n';
             break;
         case Button5:
-            fmt::println("Scrolling down!");
+            std::cout << "Scrolling down!" << '\n';
             break;
         default:
-            fmt::println("Unknown event: {}", event->xbutton.button);
+            std::cout << "Unkown event: " << event->xbutton.button << '\n';
         }
     });
 
-    m_event_loop.RegisterEventHandler(X11EventType::X11KeyPress, [&](XEvent *event) -> void {
+    m_event_loop.RegisterEventHandler(X11EventType::X11KeyPress, [&](XEvent *const event) -> void {
         const KeySym key_sym = XLookupKeysym(&event->xkey, 0);
-        const std::string key_name(XKeysymToString(key_sym));
 
-        if (key_sym == XK_Escape)
+        if (const std::string_view key_name(XKeysymToString(key_sym)); key_sym == XK_Escape)
         {
-            fmt::println("Escape key pressed.. Exiting");
+            std::cout << "Escape key pressed .. Exiting" << '\n';
             m_run = false;
         }
         else
         {
-            fmt::println("Key pressed: {}", key_name);
+            std::cout << "Key pressed: " << key_name << '\n';
         }
     });
 
-    m_event_loop.RegisterEventHandler(X11EventType::X11ClientMessage, [&](const XEvent *event) -> void {
-        if (static_cast<Atom>(event->xclient.data.l[0]) == m_delete_window_msg)
+    m_event_loop.RegisterEventHandler(X11EventType::X11ClientMessage, [&](const XEvent *const event) -> void {
+        if (std::cmp_equal(event->xclient.data.l[0], m_delete_window_msg))
         {
-            fmt::println("Window close event requested.. Exiting");
+            std::cout << "Window close event requested.. Exiting" << '\n';
             m_run = false;
         }
     });
@@ -120,7 +119,7 @@ auto main() -> int
     auto app_opt = PeripheralLogger::Create(Width(640), Height(480));
     if (!app_opt.has_value())
     {
-        fmt::println("Failed to start the PeripheralLogger application");
+        std::cout << "Failed to start the PeripheralLogger application" << '\n';
         return EXIT_FAILURE;
     }
 
@@ -128,7 +127,7 @@ auto main() -> int
 
     if (auto res = app.Run(); res.is_err())
     {
-        fmt::println("PeripheralLogger app failed to run: {}", res.err().value().info());
+        std::cout << "PeripheralLogger app failed to run: " << res.err()->info() << '\n';
         return EXIT_FAILURE;
     }
 
