@@ -8,7 +8,7 @@
 
 using namespace Tilebox;
 
-TEST(TileboxCoreGeometryTestSuite, VerifyBasicRectConstruction)
+TEST(Tilebox_GeometryTestSuite, VerifyBasicRectConstruction)
 {
     const Rect r(Width(1), Height(2));
 
@@ -18,7 +18,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyBasicRectConstruction)
     ASSERT_EQ(r.height, Height(2));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyCornersWork)
+TEST(Tilebox_GeometryTestSuite, VerifyCornersWork)
 {
     const Rect r(Width(1), Height(2));
     const auto [tl, tr, br, bl] = r.Corners();
@@ -41,7 +41,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyCornersWork)
     ASSERT_EQ(bl.y, expected_bl.y);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksBothEven)
+TEST(Tilebox_GeometryTestSuite, VerifyMidpointWorksBothEven)
 {
     const Rect r(Width(10), Height(20));
     const Point p(X(5), Y(10));
@@ -49,7 +49,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksBothEven)
     ASSERT_EQ(r.Midpoint(), p);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksBothOdd)
+TEST(Tilebox_GeometryTestSuite, VerifyMidpointWorksBothOdd)
 {
     const Rect r(Width(11), Height(21));
     const Point p(X(5), Y(10));
@@ -57,7 +57,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksBothOdd)
     ASSERT_EQ(r.Midpoint(), p);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksWidthEven)
+TEST(Tilebox_GeometryTestSuite, VerifyMidpointWorksWidthEven)
 {
     const Rect r(Width(10), Height(21));
     const Point p(X(5), Y(10));
@@ -65,7 +65,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksWidthEven)
     ASSERT_EQ(r.Midpoint(), p);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksHeightEven)
+TEST(Tilebox_GeometryTestSuite, VerifyMidpointWorksHeightEven)
 {
     const Rect r(Width(11), Height(20));
     const Point p(X(5), Y(10));
@@ -73,7 +73,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyMidpointWorksHeightEven)
     ASSERT_EQ(r.Midpoint(), p);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksSmallBorder)
+TEST(Tilebox_GeometryTestSuite, VerifyShinkInWorksSmallBorder)
 {
     constexpr std::uint32_t border = 1;
     const Width w(8);
@@ -85,7 +85,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksSmallBorder)
     ASSERT_EQ(shrunk, Rect(Point(X(r.point.x), Y(r.point.y)), w, h));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksMassiveBorder)
+TEST(Tilebox_GeometryTestSuite, VerifyShinkInWorksMassiveBorder)
 {
     constexpr std::uint32_t border = 1000;
     const Width w(1);
@@ -97,7 +97,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksMassiveBorder)
     ASSERT_EQ(shrunk, Rect(Point(X(r.point.x), Y(r.point.y)), w, h));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksBorderHalfOfWidth)
+TEST(Tilebox_GeometryTestSuite, VerifyShinkInWorksBorderHalfOfWidth)
 {
     constexpr std::uint32_t border = 5;
     const Width w(1);
@@ -109,7 +109,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksBorderHalfOfWidth)
     ASSERT_EQ(shrunk, Rect(Point(X(r.point.x), Y(r.point.y)), w, h));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksBorderHalfOfHeight)
+TEST(Tilebox_GeometryTestSuite, VerifyShinkInWorksBorderHalfOfHeight)
 {
     constexpr std::uint32_t border = 5;
     const Width w(10);
@@ -121,7 +121,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyShinkInWorksBorderHalfOfHeight)
     ASSERT_EQ(shrunk, Rect(Point(X(r.point.x), Y(r.point.y)), w, h));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthUp)
+TEST(Tilebox_GeometryTestSuite, VerifyScaleWidthUp)
 {
     constexpr std::double_t factor = 1.5;
     const Point coordinates(X(10), Y(20));
@@ -133,7 +133,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthUp)
     ASSERT_EQ(r.ScaleWidth(factor), expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthDown)
+TEST(Tilebox_GeometryTestSuite, VerifyScaleWidthDown)
 {
     constexpr std::double_t factor = 0.5;
     const Point coordinates(X(10), Y(20));
@@ -145,7 +145,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthDown)
     ASSERT_EQ(r.ScaleWidth(factor), expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthUnchanged)
+TEST(Tilebox_GeometryTestSuite, VerifyScaleWidthUnchanged)
 {
     constexpr std::double_t factor = 1.0;
     const Point coordinates(X(10), Y(20));
@@ -157,7 +157,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleWidthUnchanged)
     ASSERT_EQ(r.ScaleWidth(factor), expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightUp)
+TEST(Tilebox_GeometryTestSuite, VerifyScaleHeightUp)
 {
     constexpr std::double_t factor = 1.5;
     const Point coordinates(X(10), Y(20));
@@ -169,7 +169,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightUp)
     ASSERT_EQ(r.ScaleHeight(factor), expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightDown)
+TEST(Tilebox_GeometryTestSuite, VerifyScaleHeightDown)
 {
     constexpr std::double_t factor = 0.5;
     const Point coordinates(X(10), Y(20));
@@ -181,7 +181,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightDown)
     ASSERT_EQ(r.ScaleHeight(factor), expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightUnchanged)
+TEST(Tilebox_GeometryTestSuite, VerifyScaleHeightUnchanged)
 {
     constexpr std::double_t factor = 1.0;
     const Point coordinates(X(10), Y(20));
@@ -193,7 +193,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyScaleHeightUnchanged)
     ASSERT_EQ(r.ScaleHeight(factor), expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyResizeIncrease)
+TEST(Tilebox_GeometryTestSuite, VerifyResizeIncrease)
 {
     const X dw(1);
     const Y dh(2);
@@ -206,7 +206,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyResizeIncrease)
     ASSERT_EQ(r, expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecrease)
+TEST(Tilebox_GeometryTestSuite, VerifyResizeDecrease)
 {
 
     const X dw(-1);
@@ -220,7 +220,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecrease)
     ASSERT_EQ(r, expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyResizeClamp)
+TEST(Tilebox_GeometryTestSuite, VerifyResizeClamp)
 {
     const X dw(-100);
     const Y dh(-100);
@@ -233,7 +233,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyResizeClamp)
     ASSERT_EQ(r, expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecreaseMax)
+TEST(Tilebox_GeometryTestSuite, VerifyResizeDecreaseMax)
 {
     const X dw(std::numeric_limits<std::int32_t>::max());
     const Y dh(std::numeric_limits<std::int32_t>::min());
@@ -246,7 +246,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyResizeDecreaseMax)
     ASSERT_EQ(r, expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyRepositionIncrease)
+TEST(Tilebox_GeometryTestSuite, VerifyRepositionIncrease)
 {
     const X dx(1);
     const Y dy(2);
@@ -259,7 +259,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyRepositionIncrease)
     ASSERT_EQ(r, expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyRepositionDecrease)
+TEST(Tilebox_GeometryTestSuite, VerifyRepositionDecrease)
 {
     const X dx(-1);
     const Y dy(-2);
@@ -272,7 +272,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyRepositionDecrease)
     ASSERT_EQ(r, expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyRepositionClamp)
+TEST(Tilebox_GeometryTestSuite, VerifyRepositionClamp)
 {
     const X dx(-100);
     const Y dy(-100);
@@ -285,7 +285,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyRepositionClamp)
     ASSERT_EQ(r, expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyDecreaseMax)
+TEST(Tilebox_GeometryTestSuite, VerifyDecreaseMax)
 {
     const X dx(std::numeric_limits<std::int32_t>::min());
     const Y dy(std::numeric_limits<std::int32_t>::min());
@@ -298,7 +298,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyDecreaseMax)
     ASSERT_EQ(r, expected);
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyContainsRect)
+TEST(Tilebox_GeometryTestSuite, VerifyContainsRect)
 {
     const Rect r1(Point(X(10), Y(10)), Width(50), Height(50));
     const Rect r2(Width(100), Height(100));
@@ -307,7 +307,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyContainsRect)
     ASSERT_FALSE(r1.Contains(r2));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointOutside)
+TEST(Tilebox_GeometryTestSuite, VerifyContainsPointOutside)
 {
     const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
     const Point p;
@@ -315,7 +315,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointOutside)
     ASSERT_FALSE(r.ContainsPoint(p));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointInside)
+TEST(Tilebox_GeometryTestSuite, VerifyContainsPointInside)
 {
     const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
     const Point p(X(30), Y(20));
@@ -323,7 +323,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointInside)
     ASSERT_TRUE(r.ContainsPoint(p));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointTopLeft)
+TEST(Tilebox_GeometryTestSuite, VerifyContainsPointTopLeft)
 {
     const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
     const Point p(X(10), Y(20));
@@ -331,7 +331,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointTopLeft)
     ASSERT_TRUE(r.ContainsPoint(p));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointTopRight)
+TEST(Tilebox_GeometryTestSuite, VerifyContainsPointTopRight)
 {
     const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
     const Point p(X(40), Y(20));
@@ -339,7 +339,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointTopRight)
     ASSERT_TRUE(r.ContainsPoint(p));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointBottomRight)
+TEST(Tilebox_GeometryTestSuite, VerifyContainsPointBottomRight)
 {
     const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
     const Point p(X(40), Y(60));
@@ -347,7 +347,7 @@ TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointBottomRight)
     ASSERT_TRUE(r.ContainsPoint(p));
 }
 
-TEST(TileboxCoreGeometryTestSuite, VerifyContainsPointBottomLeft)
+TEST(Tilebox_GeometryTestSuite, VerifyContainsPointBottomLeft)
 {
     const Rect r(Point(X(10), Y(20)), Width(30), Height(40));
     const Point p(X(10), Y(60));

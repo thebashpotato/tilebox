@@ -32,6 +32,8 @@ embed:
 	$(EMBED_SCRIPT)
 
 tests:
+	ctest --output-on-failure --test-dir $(BUILD_DIR)
+tests_verbose:
 	ctest -V --output-on-failure --test-dir $(BUILD_DIR)
 
 clean:

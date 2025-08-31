@@ -9,7 +9,7 @@
 
 using namespace Tilebox;
 
-TEST(TileboxCoreColorschemeTestSuite, VerifyColorCreation)
+TEST(Tilebox_ColorschemeTestSuite, VerifyColorCreation)
 {
     auto dpy_opt = X11Display::Create();
 
@@ -27,12 +27,12 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorCreation)
     ASSERT_NE(color.Raw(), nullptr);
 }
 
-TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeSizeFunction)
+TEST(Tilebox_ColorschemeTestSuite, VerifyColorSchemeSizeFunction)
 {
     ASSERT_EQ(ColorSchemeKindIterator::size(), 3);
 }
 
-TEST(TileboxCoreColorschemeTestSuite, VerifyColorMoveContructor)
+TEST(Tilebox_ColorschemeTestSuite, VerifyColorMoveContructor)
 {
     auto dpy_opt = X11Display::Create();
 
@@ -52,7 +52,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorMoveContructor)
     ASSERT_NE(color_2.Raw(), nullptr);
 }
 
-TEST(TileboxCoreColorschemeTestSuite, VerifyColorCopyConstructor)
+TEST(Tilebox_ColorschemeTestSuite, VerifyColorCopyConstructor)
 {
     auto dpy_opt = X11Display::Create();
 
@@ -76,7 +76,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorCopyConstructor)
     ASSERT_NE(color.Raw(), nullptr);
 }
 
-TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeConfigBuilder)
+TEST(Tilebox_ColorschemeTestSuite, VerifyColorSchemeConfigBuilder)
 {
     const ColorSchemeConfig primary = ColorSchemeConfig::Build(ColorSchemeKind::Primary)
                                           .foreground("#bbbbbb")
@@ -89,7 +89,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeConfigBuilder)
     EXPECT_EQ(primary.border(), "#444444");
 }
 
-TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeCreation)
+TEST(Tilebox_ColorschemeTestSuite, VerifyColorSchemeCreation)
 {
     auto dpy_opt = X11Display::Create();
 
@@ -110,7 +110,7 @@ TEST(TileboxCoreColorschemeTestSuite, VerifyColorSchemeCreation)
     ASSERT_EQ(scheme_res.is_ok(), true);
 }
 
-TEST(TileboxCoreColorschemeTestSuite, VerifyColorAccessors)
+TEST(Tilebox_ColorschemeTestSuite, VerifyColorAccessors)
 {
     auto dpy_opt = X11Display::Create();
 

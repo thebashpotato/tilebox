@@ -32,7 +32,7 @@ auto BuildDisplay() -> X11DisplaySharedResource
 }
 } // namespace
 
-TEST(TileboxCoreX11TestSuite, VerifyX11DisplayLifetimeManagement)
+TEST(Tilebox_X11TestSuite, VerifyX11DisplayLifetimeManagement)
 {
     auto dpy = BuildDisplay();
 

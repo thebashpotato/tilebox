@@ -7,7 +7,6 @@
 #include <X11/Xft/Xft.h>
 #include <etl.hpp>
 #include <fontconfig/fontconfig.h>
-#include <ft2build.h>
 
 #include <cstdint>
 #include <string>
@@ -15,9 +14,22 @@
 namespace Tilebox::Ui
 {
 
+struct XftFontDeleter
+{
+    XftFontDeleter() = default;
+
+    explicit XftFontDeleter(X11DisplaySharedResource display) noexcept;
+
+    void operator()(XftFont *font) const noexcept;
+
+    X11DisplaySharedResource dpy;
+};
+
 /// @brief Provides a RAII wrapper around an XftFont and fontconfig.
 class X11Font
 {
+    using XftFontPtr = std::unique_ptr<XftFont, XftFontDeleter>;
+
   public:
     X11Font() noexcept = default;
     ~X11Font();
@@ -27,11 +39,11 @@ class X11Font
     auto operator=(const X11Font &rhs) -> X11Font & = delete;
 
   public:
-    /// @brief Trys to creates a font based on the name of the font.
+    /// @brief Try to create a font based on the name of the font.
     [[nodiscard]] static auto TryCreate(const X11DisplaySharedResource &dpy, const std::string &font_name) noexcept
         -> etl::Result<X11Font, X11FontError>;
 
-    /// @brief Trys to create a font based on the pattern of the font.
+    /// @brief Try to create a font based on the pattern of the font.
     [[nodiscard]] static auto TryCreate(const X11DisplaySharedResource &dpy, FcPattern *const fcp) noexcept
         -> etl::Result<X11Font, X11FontError>;
 
@@ -47,16 +59,14 @@ class X11Font
         -> etl::Result<FcPattern *const, X11FontError>;
 
     [[nodiscard]] auto IsValid() const noexcept -> bool;
-    [[nodiscard]] auto xftfont() const noexcept -> XftFont *;
+    [[nodiscard]] auto font() const noexcept -> XftFont *;
     [[nodiscard]] auto height() const noexcept -> Height;
 
   private:
-    X11Font(X11DisplaySharedResource dpy, XftFont *xft_font, FcPattern *pattern, Height height) noexcept;
-    void Release() noexcept;
+    X11Font(XftFontPtr font, FcPattern *pattern, Height height) noexcept;
 
   private:
-    X11DisplaySharedResource m_dpy;
-    XftFont *m_xftfont{};
+    XftFontPtr m_font;
     FcPattern *m_pattern{};
     Height m_height;
 };

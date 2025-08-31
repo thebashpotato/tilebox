@@ -7,12 +7,12 @@
 
 using namespace Tilebox;
 
-TEST(TileboxCoreX11CursorTestSuite, VerifyCursorTypeSize)
+TEST(Tilebox_X11CursorTestSuite, VerifyCursorTypeSize)
 {
     ASSERT_EQ(X11Cursor::TypeIterator::size(), 3);
 }
 
-TEST(TileboxCoreX11CursorTestSuite, VerifyCreation)
+TEST(Tilebox_X11CursorTestSuite, VerifyCreation)
 {
     auto dpy_opt = X11Display::Create();
 
@@ -27,7 +27,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyCreation)
     ASSERT_EQ(cursor_opt.is_ok(), true);
 }
 
-TEST(TileboxCoreX11CursorTestSuite, VerifyMoveConstructor)
+TEST(Tilebox_X11CursorTestSuite, VerifyMoveConstructor)
 {
     auto dpy_opt = X11Display::Create();
 
@@ -50,7 +50,7 @@ TEST(TileboxCoreX11CursorTestSuite, VerifyMoveConstructor)
     ASSERT_EQ(cursor_2.cursor(), cached_cursor_id);
 }
 
-TEST(TileboxCoreX11CursorTestSuite, VerifyMoveAssignment)
+TEST(Tilebox_X11CursorTestSuite, VerifyMoveAssignment)
 {
     auto dpy_opt = X11Display::Create();
 

@@ -70,12 +70,12 @@ class AtomManager
 
     [[nodiscard]] static auto ToUnderlying(const Wm atom) noexcept -> std::uint8_t
     {
-        return std::underlying_type_t<Wm>(atom);
+        return static_cast<std::underlying_type_t<Wm>>(atom);
     }
 
     [[nodiscard]] static auto ToUnderlying(const Net atom) noexcept -> std::uint8_t
     {
-        return std::underlying_type_t<Net>(atom);
+        return static_cast<std::underlying_type_t<Net>>(atom);
     }
 
   public:

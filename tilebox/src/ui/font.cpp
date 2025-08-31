@@ -1,6 +1,5 @@
 #include <cassert>
 #include <cstdint>
-#include <iostream>
 #include <string>
 #include <utility>
 
@@ -20,19 +19,33 @@ using namespace etl;
 namespace Tilebox::Ui
 {
 
-X11Font::X11Font(X11DisplaySharedResource dpy, XftFont *xft_font, FcPattern *pattern, Height height) noexcept
-    : m_dpy(std::move(dpy)), m_xftfont(xft_font), m_pattern(pattern), m_height(std::move(height))
+XftFontDeleter::XftFontDeleter(X11DisplaySharedResource display) noexcept : dpy(std::move(display))
+{
+}
+
+void XftFontDeleter::operator()(XftFont *font) const noexcept
+{
+    if (dpy && font != nullptr)
+    {
+        XftFontClose(dpy->Raw(), std::exchange(font, nullptr));
+    }
+}
+
+X11Font::X11Font(XftFontPtr font, FcPattern *pattern, Height height) noexcept
+    : m_font(std::move(font)), m_pattern(pattern), m_height(std::move(height))
 {
 }
 
 X11Font::~X11Font()
 {
-    this->Release();
+    if (m_pattern != nullptr)
+    {
+        FcPatternDestroy(std::exchange(m_pattern, nullptr));
+    }
 }
 
 X11Font::X11Font(X11Font &&rhs) noexcept
-    : m_dpy(std::move(rhs.m_dpy)), m_xftfont(std::exchange(rhs.m_xftfont, nullptr)),
-      m_pattern(std::exchange(rhs.m_pattern, nullptr)), m_height(std::move(rhs.m_height))
+    : m_font(std::move(rhs.m_font)), m_pattern(std::exchange(rhs.m_pattern, nullptr)), m_height(std::move(rhs.m_height))
 {
 }
 
@@ -40,9 +53,7 @@ auto X11Font::operator=(X11Font &&rhs) noexcept -> X11Font &
 {
     if (this != &rhs)
     {
-        Release(); // safely drop current resources
-        m_dpy = std::move(rhs.m_dpy);
-        m_xftfont = std::exchange(rhs.m_xftfont, nullptr);
+        m_font = std::move(rhs.m_font);
         m_pattern = std::exchange(rhs.m_pattern, nullptr);
         m_height = std::move(rhs.m_height);
     }
@@ -79,7 +90,7 @@ auto X11Font::TryCreate(const X11DisplaySharedResource &dpy, const std::string &
 
     Height h(static_cast<uint32_t>(xf->ascent + xf->descent));
 
-    return Result<X11Font, X11FontError>(X11Font(dpy, xf, fcp, std::move(h)));
+    return Result<X11Font, X11FontError>(X11Font(XftFontPtr(xf, XftFontDeleter(dpy)), fcp, std::move(h)));
 }
 
 auto X11Font::TryCreate(const X11DisplaySharedResource &dpy, FcPattern *const fcp) noexcept
@@ -98,12 +109,12 @@ auto X11Font::TryCreate(const X11DisplaySharedResource &dpy, FcPattern *const fc
 
     Height h(static_cast<uint32_t>(xf->ascent + xf->descent));
 
-    return Result<X11Font, X11FontError>(X11Font(dpy, xf, fcp, std::move(h)));
+    return Result<X11Font, X11FontError>(X11Font(XftFontPtr(xf, XftFontDeleter(dpy)), fcp, std::move(h)));
 }
 
 auto X11Font::ContainsChar(const X11DisplaySharedResource &dpy, const char32_t c) const noexcept -> bool
 {
-    return (XftCharExists(dpy->Raw(), m_xftfont, static_cast<FcChar32>(c)) == 1);
+    return (XftCharExists(dpy->Raw(), m_font.get(), static_cast<FcChar32>(c)) == 1);
 }
 
 auto X11Font::GetTextExtents(const X11DisplaySharedResource &dpy, const std::string_view &text) const noexcept
@@ -116,7 +127,7 @@ auto X11Font::GetTextExtents(const X11DisplaySharedResource &dpy, const std::str
             {"Cannot get text_extents, the text is empty", RUNTIME_INFO});
     }
 
-    XftTextExtentsUtf8(dpy->Raw(), m_xftfont, reinterpret_cast<const XftChar8 *>(text.data()),
+    XftTextExtentsUtf8(dpy->Raw(), m_font.get(), reinterpret_cast<const XftChar8 *>(text.data()),
                        static_cast<int32_t>(text.size()), &ext);
 
     const auto x_off = static_cast<std::uint32_t>(ext.xOff);
@@ -126,7 +137,7 @@ auto X11Font::GetTextExtents(const X11DisplaySharedResource &dpy, const std::str
 auto X11Font::FallbackForChar(const X11DisplaySharedResource &dpy, const char32_t c) const noexcept
     -> Result<X11Font, X11FontError>
 {
-    if (auto fm_result = this->FontMatch(dpy, c); fm_result.is_ok())
+    if (const auto fm_result = this->FontMatch(dpy, c); fm_result.is_ok())
     {
         FcPattern *const pattern = *fm_result.ok();
 
@@ -159,7 +170,7 @@ auto X11Font::FontMatch(const X11DisplaySharedResource &dpy, const char32_t c) c
 
     auto fc_result = FcResultNoMatch;
 
-    FcPattern *const fc_pattern = XftFontMatch(dpy->Raw(), dpy->ScreenId(), dup_pattern, &fc_result);
+    auto *const fc_pattern = XftFontMatch(dpy->Raw(), dpy->ScreenId(), dup_pattern, &fc_result);
 
     FcCharSetDestroy(charset);
     FcPatternDestroy(dup_pattern);
@@ -175,43 +186,17 @@ auto X11Font::FontMatch(const X11DisplaySharedResource &dpy, const char32_t c) c
 
 auto X11Font::IsValid() const noexcept -> bool
 {
-    return m_xftfont != nullptr && m_pattern != nullptr;
+    return m_font != nullptr && m_pattern != nullptr;
 }
 
-auto X11Font::xftfont() const noexcept -> XftFont *
+auto X11Font::font() const noexcept -> XftFont *
 {
-    return m_xftfont;
+    return m_font.get();
 }
 
 auto X11Font::height() const noexcept -> Height
 {
     return m_height;
-}
-
-void X11Font::Release() noexcept
-{
-    // Take ownership of current raw handles first
-    XftFont *xf = std::exchange(m_xftfont, nullptr);
-    FcPattern *pat = std::exchange(m_pattern, nullptr);
-
-    // Copy the shared_ptr so it stays alive for the close call even if *this gets moved again
-    auto dpy = m_dpy; // assuming you store X11DisplaySharedResource m_dpy;
-
-    if (xf != nullptr)
-    {
-        // Only attempt to close if we have a live display
-        if (dpy)
-        {
-            std::cout << "Releasing font" << '\n';
-            XftFontClose(dpy->Raw(), xf);
-        }
-        // else: no display — best effort (tiny leak on shutdown beats UB)
-    }
-    if (pat != nullptr)
-    {
-        std::cout << "Release pattern" << '\n';
-        FcPatternDestroy(pat);
-    }
 }
 
 } // namespace Tilebox::Ui
