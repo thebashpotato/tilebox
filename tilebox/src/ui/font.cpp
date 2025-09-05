@@ -1,4 +1,3 @@
-#include <cassert>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -114,7 +113,7 @@ auto X11Font::TryCreate(const X11DisplaySharedResource &dpy, FcPattern *const fc
 
 auto X11Font::ContainsChar(const X11DisplaySharedResource &dpy, const char32_t c) const noexcept -> bool
 {
-    return (XftCharExists(dpy->Raw(), m_font.get(), static_cast<FcChar32>(c)) == 1);
+    return (XftCharExists(dpy->Raw(), m_font.get(), c) == 1);
 }
 
 auto X11Font::GetTextExtents(const X11DisplaySharedResource &dpy, const std::string_view &text) const noexcept
@@ -153,7 +152,7 @@ auto X11Font::FontMatch(const X11DisplaySharedResource &dpy, const char32_t c) c
     -> Result<FcPattern *const, X11FontError>
 {
     FcCharSet *const charset = FcCharSetCreate();
-    FcCharSetAddChar(charset, static_cast<FcChar32>(c));
+    FcCharSetAddChar(charset, c);
 
     FcPattern *const dup_pattern = FcPatternDuplicate(m_pattern);
     if (dup_pattern == nullptr)

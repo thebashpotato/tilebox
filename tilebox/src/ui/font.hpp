@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 #include "tilebox/error.hpp"
 #include "tilebox/geometry.hpp"
 #include "tilebox/x11/display.hpp"
@@ -8,8 +11,6 @@
 #include <etl.hpp>
 #include <fontconfig/fontconfig.h>
 
-#include <cstdint>
-#include <string>
 
 namespace Tilebox::Ui
 {
